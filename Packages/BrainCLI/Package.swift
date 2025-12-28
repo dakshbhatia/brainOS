@@ -27,8 +27,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "BrainOSCLITests",
-            dependencies: ["BrainOSCLICore"]
+            name: "BrainCLITests",
+            dependencies: ["BrainCLICore"]
         ),
     ]
 )

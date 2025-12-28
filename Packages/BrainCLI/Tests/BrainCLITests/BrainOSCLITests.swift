@@ -1,14 +1,14 @@
 //
-//  BrainOSCLITests.swift
+//  BrainCLITests.swift
 //  BrainOS
 //
 //  Unit tests for the BrainOS CLI core functionality.
 //
 
 import XCTest
-@testable import BrainOSCLICore
+@testable import BrainCLICore
 
-final class BrainOSCLITests: XCTestCase {
+final class BrainCLITests: XCTestCase {
     func testConfiguration() {
         // Just a smoke test to ensure things link
         let root = Configuration.toolsRootDirectory()

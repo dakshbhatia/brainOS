@@ -86,13 +86,29 @@ public actor BrainManager {
     }
     
     private func checkHealth() async {
-        // Logic to query HealthKit
         print("BrainOS: Checking physical health...")
+        do {
+            try await BrainHealthManager.shared.requestPermissions()
+            let steps = try await BrainHealthManager.shared.fetchStepCount(days: 1)
+            if let todaySteps = steps.first, todaySteps < 2000 {
+                let hour = Calendar.current.component(.hour, from: Date())
+                if hour > 14 { // Afternoon nudge
+                    notificationService.show(
+                        title: "Movement Nudge",
+                        subtitle: "You've only taken \(Int(todaySteps)) steps",
+                        body: "How about a quick 10-minute walk to clear your head?"
+                    )
+                }
+            }
+        } catch {
+            print("BrainOS: Health check failed: \(error)")
+        }
     }
     
     private func checkSpending() async {
-        // Logic to query Finance/Plaid
         print("BrainOS: Checking financial health...")
+        // Placeholder for Plaid/Finance integration
+        // In a real implementation, this would query the BrainFinanceTool
     }
     
     private func sendDailyBrief() async {

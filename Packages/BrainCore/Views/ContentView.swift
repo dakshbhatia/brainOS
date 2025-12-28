@@ -11,6 +11,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var server: ServerController
     @StateObject private var themeManager = ThemeManager.shared
+    @State private var showDashboard = true
 
     /// Use computed property to always get the current theme from ThemeManager
     private var theme: ThemeProtocol { themeManager.currentTheme }
@@ -24,24 +25,63 @@ struct ContentView: View {
             theme.primaryBackground
                 .ignoresSafeArea()
 
-            VStack(spacing: 12) {
-                TopStatusHeader(
-                    appName: "BrainOS",
-                    serverURL: "http://\(server.localNetworkAddress):\(String(server.port))",
-                    statusLineText: statusText,
-                    onRetry: toggleServer,
-                    badgeText: statusBadgeText,
-                    badgeColor: statusBadgeColor,
-                    badgeAnimating: statusBadgeAnimating
-                )
+            if showDashboard {
+                VStack(spacing: 0) {
+                    BrainDashboardView()
+                    
+                    Divider()
+                    
+                    HStack {
+                        Button(action: { showDashboard = false }) {
+                            HStack {
+                                StatusDot(color: statusBadgeColor, isAnimating: statusBadgeAnimating)
+                                Text("Server Settings")
+                                    .font(.caption)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .padding(8)
+                        
+                        Spacer()
+                        
+                        AskAIButton {
+                            AppDelegate.shared?.showChatOverlay()
+                        }
+                        .padding(8)
+                    }
+                    .background(Color.primary.opacity(0.02))
+                }
+            } else {
+                VStack(spacing: 12) {
+                    HStack {
+                        Button(action: { showDashboard = true }) {
+                            Image(systemName: "chevron.left")
+                            Text("Back to Dashboard")
+                        }
+                        .buttonStyle(.plain)
+                        .font(.caption)
+                        
+                        Spacer()
+                    }
+                    
+                    TopStatusHeader(
+                        appName: "BrainOS",
+                        serverURL: "http://\(server.localNetworkAddress):\(String(server.port))",
+                        statusLineText: statusText,
+                        onRetry: toggleServer,
+                        badgeText: statusBadgeText,
+                        badgeColor: statusBadgeColor,
+                        badgeAnimating: statusBadgeAnimating
+                    )
 
-                BottomActionBar(portString: $portString)
+                    BottomActionBar(portString: $portString)
+                }
+                .padding(16)
             }
-            .padding(16)
         }
         .frame(
-            width: 300,
-            height: 150
+            width: 350,
+            height: showDashboard ? 550 : 200
         )
         .environment(\.theme, themeManager.currentTheme)
         .tint(theme.accentColor)

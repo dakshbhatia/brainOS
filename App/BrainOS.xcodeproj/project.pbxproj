@@ -241,8 +241,8 @@
 			mainGroup = F0BB3C1D2E51FBCC00895593;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				F0F4E2992ED1209200BEFA4D /* XCLocalSwiftPackageReference "../Packages/BrainOSRepository" */,
-				F0AA7F342ED20D2E00672B07 /* XCLocalSwiftPackageReference "../Packages/BrainOSCLI" */,
+				F0F4E2992ED1209200BEFA4D /* XCLocalSwiftPackageReference "../Packages/BrainRepository" */,
+				F0AA7F342ED20D2E00672B07 /* XCLocalSwiftPackageReference "../Packages/BrainCLI" */,
 				F0AA7F3B2ED20DA700672B07 /* XCLocalSwiftPackageReference "../Packages/BrainCore" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -681,17 +681,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F0AA7F342ED20D2E00672B07 /* XCLocalSwiftPackageReference "../Packages/BrainOSCLI" */ = {
+		F0AA7F342ED20D2E00672B07 /* XCLocalSwiftPackageReference "../Packages/BrainCLI" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Packages/BrainOSCLI;
+			relativePath = ../Packages/BrainCLI;
 		};
 		F0AA7F3B2ED20DA700672B07 /* XCLocalSwiftPackageReference "../Packages/BrainCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../Packages/BrainCore;
 		};
-		F0F4E2992ED1209200BEFA4D /* XCLocalSwiftPackageReference "../Packages/BrainOSRepository" */ = {
+		F0F4E2992ED1209200BEFA4D /* XCLocalSwiftPackageReference "../Packages/BrainRepository" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Packages/BrainOSRepository;
+			relativePath = ../Packages/BrainRepository;
 		};
 /* End XCLocalSwiftPackageReference section */
 

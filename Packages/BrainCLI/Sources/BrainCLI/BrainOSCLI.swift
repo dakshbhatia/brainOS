@@ -1,15 +1,15 @@
 //
-//  BrainOSCLI.swift
+//  BrainCLI.swift
 //  BrainOS
 //
 //  Main entry point for the BrainOS CLI. Parses command-line arguments and routes to appropriate command handlers.
 //
 
 import Foundation
-import BrainOSCLICore
+import BrainCLICore
 
 @main
-struct BrainOSCLI {
+struct BrainCLI {
     private enum CommandType {
         case status
         case serve([String])

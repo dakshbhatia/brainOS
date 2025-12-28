@@ -1,5 +1,5 @@
 {
-  "originHash" : "c569554dcf558b49fe7ac9f0b7adeec9af66d3cc2d9390c002e5bb565afd4e52",
+  "originHash" : "e72da3d0b512108502d24da2d3ea7e1291b6e5bafecaef1b6273c8e4e8758081",
   "pins" : [
     {
       "identity" : "eventsource",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "17cc2f9d7fb03b6027ec1f6702c9b66be7cd9c6e",
         "version" : "2.3.2"
+      }
+    },
+    {
+      "identity" : "macosusesdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mediar-ai/MacosUseSDK.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5d810b557dc73f8fb930767671b0cfcd989a23e7"
       }
     },
     {
