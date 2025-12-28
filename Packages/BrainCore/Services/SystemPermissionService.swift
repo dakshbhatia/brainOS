@@ -10,6 +10,7 @@ import Contacts
 import CoreLocation
 import EventKit
 import Foundation
+import HealthKit
 
 @MainActor
 final class SystemPermissionService: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -90,6 +91,8 @@ final class SystemPermissionService: NSObject, ObservableObject, CLLocationManag
             return checkContactsPermission()
         case .disk:
             return checkDiskPermission()
+        case .health:
+            return checkHealthPermission()
         }
     }
 
@@ -199,6 +202,8 @@ final class SystemPermissionService: NSObject, ObservableObject, CLLocationManag
             requestContactsPermission()
         case .disk:
             requestDiskPermission()
+        case .health:
+            requestHealthPermission()
         }
     }
 
@@ -705,6 +710,31 @@ final class SystemPermissionService: NSObject, ObservableObject, CLLocationManag
             return "WARNING: Access Not Determined"
         @unknown default:
             return "ERROR: Unknown Status"
+        }
+    }
+
+    // MARK: - Health Permission
+
+    private func checkHealthPermission() -> Bool {
+        guard HKHealthStore.isHealthDataAvailable() else { return false }
+        
+        let healthStore = HKHealthStore()
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        
+        // Note: authorizationStatus(for:) only returns sharingAuthorized if the user has been prompted.
+        // For reading, it doesn't tell us if they actually granted it, but it's the best we can do.
+        return healthStore.authorizationStatus(for: stepType) != .notDetermined
+    }
+
+    private func requestHealthPermission() {
+        Task {
+            do {
+                try await BrainHealthManager.shared.requestPermissions()
+                self.setPermission(.health, isGranted: true)
+            } catch {
+                print("Failed to request health permissions: \(error)")
+                self.setPermission(.health, isGranted: false)
+            }
         }
     }
 

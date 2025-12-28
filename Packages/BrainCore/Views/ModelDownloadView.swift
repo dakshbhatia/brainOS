@@ -203,7 +203,7 @@ struct ModelDownloadView: View {
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            Text("🧠")
+            Image(systemName: emptyStateIcon)
                 .font(.system(size: 40, weight: .light))
                 .foregroundColor(theme.tertiaryText)
 
@@ -464,7 +464,7 @@ private struct DownloadStatusIndicator: View {
                         .rotationEffect(.degrees(-90))
                         .animation(.easeOut(duration: 0.3), value: averageProgress)
 
-                    Text("🧠")
+                    Image(systemName: "arrow.down")
                         .font(.system(size: 7, weight: .bold))
                         .foregroundColor(theme.accentColor)
                 }

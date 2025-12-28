@@ -237,8 +237,8 @@ struct ConfigurationView: View {
 
                                                 if let message = cliInstallMessage {
                                                     HStack(spacing: 6) {
-                                                        Text("🧠")
-                                                        .font(.system(size: 12))
+                                                        Image(systemName: cliInstallSuccess ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                                                            .font(.system(size: 12))
                                                         Text(message)
                                                             .font(.system(size: 11))
                                                             .lineLimit(2)
@@ -386,7 +386,7 @@ struct ConfigurationView: View {
 
     private func successToast(_ message: String) -> some View {
         HStack(spacing: 10) {
-            Text("🧠")
+            Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 16))
                 .foregroundColor(theme.successColor)
 
@@ -439,7 +439,7 @@ struct ConfigurationView: View {
                     // Reset button
                     Button(action: resetToDefaults) {
                         HStack(spacing: 6) {
-                            Text("🧠")
+                            Image(systemName: "arrow.counterclockwise")
                                 .font(.system(size: 12, weight: .medium))
                             Text("Reset")
                                 .font(.system(size: 13, weight: .medium))
@@ -462,7 +462,7 @@ struct ConfigurationView: View {
                     // Save button
                     Button(action: saveConfiguration) {
                         HStack(spacing: 6) {
-                            Text("🧠")
+                            Image(systemName: "checkmark")
                                 .font(.system(size: 12, weight: .semibold))
                             Text("Save Changes")
                                 .font(.system(size: 13, weight: .medium))
@@ -900,7 +900,7 @@ private struct SettingsSection<Content: View>: View {
         VStack(alignment: .leading, spacing: 12) {
             // Section header with icon and uppercase title
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.accentColor)
 
@@ -1181,7 +1181,7 @@ private struct SystemPermissionsSection: View {
         VStack(alignment: .leading, spacing: 12) {
             // Section header with icon and uppercase title
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "lock.shield")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.accentColor)
 
@@ -1264,7 +1264,7 @@ private struct SystemPermissionRow: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                    Text("🧠")
+                    Image(systemName: "lock.shield")
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(
                             isGranted ? themeManager.currentTheme.successColor : themeManager.currentTheme.secondaryText
@@ -1341,7 +1341,7 @@ private struct SystemPermissionRow: View {
                             permissionService.openSystemSettings(for: permission)
                         }) {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "gearshape")
                                     .font(.system(size: 11))
                                 Text("Settings")
                                     .font(.system(size: 12, weight: .medium))
@@ -1364,7 +1364,7 @@ private struct SystemPermissionRow: View {
                             permissionService.requestPermission(permission)
                         }) {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "plus.circle")
                                     .font(.system(size: 11))
                                 Text("Grant")
                                     .font(.system(size: 12, weight: .medium))
@@ -1386,7 +1386,7 @@ private struct SystemPermissionRow: View {
             if let result = testResult {
                 let isSuccess = result.hasPrefix("SUCCESS")
                 HStack(alignment: .top, spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: isSuccess ? "checkmark.circle" : "info.circle")
                         .font(.system(size: 12))
                         .foregroundColor(
                             isSuccess ? themeManager.currentTheme.successColor : themeManager.currentTheme.warningColor
@@ -1516,7 +1516,7 @@ private struct DefaultPersonaPicker: View {
                                 .foregroundColor(.secondary)
                         }
                         if selection == persona.id {
-                            Text("🧠")
+                            Image(systemName: "checkmark")
                         }
                     }
                 }
@@ -1532,7 +1532,7 @@ private struct DefaultPersonaPicker: View {
         } label: {
             HStack(spacing: 10) {
                 // Persona icon
-                Text("🧠")
+                Image(systemName: "person.fill")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(personaColor)
 
@@ -1542,7 +1542,7 @@ private struct DefaultPersonaPicker: View {
 
                 Spacer()
 
-                Text("🧠")
+                Image(systemName: "chevron.up.down")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(themeManager.currentTheme.tertiaryText)
             }

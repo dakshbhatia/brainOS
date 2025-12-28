@@ -15,8 +15,9 @@ struct SearchField: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
-                .font(.system(size: 14))
+            HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(theme.tertiaryText)
 
             ZStack(alignment: .leading) {
@@ -35,7 +36,7 @@ struct SearchField: View {
 
             if !text.isEmpty {
                 Button(action: { text = "" }) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12))
                         .foregroundColor(theme.tertiaryText)
                 }

@@ -88,7 +88,7 @@ struct ModelPickerView: View {
 
     private var searchField: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 13))
                 .foregroundColor(theme.tertiaryText)
 
@@ -99,7 +99,7 @@ struct ModelPickerView: View {
 
             if !searchText.isEmpty {
                 Button(action: { searchText = "" }) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12))
                         .foregroundColor(theme.tertiaryText)
                 }
@@ -115,7 +115,7 @@ struct ModelPickerView: View {
 
     private var emptyState: some View {
         VStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 24))
                 .foregroundColor(theme.tertiaryText)
             Text("No models found")
@@ -179,11 +179,11 @@ struct ModelPickerView: View {
     private func sourceIcon(for source: ModelOption.Source) -> some View {
         switch source {
         case .foundation:
-            Text("🧠")
+            Image(systemName: "sparkles")
         case .local:
-            Text("🧠")
+            Image(systemName: "sparkles")
         case .remote:
-            Text("🧠")
+            Image(systemName: "sparkles")
         }
     }
 }
@@ -226,7 +226,7 @@ private struct ModelRowItem: View {
 
                     // VLM indicator
                     if model.isVLM {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 10))
                             .foregroundColor(theme.accentColor)
                             .help("Vision Language Model - supports images")
@@ -250,7 +250,7 @@ private struct ModelRowItem: View {
 
             // Checkmark for selected
             if isSelected {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(theme.accentColor)
             }

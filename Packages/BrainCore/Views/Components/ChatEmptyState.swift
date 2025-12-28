@@ -19,6 +19,8 @@ struct ChatEmptyState: View {
     let onSelectPersona: (UUID) -> Void
 
     @StateObject private var modelManager = ModelManager.shared
+    @StateObject private var permissionService = SystemPermissionService.shared
+    @AppStorage("hasCompletedIntegrationsOnboarding") private var hasCompletedIntegrationsOnboarding = false
     @State private var glowIntensity: CGFloat = 0.6
     @State private var hasAppeared = false
     @State private var isVisible = false
@@ -45,10 +47,12 @@ struct ChatEmptyState: View {
         VStack(spacing: 0) {
             Spacer()
 
-            if hasModels {
-                readyState
-            } else {
+            if !hasModels {
                 noModelsState
+            } else if !hasCompletedIntegrationsOnboarding {
+                integrationsState
+            } else {
+                readyState
             }
 
             Spacer()
@@ -66,6 +70,87 @@ struct ChatEmptyState: View {
             isVisible = false
             stopGradientAnimation()
         }
+    }
+
+    // MARK: - Integrations State
+
+    private var integrationsState: some View {
+        VStack(spacing: 32) {
+            // Header
+            VStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(theme.accentColor.opacity(0.1))
+                        .frame(width: 64, height: 64)
+                    
+                    Image(systemName: "link")
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundColor(theme.accentColor)
+                }
+                .opacity(hasAppeared ? 1 : 0)
+                .scaleEffect(hasAppeared ? 1 : 0.9)
+                
+                Text("Connect your life")
+                    .font(theme.font(size: CGFloat(theme.headingSize) + 4, weight: .semibold))
+                    .foregroundColor(theme.primaryText)
+                
+                Text("Grant access to your local data to enable powerful agent capabilities.")
+                    .font(theme.font(size: CGFloat(theme.bodySize)))
+                    .foregroundColor(theme.secondaryText)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 400)
+            }
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 10)
+            .animation(theme.springAnimation().delay(0.1), value: hasAppeared)
+
+            // Permissions list
+            VStack(spacing: 12) {
+                IntegrationRow(permission: .calendar, service: permissionService)
+                IntegrationRow(permission: .reminders, service: permissionService)
+                IntegrationRow(permission: .contacts, service: permissionService)
+                IntegrationRow(permission: .health, service: permissionService)
+            }
+            .frame(maxWidth: 400)
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 10)
+            .animation(theme.springAnimation().delay(0.2), value: hasAppeared)
+
+            // Actions
+            VStack(spacing: 16) {
+                Button(action: {
+                    withAnimation(theme.animationSlow()) {
+                        hasCompletedIntegrationsOnboarding = true
+                    }
+                }) {
+                    Text("Continue to Chat")
+                        .font(theme.font(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 32)
+                        .padding(.vertical, 12)
+                        .background(
+                            Capsule()
+                                .fill(theme.accentColor)
+                        )
+                }
+                .buttonStyle(.plain)
+                
+                Button(action: {
+                    withAnimation(theme.animationSlow()) {
+                        hasCompletedIntegrationsOnboarding = true
+                    }
+                }) {
+                    Text("Skip for now")
+                        .font(theme.font(size: 12, weight: .medium))
+                        .foregroundColor(theme.tertiaryText)
+                }
+                .buttonStyle(.plain)
+            }
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 20)
+            .animation(theme.springAnimation().delay(0.3), value: hasAppeared)
+        }
+        .padding(.horizontal, 40)
     }
 
     // MARK: - Ready State (has models)
@@ -138,7 +223,7 @@ struct ChatEmptyState: View {
                     .frame(width: 80, height: 80)
 
                 // Icon
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 32, weight: .medium))
                     .foregroundStyle(
                         LinearGradient(
@@ -171,8 +256,7 @@ struct ChatEmptyState: View {
             VStack(spacing: 12) {
                 ForEach(Array(topSuggestions.enumerated()), id: \.element.id) { index, model in
                     SuggestedModelCard(
-                        model: model,
-                        onDownload: onOpenModelManager
+                        model: model
                     )
                     .opacity(hasAppeared ? 1 : 0)
                     .offset(y: hasAppeared ? 0 : 15)
@@ -184,7 +268,7 @@ struct ChatEmptyState: View {
             HStack(spacing: 16) {
                 Button(action: onOpenModelManager) {
                     HStack(spacing: 5) {
-                        Text("🧠")
+                        Image(systemName: "square.grid.2x2")
                             .font(theme.font(size: CGFloat(theme.captionSize) - 1))
                         Text("Browse all models")
                     }
@@ -206,7 +290,7 @@ struct ChatEmptyState: View {
 
                     Button(action: useFoundation) {
                         HStack(spacing: 5) {
-                            Text("🧠")
+                            Image(systemName: "apple.logo")
                                 .font(theme.font(size: CGFloat(theme.captionSize) - 1))
                             Text("Use Apple Foundation")
                         }
@@ -239,8 +323,8 @@ struct ChatEmptyState: View {
                         Text(persona.name)
                         if persona.id == activePersonaId {
                             Spacer()
-                            Text("🧠")
-                                .font(.system(size: 12, weight: .medium))
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 10, weight: .bold))
                         }
                     }
                 }
@@ -256,7 +340,7 @@ struct ChatEmptyState: View {
         } label: {
             HStack(spacing: 8) {
                 // Persona icon
-                Text("🧠")
+                Image(systemName: "person.fill")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(theme.accentColor)
 
@@ -264,7 +348,7 @@ struct ChatEmptyState: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(theme.primaryText)
 
-                Text("🧠")
+                Image(systemName: "chevron.up.down")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
             }
@@ -385,7 +469,7 @@ private struct QuickActionButton: View {
     var body: some View {
         Button(action: { onTap(action.prompt) }) {
             HStack(spacing: 10) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(isHovered ? theme.accentColor : theme.secondaryText)
                     .frame(width: 20)
@@ -396,7 +480,7 @@ private struct QuickActionButton: View {
 
                 Spacer()
 
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
                     .opacity(isHovered ? 1 : 0)
@@ -435,11 +519,15 @@ private struct QuickActionButton: View {
 
 private struct SuggestedModelCard: View {
     let model: MLXModel
-    let onDownload: () -> Void
 
+    @StateObject private var modelManager = ModelManager.shared
     @State private var isHovered = false
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
+
+    private var downloadState: DownloadState {
+        modelManager.downloadStates[model.id] ?? .notStarted
+    }
 
     private var isVLM: Bool {
         model.isLikelyVLM
@@ -454,7 +542,11 @@ private struct SuggestedModelCard: View {
     }
 
     var body: some View {
-        Button(action: onDownload) {
+        Button(action: {
+            if case .notStarted = downloadState {
+                modelManager.downloadModel(model)
+            }
+        }) {
             HStack(spacing: 16) {
                 // Model icon with gradient background
                 ZStack {
@@ -471,7 +563,7 @@ private struct SuggestedModelCard: View {
                         )
                         .frame(width: 48, height: 48)
 
-                    Text("🧠")
+                    Image(systemName: isVLM ? "eye" : "cpu")
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(theme.accentColor)
                 }
@@ -486,7 +578,7 @@ private struct SuggestedModelCard: View {
 
                         // Model type badge
                         HStack(spacing: 3) {
-                            Text("🧠")
+                            Image(systemName: modelTypeIcon)
                                 .font(.system(size: 8, weight: .semibold))
                             Text(modelTypeLabel)
                                 .font(.system(size: 10, weight: .semibold))
@@ -513,18 +605,45 @@ private struct SuggestedModelCard: View {
                         }
                     }
 
-                    Text(model.description)
-                        .font(.system(size: 12))
-                        .foregroundColor(theme.secondaryText)
-                        .lineLimit(1)
+                    if case .downloading(let progress) = downloadState {
+                        VStack(alignment: .leading, spacing: 4) {
+                            ProgressView(value: progress)
+                                .progressViewStyle(.linear)
+                                .tint(theme.accentColor)
+                            Text("\(Int(progress * 100))% downloaded")
+                                .font(.system(size: 10))
+                                .foregroundColor(theme.secondaryText)
+                        }
+                    } else {
+                        Text(model.description)
+                            .font(.system(size: 12))
+                            .foregroundColor(theme.secondaryText)
+                            .lineLimit(1)
+                    }
                 }
 
                 Spacer()
 
-                // Download button
-                Text("🧠")
-                    .font(.system(size: 24))
-                    .foregroundColor(isHovered ? theme.accentColor : theme.secondaryText)
+                // Download status icon
+                Group {
+                    switch downloadState {
+                    case .notStarted:
+                        Image(systemName: "arrow.down.circle")
+                            .font(.system(size: 24))
+                            .foregroundColor(isHovered ? theme.accentColor : theme.secondaryText)
+                    case .downloading:
+                        ProgressView()
+                            .controlSize(.small)
+                    case .completed:
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 24))
+                            .foregroundColor(theme.successColor)
+                    case .failed:
+                        Image(systemName: "exclamationmark.circle")
+                            .font(.system(size: 24))
+                            .foregroundColor(theme.errorColor)
+                    }
+                }
             }
             .padding(16)
             .background(
@@ -542,6 +661,7 @@ private struct SuggestedModelCard: View {
             )
         }
         .buttonStyle(.plain)
+        .disabled(downloadState != .notStarted && downloadState != .failed)
         .onHover { hovering in
             withAnimation(theme.animationQuick()) {
                 isHovered = hovering
@@ -588,3 +708,67 @@ private struct SuggestedModelCard: View {
         }
     }
 #endif
+
+struct IntegrationRow: View {
+    let permission: SystemPermission
+    @ObservedObject var service: SystemPermissionService
+    @Environment(\.theme) private var theme
+
+    var isGranted: Bool {
+        service.permissionStates[permission] ?? false
+    }
+
+    var body: some View {
+        HStack(spacing: 16) {
+            // Icon
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(isGranted ? theme.accentColor.opacity(0.1) : theme.secondaryBackground)
+                    .frame(width: 40, height: 40)
+
+                Image(systemName: permission.systemIconName)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(isGranted ? theme.accentColor : theme.secondaryText)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(permission.displayName)
+                    .font(theme.font(size: 14, weight: .medium))
+                    .foregroundColor(theme.primaryText)
+                
+                Text(permission.description)
+                    .font(theme.font(size: 11))
+                    .foregroundColor(theme.tertiaryText)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            if isGranted {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(theme.accentColor)
+                    .font(.system(size: 20))
+            } else {
+                Button(action: {
+                    service.requestPermission(permission)
+                }) {
+                    Text("Grant")
+                        .font(theme.font(size: 12, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(theme.accentColor)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(theme.secondaryBackground.opacity(0.5))
+        )
+    }
+}

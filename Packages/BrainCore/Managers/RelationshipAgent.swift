@@ -7,73 +7,72 @@ public actor RelationshipAgent {
     private init() {}
     
     public func analyzeRecentInteractions() async -> [RelationshipNudge] {
-        // 1. NOTICE: Query the Messages
+        BrainLogger.info("Analyzing recent interactions with LLM...", category: .agent)
+        
+        // 1. Gather context from Messages
         let messages = (try? await BrainMessagesManager.shared.fetchRecentMessages(limit: 50)) ?? []
+        if messages.isEmpty {
+            return getMockNudges()
+        }
         
-        // Group messages by sender
-        let groupedMessages = Dictionary(grouping: messages) { $0.senderName ?? $0.sender }
+        // 2. Format messages for LLM analysis
+        let messageContext = messages.map { msg in
+            let sender = msg.senderName ?? msg.sender
+            let direction = msg.isFromMe ? "To" : "From"
+            return "[\(msg.timestamp)] \(direction) \(sender): \(msg.text ?? "[Attachment]")"
+        }.joined(separator: "\n")
         
-        var nudges: [RelationshipNudge] = []
+        let prompt = """
+        Analyze these recent messages and identify any social obligations or opportunities to connect.
+        For each person, if a nudge is needed, provide:
+        - contactName
+        - reason (why nudge?)
+        - suggestion (what to say/do)
+        - priority (high/medium/low)
+        - actionType (reply/message/call)
         
-        // 2. Simple heuristic-based analysis for MVP
-        for (displayName, senderMessages) in groupedMessages {
-            if displayName == "Unknown" { continue }
+        Output as a JSON array of objects. If no nudges needed, output [].
+        
+        Messages:
+        \(messageContext)
+        """
+        
+        do {
+            let engine = ChatEngine()
+            let response = try await engine.generateOneShot(
+                messages: [ChatMessage(role: "user", content: prompt)],
+                parameters: GenerationParameters(temperature: 0.3, maxTokens: 500, topPOverride: nil, repetitionPenalty: nil),
+                requestedModel: "default"
+            )
             
-            // Check if the last message was from them and was more than 24 hours ago
-            if let lastMessage = senderMessages.first, !lastMessage.isFromMe {
-                let timeSinceLastMessage = Date().timeIntervalSince(lastMessage.timestamp)
-                
-                // Check for tapbacks - if they loved/liked your message, it's a positive signal
-                if let tapback = lastMessage.tapbackType {
-                    if tapback == .loved || tapback == .liked {
-                        // Maybe nudge to say something back if it's been a while
-                        if timeSinceLastMessage > 172800 { // 48 hours
-                            nudges.append(RelationshipNudge(
-                                contactName: displayName,
-                                reason: "They \(tapback.rawValue.lowercased()) your message 2 days ago. Keep the momentum going!",
-                                suggestion: "Send a quick update or a photo.",
-                                priority: .medium,
-                                actionType: .message
-                            ))
-                        }
-                        continue
-                    }
-                }
-                
-                if timeSinceLastMessage > 86400 { // 24 hours
-                    let textPreview = lastMessage.text?.prefix(30) ?? "an attachment"
-                    nudges.append(RelationshipNudge(
-                        contactName: displayName,
-                        reason: "They messaged you \(Int(timeSinceLastMessage / 3600)) hours ago and you haven't replied.",
-                        suggestion: "Draft a reply to: \"\(textPreview)...\"",
-                        priority: timeSinceLastMessage > 172800 ? .high : .medium,
-                        actionType: .reply
-                    ))
-                }
+            if let data = response.data(using: .utf8),
+               let nudges = try? JSONDecoder().decode([RelationshipNudge].self, from: data) {
+                return nudges
             }
+        } catch {
+            BrainLogger.error("LLM relationship analysis failed: \(error)", category: .agent)
         }
         
-        // If no real messages found (e.g. no FDA), return mocks for demo
-        if nudges.isEmpty {
-            return [
-                RelationshipNudge(
-                    contactName: "Mom",
-                    reason: "She asked about dinner 2 days ago and you haven't replied.",
-                    suggestion: "Draft a reply: 'Hey Mom, yes I'll be there! Looking forward to it.'",
-                    priority: .high,
-                    actionType: .reply
-                ),
-                RelationshipNudge(
-                    contactName: "Sarah",
-                    reason: "Last interaction was 5 days ago.",
-                    suggestion: "Send a quick check-in message.",
-                    priority: .medium,
-                    actionType: .message
-                )
-            ]
-        }
-        
-        return nudges.sorted { $0.priority == .high && $1.priority != .high }
+        return getMockNudges()
+    }
+    
+    private func getMockNudges() -> [RelationshipNudge] {
+        return [
+            RelationshipNudge(
+                contactName: "Mom",
+                reason: "She asked about dinner 2 days ago and you haven't replied.",
+                suggestion: "Draft a reply: 'Hey Mom, yes I'll be there! Looking forward to it.'",
+                priority: .high,
+                actionType: .reply
+            ),
+            RelationshipNudge(
+                contactName: "Sarah",
+                reason: "Last interaction was 5 days ago.",
+                suggestion: "Send a quick check-in message.",
+                priority: .medium,
+                actionType: .message
+            )
+        ]
     }
 }
 

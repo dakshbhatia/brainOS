@@ -91,8 +91,8 @@ struct GradientButton: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 if let icon = icon {
-                    Text("🧠")
-                        .font(.system(size: 14, weight: .medium))
+                    Image(systemName: icon)
+                        .font(.system(size: 12, weight: .medium))
                 }
                 Text(title)
                     .font(.system(size: 14, weight: .semibold))
@@ -168,8 +168,8 @@ struct SimpleToggleButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                Text("🧠")
-                    .font(.system(size: 16, weight: .medium))
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .medium))
                     .rotationEffect(.degrees(isHovering ? 8 : 0))
                     .scaleEffect(isHovering ? 1.06 : 1.0)
                     .animation(.easeInOut(duration: 0.2), value: isHovering)
@@ -253,8 +253,8 @@ struct CopyableURLField: View {
 
                 Button(action: copyURL) {
                     ZStack {
-                        Text("🧠")
-                            .font(.system(size: 14, weight: .medium))
+                        Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
+                            .font(.system(size: 12, weight: .medium))
                             .foregroundColor(showCopied ? theme.successColor : theme.primaryText)
                     }
                     .frame(width: 36, height: 36)
@@ -379,8 +379,8 @@ struct IconBadge: View {
                         .stroke(color.opacity(0.3), lineWidth: 1.5)
                 )
 
-            Text("🧠")
-                .font(.system(size: size * 0.5, weight: .medium))
+            Image(systemName: icon)
+                .font(.system(size: size * 0.4, weight: .medium))
                 .foregroundColor(color)
         }
         .frame(width: size, height: size)
@@ -484,8 +484,8 @@ struct SystemResourceMonitor: View {
             // CPU Usage
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 4) {
-                    Text("🧠")
-                        .font(.system(size: 11, weight: .medium))
+                    Image(systemName: "cpu")
+                        .font(.system(size: 10, weight: .medium))
                         .foregroundColor(theme.secondaryText)
                     Text("CPU")
                         .font(.system(size: 11, weight: .medium))
@@ -530,8 +530,8 @@ struct SystemResourceMonitor: View {
             // RAM Usage
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 4) {
-                    Text("🧠")
-                        .font(.system(size: 11, weight: .medium))
+                    Image(systemName: "memorychip")
+                        .font(.system(size: 10, weight: .medium))
                         .foregroundColor(theme.secondaryText)
                     Text("RAM")
                         .font(.system(size: 11, weight: .medium))

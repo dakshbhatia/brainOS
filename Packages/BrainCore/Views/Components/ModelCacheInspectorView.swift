@@ -20,7 +20,7 @@ struct ModelCacheInspectorView: View {
                     .foregroundColor(theme.primaryText)
                 Spacer()
                 Button(action: { Task { await refresh() } }) {
-                    Text("🧠")
+                    Image(systemName: "arrow.clockwise")
                         .font(.system(size: 12, weight: .semibold))
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -96,7 +96,7 @@ struct ModelCacheInspectorView: View {
                     }
                 } label: {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "trash")
                         Text("Clear All")
                     }
                 }

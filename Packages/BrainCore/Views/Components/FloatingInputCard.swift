@@ -270,7 +270,7 @@ struct FloatingInputCard: View {
 
                         // Show VLM indicator
                         if option.isVLM {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(theme.font(size: CGFloat(theme.captionSize) - 3))
                                 .foregroundColor(theme.accentColor)
                         }
@@ -294,7 +294,7 @@ struct FloatingInputCard: View {
                         .foregroundColor(theme.secondaryText)
                 }
 
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(theme.font(size: CGFloat(theme.captionSize) - 3, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
             }
@@ -346,7 +346,7 @@ struct FloatingInputCard: View {
     private var toolSelectorChip: some View {
         Button(action: { showToolPicker.toggle() }) {
             HStack(spacing: 6) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(theme.font(size: CGFloat(theme.captionSize) - 2))
                     .foregroundColor(hasToolOverrides ? theme.accentColor : theme.tertiaryText)
 
@@ -361,7 +361,7 @@ struct FloatingInputCard: View {
                         .frame(width: 5, height: 5)
                 }
 
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(theme.font(size: CGFloat(theme.captionSize) - 3, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
             }
@@ -453,7 +453,7 @@ struct FloatingInputCard: View {
 
     private var imageAttachButton: some View {
         Button(action: pickImage) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(theme.secondaryText)
                 .frame(width: 32, height: 32)
@@ -554,7 +554,7 @@ struct FloatingInputCard: View {
         Button(action: isStreaming ? onStop : syncAndSend) {
             ZStack {
                 // Send icon - uses theme body size
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(theme.font(size: CGFloat(theme.bodySize), weight: .semibold))
                     .foregroundColor(isStreaming ? .white : theme.primaryBackground)
                     .opacity(isStreaming ? 0 : 1)
@@ -685,7 +685,7 @@ struct CachedImageThumbnail: View {
 
             // Remove button
             Button(action: onRemove) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 16))
                     .foregroundColor(.white)
                     .background(

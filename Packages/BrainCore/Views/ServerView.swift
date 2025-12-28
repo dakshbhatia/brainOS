@@ -112,7 +112,7 @@ struct ServerView: View {
                             )
 
                         Button(action: copyServerURL) {
-                            Text("🧠")
+                            Image(systemName: "doc.on.doc")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(theme.secondaryText)
                                 .padding(8)
@@ -162,8 +162,8 @@ struct ServerView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         // Category header
                         HStack(spacing: 6) {
-                            Text("🧠")
-                                .font(.system(size: 10, weight: .semibold))
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 6, weight: .semibold))
                                 .foregroundColor(categoryColor(group.category))
                             Text(group.category.rawValue)
                                 .font(.system(size: 11, weight: .semibold))
@@ -244,7 +244,7 @@ struct ServerView: View {
 
             Button(action: openDocumentation) {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12, weight: .medium))
                     Text("Open Documentation")
                         .font(.system(size: 13, weight: .medium))
@@ -707,7 +707,7 @@ private struct EndpointRow: View {
                     }
 
                     // Expand chevron
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundColor(theme.tertiaryText)
                 }
@@ -794,7 +794,7 @@ private struct EndpointRow: View {
                                         ProgressView()
                                             .scaleEffect(0.7)
                                     } else {
-                                        Text("🧠")
+                                        Image(systemName: "sparkles")
                                             .font(.system(size: 10))
                                     }
                                     Text(isLoading ? "Sending..." : "Send Request")
@@ -838,7 +838,7 @@ private struct EndpointRow: View {
                                         NSPasteboard.general.clearContents()
                                         NSPasteboard.general.setString(resp.formattedBody, forType: .string)
                                     }) {
-                                        Text("🧠")
+                                        Image(systemName: "doc.on.doc")
                                             .font(.system(size: 10))
                                             .foregroundColor(theme.tertiaryText)
                                     }
@@ -847,7 +847,7 @@ private struct EndpointRow: View {
 
                                     // Clear button
                                     Button(action: onClearResponse) {
-                                        Text("🧠")
+                                        Image(systemName: "xmark.circle")
                                             .font(.system(size: 10))
                                             .foregroundColor(theme.tertiaryText)
                                     }
@@ -892,7 +892,7 @@ private struct EndpointRow: View {
                                 )
                             } else {
                                 VStack(spacing: 8) {
-                                    Text("🧠")
+                                    Image(systemName: "play.circle")
                                         .font(.system(size: 24))
                                         .foregroundColor(theme.tertiaryText.opacity(0.5))
                                     Text("Click 'Send Request' to test")

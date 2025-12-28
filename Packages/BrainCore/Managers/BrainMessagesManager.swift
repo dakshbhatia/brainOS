@@ -64,12 +64,14 @@ public class BrainMessagesManager {
     private var contactCache: [String: String] = [:]
     
     public func fetchRecentMessages(limit: Int = 20, contactName: String? = nil) throws -> [MessageEntry] {
+        BrainLogger.info("Fetching \(limit) recent messages...", category: .messages)
         var db: OpaquePointer?
         
         // Open database in read-only mode
         if sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK {
             let error = String(cString: sqlite3_errmsg(db))
             sqlite3_close(db)
+            BrainLogger.error("Failed to open chat.db: \(error)", category: .messages)
             throw NSError(domain: "BrainMessagesManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to open chat.db: \(error)"])
         }
         
@@ -164,6 +166,7 @@ public class BrainMessagesManager {
             ))
         }
         
+        BrainLogger.debug("Successfully fetched \(messages.count) messages from chat.db", category: .messages)
         return messages
     }
     
@@ -191,7 +194,7 @@ public class BrainMessagesManager {
                 return name
             }
         } catch {
-            print("BrainMessagesManager: Failed to resolve contact: \(error)")
+            BrainLogger.error("Failed to resolve contact \(identifier): \(error)", category: .messages)
         }
         
         return nil

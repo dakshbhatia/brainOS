@@ -170,6 +170,8 @@ final class HTTPHandler: ChannelInboundHandler, Sendable {
                 handleShowEndpoint(head: head, context: context, startTime: startTime, userAgent: userAgent)
             } else if head.method == .POST, path == "/chat/completions" || path == "/v1/chat/completions" {
                 handleChatCompletions(head: head, context: context, startTime: startTime, userAgent: userAgent)
+            } else if head.method == .POST, path == "/audio/speech" || path == "/v1/audio/speech" {
+                handleAudioSpeech(head: head, context: context, startTime: startTime, userAgent: userAgent)
             } else if head.method == .POST, path == "/chat" {
                 handleChatNDJSON(head: head, context: context, startTime: startTime, userAgent: userAgent)
             } else if head.method == .GET, path == "/mcp/health" {
@@ -370,6 +372,82 @@ final class HTTPHandler: ChannelInboundHandler, Sendable {
     var currentCORSHeaders: [(String, String)] { stateRef.value.corsHeaders }
 
     // MARK: - Chat handlers
+
+    private func handleAudioSpeech(
+        head: HTTPRequestHead,
+        context: ChannelHandlerContext,
+        startTime: Date,
+        userAgent: String?
+    ) {
+        let data: Data
+        if let body = stateRef.value.requestBodyBuffer {
+            var bodyCopy = body
+            let bytes = bodyCopy.readBytes(length: bodyCopy.readableBytes) ?? []
+            data = Data(bytes)
+        } else {
+            data = Data()
+        }
+
+        struct AudioSpeechRequest: Codable {
+            let model: String
+            let input: String
+            let voice: String?
+            let speed: Double?
+        }
+
+        guard let req = try? JSONDecoder().decode(AudioSpeechRequest.self, from: data) else {
+            sendResponse(
+                context: context,
+                version: head.version,
+                status: .badRequest,
+                headers: [("Content-Type", "text/plain; charset=utf-8")],
+                body: "Invalid request format"
+            )
+            return
+        }
+
+        Task {
+            let url = URL(string: "http://127.0.0.1:8001/v1/audio/speech")!
+            var proxyRequest = URLRequest(url: url)
+            proxyRequest.httpMethod = "POST"
+            proxyRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let body: [String: Any] = [
+                "text": req.input,
+                "voice_id": req.voice ?? "default",
+                "speed": req.speed ?? 1.0
+            ]
+            proxyRequest.httpBody = try? JSONSerialization.data(withJSONObject: body)
+            
+            do {
+                let (audioData, response) = try await URLSession.shared.data(for: proxyRequest)
+                let httpResponse = response as? HTTPURLResponse
+                
+                var headers = [("Content-Type", "audio/wav")]
+                headers.append(contentsOf: await MainActor.run { self.stateRef.value.corsHeaders })
+                
+                await MainActor.run {
+                    self.sendResponse(
+                        context: context,
+                        version: head.version,
+                        status: .init(statusCode: httpResponse?.statusCode ?? 200),
+                        headers: headers,
+                        body: audioData
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    self.sendResponse(
+                        context: context,
+                        version: head.version,
+                        status: .internalServerError,
+                        headers: [],
+                        body: "Speech generation failed"
+                    )
+                }
+            }
+        }
+    }
 
     private func handleChatCompletions(
         head: HTTPRequestHead,

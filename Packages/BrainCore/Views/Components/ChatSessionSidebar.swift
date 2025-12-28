@@ -82,7 +82,7 @@ struct ChatSessionSidebar: View {
             Spacer()
 
             Button(action: onNewChat) {
-                Text("🧠")
+                Image(systemName: "plus")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(theme.secondaryText)
             }
@@ -98,7 +98,7 @@ struct ChatSessionSidebar: View {
 
     private var searchField: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "magnifyingglass")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(isSearchFocused ? theme.primaryText : theme.secondaryText.opacity(0.7))
 
@@ -114,7 +114,7 @@ struct ChatSessionSidebar: View {
                         searchQuery = ""
                     }
                 }) {
-                    Text("🧠")
+                    Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(theme.secondaryText.opacity(0.7))
                 }
@@ -144,7 +144,7 @@ struct ChatSessionSidebar: View {
     private var emptyState: some View {
         VStack(spacing: 8) {
             Spacer()
-            Text("🧠")
+            Image(systemName: "bubble.left.and.bubble.right")
                 .font(.system(size: 28))
                 .foregroundColor(theme.secondaryText.opacity(0.5))
             Text("No conversations yet")
@@ -161,7 +161,7 @@ struct ChatSessionSidebar: View {
         VStack(spacing: 12) {
             Spacer()
 
-            Text("🧠")
+            Image(systemName: "magnifyingglass")
                 .font(.system(size: 24, weight: .light))
                 .foregroundColor(theme.secondaryText.opacity(0.4))
 
@@ -354,7 +354,7 @@ private struct SessionRow: View {
 
     /// Default persona indicator with person icon
     private var defaultPersonaIndicator: some View {
-        Text("🧠")
+        Image(systemName: "person.fill")
             .font(.system(size: 9, weight: .medium))
             .foregroundColor(theme.secondaryText.opacity(0.6))
             .frame(width: 18, height: 18)
@@ -435,7 +435,7 @@ private struct ActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("🧠")
+            Image(systemName: icon)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(isHovered ? theme.primaryText : theme.secondaryText)
                 .frame(width: 24, height: 24)

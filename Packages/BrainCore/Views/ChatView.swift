@@ -1450,7 +1450,7 @@ struct ChatView: View {
                 }
                 isPinnedToBottom = true
             }) {
-                Text("🧠")
+                Image(systemName: "chevron.down")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(theme.secondaryText)
                     .frame(width: 32, height: 32)
@@ -1573,7 +1573,7 @@ private struct HeaderActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("🧠")
+            Image(systemName: icon)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(isHovered ? theme.primaryText : theme.secondaryText)
                 .frame(width: 28, height: 28)
@@ -1602,7 +1602,7 @@ private struct SettingsButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("🧠")
+            Image(systemName: "gearshape")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(isHovered ? theme.primaryText : theme.secondaryText)
                 .frame(width: 28, height: 28)
@@ -1626,24 +1626,24 @@ private struct SettingsButton: View {
 private struct CloseButton: View {
     let action: () -> Void
 
-    @State private var isHovered = false
+    @State private var isHovering = false
     @Environment(\.theme) private var theme
 
     var body: some View {
         Button(action: action) {
-            Text("🧠")
+            Image(systemName: "xmark")
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(isHovered ? theme.primaryText : theme.secondaryText)
+                .foregroundColor(isHovering ? theme.primaryText : theme.secondaryText)
                 .frame(width: 28, height: 28)
                 .background(
                     Circle()
-                        .fill(theme.secondaryBackground.opacity(isHovered ? 0.8 : 0.5))
+                        .fill(theme.secondaryBackground.opacity(isHovering ? 0.8 : 0.5))
                 )
         }
         .buttonStyle(.plain)
         .onHover { hovering in
             withAnimation(theme.animationQuick()) {
-                isHovered = hovering
+                isHovering = hovering
             }
         }
         .help("Close")

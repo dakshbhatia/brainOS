@@ -67,7 +67,7 @@ struct GlassListRow<Content: View>: View {
                 HStack {
                     Text("Item \(index + 1)")
                     Spacer()
-                    Text("🧠")
+                    Image(systemName: "chevron.right")
                 }
             }
         }

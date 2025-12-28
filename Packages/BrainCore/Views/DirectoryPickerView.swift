@@ -42,7 +42,7 @@ struct DirectoryPickerView: View {
                     Button(action: {
                         showFilePicker = true
                     }) {
-                        Text("🧠")
+                        Image(systemName: "folder")
                             .font(.system(size: 12))
                             .foregroundColor(theme.primaryText)
                             .frame(width: 24, height: 24)
@@ -62,7 +62,7 @@ struct DirectoryPickerView: View {
                         Button(action: {
                             directoryPicker.resetDirectory()
                         }) {
-                            Text("🧠")
+                            Image(systemName: "arrow.counterclockwise")
                                 .font(.system(size: 12))
                                 .foregroundColor(theme.primaryText)
                                 .frame(width: 24, height: 24)

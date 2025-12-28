@@ -248,7 +248,7 @@ struct RemoteProviderEditSheet: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(
                         LinearGradient(
@@ -276,7 +276,7 @@ struct RemoteProviderEditSheet: View {
             Spacer()
 
             Button(action: { dismiss() }) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(theme.secondaryText)
                     .frame(width: 28, height: 28)
@@ -361,7 +361,7 @@ struct RemoteProviderEditSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             // Section header
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(theme.accentColor)
 
@@ -432,7 +432,7 @@ struct RemoteProviderEditSheet: View {
             // Endpoint preview
             if !host.isEmpty {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 11))
                         .foregroundColor(theme.accentColor)
 
@@ -473,7 +473,7 @@ struct RemoteProviderEditSheet: View {
         VStack(alignment: .leading, spacing: 16) {
             // Section header
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(theme.accentColor)
 
@@ -507,7 +507,7 @@ struct RemoteProviderEditSheet: View {
                         Spacer()
 
                         HStack(spacing: 4) {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 9))
                             Text("Stored in Keychain")
                                 .font(.system(size: 10))
@@ -553,7 +553,7 @@ struct RemoteProviderEditSheet: View {
                 }
             }) {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundColor(theme.tertiaryText)
                         .rotationEffect(.degrees(showAdvanced ? 90 : 0))
@@ -613,7 +613,7 @@ struct RemoteProviderEditSheet: View {
                             Button(action: {
                                 customHeaders.append(HeaderEntry(key: "", value: "", isSecret: false))
                             }) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 10, weight: .semibold))
                                     .foregroundColor(theme.accentColor)
                                     .frame(width: 24, height: 24)
@@ -665,10 +665,10 @@ struct RemoteProviderEditSheet: View {
                                 .scaleEffect(0.5)
                                 .frame(width: 14, height: 14)
                         } else if let result = testResult {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 12))
                         } else {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 11))
                         }
                     }
@@ -941,7 +941,7 @@ private struct PresetPill: View {
                         )
                         .frame(width: 38, height: 38)
 
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(isSelected ? .white : themeManager.currentTheme.tertiaryText)
                 }
@@ -1030,7 +1030,7 @@ private struct CompactHeaderRow: View {
             .foregroundColor(themeManager.currentTheme.primaryText)
 
             Button(action: { header.isSecret.toggle() }) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 10))
                     .foregroundColor(
                         header.isSecret ? themeManager.currentTheme.accentColor : themeManager.currentTheme.tertiaryText
@@ -1045,7 +1045,7 @@ private struct CompactHeaderRow: View {
             .help(header.isSecret ? "This value is stored securely" : "Click to make this a secret value")
 
             Button(action: onDelete) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.tertiaryText)
                     .frame(width: 22, height: 22)

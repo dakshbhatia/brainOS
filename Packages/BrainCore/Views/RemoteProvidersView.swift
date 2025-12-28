@@ -78,7 +78,7 @@ struct RemoteProvidersView: View {
 
                 Button(action: { showAddSheet = true }) {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "plus")
                             .font(.system(size: 12, weight: .semibold))
                         Text("Add Provider")
                             .font(.system(size: 13, weight: .medium))
@@ -125,7 +125,7 @@ struct RemoteProvidersView: View {
                     .fill(theme.accentColor.opacity(0.1))
                     .frame(width: 80, height: 80)
 
-                Text("🧠")
+                Image(systemName: "network")
                     .font(.system(size: 36))
                     .foregroundColor(theme.accentColor)
             }
@@ -145,7 +145,7 @@ struct RemoteProvidersView: View {
 
             Button(action: { showAddSheet = true }) {
                 HStack(spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: "plus")
                         .font(.system(size: 12, weight: .semibold))
                     Text("Add Your First Provider")
                         .font(.system(size: 14, weight: .medium))
@@ -222,7 +222,7 @@ private struct ProviderCardView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(statusColor.opacity(0.12))
-                    Text("🧠")
+                    Image(systemName: "network")
                         .font(.system(size: 22))
                         .foregroundColor(statusColor)
                 }
@@ -254,7 +254,7 @@ private struct ProviderCardView: View {
                 // Actions
                 HStack(spacing: 12) {
                     Button(action: onEdit) {
-                        Text("🧠")
+                        Image(systemName: "pencil")
                             .font(.system(size: 14))
                             .foregroundColor(theme.secondaryText)
                             .frame(width: 32, height: 32)
@@ -266,7 +266,7 @@ private struct ProviderCardView: View {
                     .buttonStyle(PlainButtonStyle())
 
                     Button(action: { showDeleteConfirm = true }) {
-                        Text("🧠")
+                        Image(systemName: "trash")
                             .font(.system(size: 14))
                             .foregroundColor(theme.errorColor.opacity(0.8))
                             .frame(width: 32, height: 32)
@@ -296,7 +296,7 @@ private struct ProviderCardView: View {
                     .background(theme.errorColor.opacity(0.3))
 
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 12))
                     Text(error)
                         .font(.system(size: 12))

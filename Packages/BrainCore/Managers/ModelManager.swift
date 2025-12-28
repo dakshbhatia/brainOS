@@ -81,6 +81,7 @@ final class ModelManager: NSObject, ObservableObject {
 
     /// Load popular MLX models
     func loadAvailableModels() {
+        BrainLogger.info("Loading available MLX models...", category: .model)
         // Use full curated suggestions regardless of SDK allowlist so they are visible in All & Suggested
         let curated = Self.curatedSuggestedModels
 
@@ -307,6 +308,7 @@ final class ModelManager: NSObject, ObservableObject {
 
     /// Kick off a download for a given Hugging Face repo id if resolvable to MLX.
     func downloadModel(withRepoId repoId: String) {
+        BrainLogger.info("Initiating download for model: \(repoId)", category: .model)
         guard let model = resolveModel(byRepoId: repoId) else { return }
         downloadModel(model)
     }
@@ -482,6 +484,13 @@ final class ModelManager: NSObject, ObservableObject {
                     if self.downloadTokens[model.id] == token {
                         self.downloadStates[model.id] =
                             completed ? .completed : .failed(error: "Downloaded snapshot incomplete")
+                        
+                        if completed {
+                            BrainLogger.info("Successfully downloaded model: \(model.id)", category: .model)
+                        } else {
+                            BrainLogger.error("Download failed for model: \(model.id) - Snapshot incomplete", category: .model)
+                        }
+                        
                         self.downloadTokens[model.id] = nil
                         self.downloadMetrics[model.id] = nil
                         self.progressSamples[model.id] = nil
@@ -502,6 +511,7 @@ final class ModelManager: NSObject, ObservableObject {
                     }
                 }
             } catch {
+                BrainLogger.error("Download error for \(model.id): \(error.localizedDescription)", category: .model)
                 await MainActor.run {
                     if self.downloadTokens[model.id] == token {
                         self.downloadStates[model.id] = .failed(error: error.localizedDescription)

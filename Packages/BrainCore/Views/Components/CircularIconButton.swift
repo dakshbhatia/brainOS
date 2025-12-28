@@ -14,8 +14,8 @@ struct CircularIconButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("🧠")
-                .font(.system(size: 14))
+            Image(systemName: systemName)
+                .font(.system(size: 12))
                 .foregroundColor(theme.primaryText)
                 .frame(width: 28, height: 28)
                 .background(

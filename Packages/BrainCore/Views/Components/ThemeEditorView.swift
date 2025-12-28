@@ -114,7 +114,7 @@ struct ThemeEditorView: View {
                 Button(action: {
                     dismiss(); onDismiss()
                 }) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(currentTheme.secondaryText)
                         .frame(width: 24, height: 24)
@@ -164,7 +164,7 @@ struct ThemeEditorView: View {
                 ForEach(EditorTab.allCases, id: \.rawValue) { tab in
                     Button(action: { selectedTab = tab }) {
                         HStack(spacing: 8) {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 13))
                             Text(tab.rawValue)
                                 .font(.system(size: 13, weight: .medium))
@@ -208,7 +208,7 @@ struct ThemeEditorView: View {
                 Button(action: saveTheme) {
                     HStack(spacing: 4) {
                         if showSaveConfirmation {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                         }
                         Text(showSaveConfirmation ? "Saved!" : (editingTheme.isBuiltIn ? "Save as Copy" : "Save"))
                     }
@@ -331,7 +331,7 @@ struct ThemeEditorView: View {
                         } else {
                             Button(action: { showImagePicker = true }) {
                                 VStack(spacing: 8) {
-                                    Text("🧠")
+                                    Image(systemName: "sparkles")
                                         .font(.system(size: 24))
                                     Text("Choose Image")
                                         .font(.system(size: 13, weight: .medium))
@@ -712,7 +712,7 @@ struct ThemeEditorView: View {
                     .frame(width: 44)
 
                     Button(action: { hex.wrappedValue = nil }) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 14))
                             .foregroundColor(currentTheme.tertiaryText)
                     }
@@ -1158,7 +1158,7 @@ struct ThemeChatPreview: View {
                 .fill(Color(themeHex: theme.colors.secondaryBackground).opacity(0.8))
                 .frame(width: 28, height: 28)
                 .overlay(
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(primaryFont(size: CGFloat(theme.typography.captionSize), weight: .medium))
                         .foregroundColor(Color(themeHex: theme.colors.secondaryText))
                 )
@@ -1171,7 +1171,7 @@ struct ThemeChatPreview: View {
                     .fill(Color(themeHex: theme.colors.secondaryBackground).opacity(0.8))
                     .frame(width: 28, height: 28)
                     .overlay(
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(primaryFont(size: CGFloat(theme.typography.captionSize), weight: .medium))
                             .foregroundColor(Color(themeHex: theme.colors.secondaryText))
                     )
@@ -1180,7 +1180,7 @@ struct ThemeChatPreview: View {
                     .fill(Color(themeHex: theme.colors.secondaryBackground).opacity(0.8))
                     .frame(width: 28, height: 28)
                     .overlay(
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(primaryFont(size: CGFloat(theme.typography.captionSize) - 2, weight: .semibold))
                             .foregroundColor(Color(themeHex: theme.colors.secondaryText))
                     )
@@ -1199,7 +1199,7 @@ struct ThemeChatPreview: View {
                     Text("gpt-4")
                         .font(captionFont)
                         .foregroundColor(Color(themeHex: theme.colors.secondaryText))
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(primaryFont(size: CGFloat(theme.typography.captionSize) - 3, weight: .semibold))
                         .foregroundColor(Color(themeHex: theme.colors.tertiaryText))
                 }
@@ -1250,7 +1250,7 @@ struct ThemeChatPreview: View {
                     )
                     .frame(width: 32, height: 32)
                     .overlay(
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(primaryFont(size: CGFloat(theme.typography.bodySize), weight: .semibold))
                             .foregroundColor(.white)
                     )

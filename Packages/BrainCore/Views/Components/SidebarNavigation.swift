@@ -66,7 +66,7 @@ struct SidebarNavigation<Content: View, Footer: View>: View {
                         isCollapsed.toggle()
                     }
                 }) {
-                    Text("🧠")
+                    Image(systemName: isCollapsed ? "sidebar.right" : "sidebar.left")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(theme.secondaryText)
                         .frame(width: isCollapsed ? 44 : 28, height: 28)
@@ -166,7 +166,7 @@ private struct SidebarItemView: View {
             if isCollapsed {
                 // Collapsed: icon only, centered with clean styling
                 ZStack {
-                    Text("🧠")
+                    Image(systemName: item.icon)
                         .font(.system(size: 18, weight: .medium))
                         .foregroundColor(isSelected ? theme.accentColor : theme.secondaryText)
                         .symbolRenderingMode(.hierarchical)
@@ -197,7 +197,7 @@ private struct SidebarItemView: View {
             } else {
                 // Expanded: full row
                 HStack(spacing: 10) {
-                    Text("🧠")
+                    Image(systemName: item.icon)
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(isSelected ? theme.accentColor : theme.secondaryText)
                         .frame(width: 24)
@@ -272,7 +272,7 @@ struct SidebarSearchField: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "magnifyingglass")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(isFocused ? theme.accentColor : theme.tertiaryText)
 
@@ -293,7 +293,7 @@ struct SidebarSearchField: View {
 
             if !text.isEmpty {
                 Button(action: { text = "" }) {
-                    Text("🧠")
+                    Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 11))
                         .foregroundColor(isHovering ? theme.secondaryText : theme.tertiaryText)
                 }
@@ -336,7 +336,7 @@ struct SidebarUpdateButton: View {
             if updateAvailable {
                 // Update available state - prominent styling
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 16, weight: .semibold))
                         .symbolRenderingMode(.hierarchical)
 
@@ -352,7 +352,7 @@ struct SidebarUpdateButton: View {
 
                     Spacer()
 
-                    Text("🧠")
+                    Image(systemName: "chevron.right")
                         .font(.system(size: 10, weight: .semibold))
                         .opacity(0.7)
                 }
@@ -402,7 +402,7 @@ struct SidebarUpdateButton: View {
             } else {
                 // Normal state - subtle styling
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "arrow.clockwise")
                         .font(.system(size: 14, weight: .medium))
 
                     Text("Check for Updates")

@@ -90,7 +90,7 @@ struct ThinkingBlockView: View {
                         .fill(thinkingColor.opacity(isStreaming ? 0.18 : 0.12))
                         .frame(width: 24, height: 24)
 
-                    Text("🧠")
+                    Image(systemName: "brain")
                         .font(theme.font(size: CGFloat(theme.captionSize) - 1, weight: .medium))
                         .foregroundColor(thinkingColor)
                         .opacity(isStreaming ? pulseOpacity : 1.0)
@@ -124,7 +124,7 @@ struct ThinkingBlockView: View {
                 }
 
                 // Expand/collapse chevron
-                Text("🧠")
+                Image(systemName: "chevron.right")
                     .font(theme.font(size: CGFloat(theme.captionSize) - 2, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))

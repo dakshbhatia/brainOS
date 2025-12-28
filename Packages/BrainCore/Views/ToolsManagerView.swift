@@ -126,7 +126,7 @@ struct ToolsManagerView: View {
                                     .scaleEffect(0.6)
                                     .frame(width: 16, height: 16)
                             } else {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 13, weight: .medium))
                             }
                         }
@@ -156,7 +156,7 @@ struct ToolsManagerView: View {
                                     .scaleEffect(0.6)
                                     .frame(width: 16, height: 16)
                             } else {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 13, weight: .medium))
                             }
                         }
@@ -347,7 +347,7 @@ struct ToolsManagerView: View {
 
     private func emptyState(icon: String, title: String, subtitle: String?) -> some View {
         VStack(spacing: 12) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 40, weight: .light))
                 .foregroundColor(theme.tertiaryText)
 
@@ -466,7 +466,7 @@ private struct PermissionStatusBanner: View {
                 Circle()
                     .fill(theme.warningColor.opacity(0.15))
                     .frame(width: 36, height: 36)
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 16))
                     .foregroundColor(theme.warningColor)
             }
@@ -491,7 +491,7 @@ private struct PermissionStatusBanner: View {
                 }
             }) {
                 HStack(spacing: 4) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 11))
                     Text("System Settings")
                         .font(.system(size: 12, weight: .medium))
@@ -527,7 +527,7 @@ private struct InstalledSectionHeader: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(theme.accentColor)
             Text(title)
@@ -570,7 +570,7 @@ private struct RemoteProviderToolsCard: View {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(theme.accentColor.opacity(0.12))
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 20))
                                 .foregroundColor(theme.accentColor)
                         }
@@ -607,7 +607,7 @@ private struct RemoteProviderToolsCard: View {
 
                         // Tool count
                         HStack(spacing: 4) {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 10))
                             Text("\(tools.count) tool\(tools.count == 1 ? "" : "s")")
                                 .font(.system(size: 11, weight: .medium))
@@ -618,7 +618,7 @@ private struct RemoteProviderToolsCard: View {
                         .background(Capsule().fill(theme.tertiaryBackground))
 
                         // Chevron
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(theme.tertiaryText)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -633,7 +633,7 @@ private struct RemoteProviderToolsCard: View {
                         Label("Disconnect", systemImage: "bolt.slash")
                     }
                 } label: {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 16))
                         .foregroundColor(theme.secondaryText)
                         .frame(width: 28, height: 28)
@@ -726,7 +726,7 @@ private struct RemoteToolRow: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(theme.accentColor.opacity(0.08))
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(theme.accentColor)
             }
@@ -753,7 +753,7 @@ private struct RemoteToolRow: View {
                         onChange()
                     } label: {
                         HStack {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                             Text("Auto")
                         }
                     }
@@ -762,7 +762,7 @@ private struct RemoteToolRow: View {
                         onChange()
                     } label: {
                         HStack {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                             Text("Ask")
                         }
                     }
@@ -771,19 +771,19 @@ private struct RemoteToolRow: View {
                         onChange()
                     } label: {
                         HStack {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                             Text("Deny")
                         }
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 9))
                             .foregroundColor(colorForPolicy(info.effectivePolicy))
                         Text(info.effectivePolicy.rawValue.capitalized)
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(colorForPolicy(info.effectivePolicy))
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 8))
                             .foregroundColor(theme.tertiaryText)
                     }
@@ -893,7 +893,7 @@ private struct InstalledPluginCard: View {
                                             ? theme.warningColor.opacity(0.12)
                                             : theme.accentColor.opacity(0.12)
                                 )
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                             .font(.system(size: 20))
                             .foregroundColor(
                                 plugin.hasLoadError
@@ -905,7 +905,7 @@ private struct InstalledPluginCard: View {
 
                             // Warning overlay badge for missing permissions
                             if hasMissingPermissions && !plugin.hasLoadError {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 14))
                                     .foregroundColor(theme.warningColor)
                                     .background(Circle().fill(theme.cardBackground).padding(-2))
@@ -955,7 +955,7 @@ private struct InstalledPluginCard: View {
                         // Tool count badge
                         if !tools.isEmpty {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 10))
                                 Text("\(tools.count) tool\(tools.count == 1 ? "" : "s")")
                                     .font(.system(size: 11, weight: .medium))
@@ -967,7 +967,7 @@ private struct InstalledPluginCard: View {
                         }
 
                         // Chevron indicator
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(theme.tertiaryText)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -985,7 +985,7 @@ private struct InstalledPluginCard: View {
                     } else if plugin.hasLoadError {
                         Button(action: { retryLoad() }) {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 11))
                                 Text("Retry")
                                     .font(.system(size: 12, weight: .semibold))
@@ -1002,7 +1002,7 @@ private struct InstalledPluginCard: View {
                     } else if plugin.hasUpdate {
                         Button(action: { upgrade() }) {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 11))
                                 Text("Update")
                                     .font(.system(size: 12, weight: .semibold))
@@ -1033,7 +1033,7 @@ private struct InstalledPluginCard: View {
                             Label("Uninstall", systemImage: "trash")
                         }
                     } label: {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 16))
                             .foregroundColor(theme.secondaryText)
                             .frame(width: 28, height: 28)
@@ -1053,7 +1053,7 @@ private struct InstalledPluginCard: View {
                     .padding(.vertical, 4)
 
                 HStack(spacing: 10) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 14))
                         .foregroundColor(.red)
 
@@ -1084,7 +1084,7 @@ private struct InstalledPluginCard: View {
 
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 10) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 16))
                             .foregroundColor(theme.warningColor)
 
@@ -1108,7 +1108,7 @@ private struct InstalledPluginCard: View {
                                 onChange()
                             }) {
                                 HStack(spacing: 6) {
-                                    Text("🧠")
+                                    Image(systemName: "sparkles")
                                         .font(.system(size: 11))
                                     Text("Grant \(perm.displayName)")
                                         .font(.system(size: 11, weight: .medium))
@@ -1132,7 +1132,7 @@ private struct InstalledPluginCard: View {
                             }
                         }) {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 10))
                                 Text("Open Settings")
                                     .font(.system(size: 11, weight: .medium))
@@ -1215,7 +1215,7 @@ private struct InstalledPluginCard: View {
 
     private var updateBadge: some View {
         HStack(spacing: 4) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 10))
             Text("Update")
                 .font(.system(size: 10, weight: .semibold))
@@ -1231,7 +1231,7 @@ private struct InstalledPluginCard: View {
 
     private var loadErrorBadge: some View {
         HStack(spacing: 4) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 10))
             Text("Error")
                 .font(.system(size: 10, weight: .semibold))
@@ -1247,7 +1247,7 @@ private struct InstalledPluginCard: View {
 
     private var permissionWarningBadge: some View {
         HStack(spacing: 4) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 10))
             Text("Needs Permission")
                 .font(.system(size: 10, weight: .semibold))
@@ -1310,13 +1310,13 @@ private struct InstalledToolRow: View {
                         hasMissingSystemPermissions
                             ? theme.warningColor.opacity(0.1) : theme.accentColor.opacity(0.08)
                     )
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(hasMissingSystemPermissions ? theme.warningColor : theme.accentColor)
 
                 // Warning badge
                 if hasMissingSystemPermissions {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 8))
                         .foregroundColor(theme.warningColor)
                         .offset(x: 10, y: -10)
@@ -1360,7 +1360,7 @@ private struct InstalledToolRow: View {
                         onChange()
                     } label: {
                         HStack {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .foregroundColor(colorForPolicy(.auto))
                             Text("Auto")
                                 .foregroundColor(colorForPolicy(.auto))
@@ -1371,7 +1371,7 @@ private struct InstalledToolRow: View {
                         onChange()
                     } label: {
                         HStack {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .foregroundColor(colorForPolicy(.ask))
                             Text("Ask")
                                 .foregroundColor(colorForPolicy(.ask))
@@ -1382,7 +1382,7 @@ private struct InstalledToolRow: View {
                         onChange()
                     } label: {
                         HStack {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .foregroundColor(colorForPolicy(.deny))
                             Text("Deny")
                                 .foregroundColor(colorForPolicy(.deny))
@@ -1390,13 +1390,13 @@ private struct InstalledToolRow: View {
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 9))
                             .foregroundColor(colorForPolicy(info.effectivePolicy))
                         Text(info.effectivePolicy.rawValue.capitalized)
                             .font(.system(size: 10, weight: .medium))
                             .foregroundColor(colorForPolicy(info.effectivePolicy))
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 8))
                             .foregroundColor(theme.tertiaryText)
                     }
@@ -1479,7 +1479,7 @@ private struct PluginRow: View {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(theme.accentColor.opacity(0.12))
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 20))
                                 .foregroundColor(theme.accentColor)
                         }
@@ -1522,7 +1522,7 @@ private struct PluginRow: View {
                         // Tool count badge
                         if let tools = plugin.spec.capabilities?.tools, !tools.isEmpty {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 10))
                                 Text("\(tools.count) tool\(tools.count == 1 ? "" : "s")")
                                     .font(.system(size: 11, weight: .medium))
@@ -1534,7 +1534,7 @@ private struct PluginRow: View {
                         }
 
                         // Chevron indicator
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(theme.tertiaryText)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -1578,7 +1578,7 @@ private struct PluginRow: View {
                         FlowLayout(spacing: 6) {
                             ForEach(tools, id: \.name) { tool in
                                 HStack(spacing: 4) {
-                                    Text("🧠")
+                                    Image(systemName: "sparkles")
                                         .font(.system(size: 9))
                                     Text(tool.name)
                                         .font(.system(size: 11, weight: .medium))
@@ -1639,7 +1639,7 @@ private struct PluginRow: View {
 
     private var updateBadge: some View {
         HStack(spacing: 4) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 10))
             Text("Update")
                 .font(.system(size: 10, weight: .semibold))
@@ -1662,7 +1662,7 @@ private struct PluginRow: View {
         } else if plugin.hasUpdate {
             Button(action: { upgrade() }) {
                 HStack(spacing: 5) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12))
                     Text("Update")
                         .font(.system(size: 13, weight: .semibold))
@@ -1685,11 +1685,11 @@ private struct PluginRow: View {
                 }
             } label: {
                 HStack(spacing: 5) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12))
                     Text("Installed")
                         .font(.system(size: 13, weight: .medium))
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 9, weight: .semibold))
                 }
                 .foregroundColor(theme.successColor)
@@ -1705,7 +1705,7 @@ private struct PluginRow: View {
         } else {
             Button(action: { install() }) {
                 HStack(spacing: 5) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12))
                     Text("Install")
                         .font(.system(size: 13, weight: .semibold))
@@ -1840,7 +1840,7 @@ private struct ToolSettingsRow: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(theme.accentColor.opacity(0.1))
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(theme.accentColor)
                 }
@@ -1895,7 +1895,7 @@ private struct ToolSettingsRow: View {
                         // Permission indicator
                         if let info = info {
                             HStack(spacing: 5) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 10))
                                     .foregroundColor(colorForPolicy(info.effectivePolicy))
                                 Text(info.effectivePolicy.rawValue.capitalized)
@@ -1910,7 +1910,7 @@ private struct ToolSettingsRow: View {
                             )
                         }
 
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundColor(theme.tertiaryText)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -2057,7 +2057,7 @@ private struct ToolSettingsRow: View {
     }
 
     private var updateBadge: some View {
-        Text("🧠")
+        Image(systemName: "sparkles")
             .font(.system(size: 10))
             .foregroundColor(.orange)
     }
@@ -2099,7 +2099,7 @@ private struct InstalledPluginsSummaryView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 12))
                 .foregroundColor(theme.accentColor)
             Text(summaryText.isEmpty ? "No plugins" : summaryText)

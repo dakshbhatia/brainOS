@@ -179,8 +179,9 @@ private struct TopStatusHeader: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
-                .font(.system(size: 32))
+            Image(systemName: "brain.head.profile")
+                .font(.system(size: 24))
+                .foregroundColor(theme.accentColor)
                 .frame(width: 40, height: 40)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .contentShape(Rectangle())
@@ -223,7 +224,7 @@ private struct TopStatusHeader: View {
                             .foregroundColor(theme.secondaryText)
 
                         Button(action: copyURL) {
-                            Text("🧠")
+                            Image(systemName: "doc.on.doc")
                                 .font(.system(size: 10))
                                 .foregroundColor(theme.tertiaryText)
                         }
@@ -284,7 +285,7 @@ private struct RetryButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
-                Text("🧠")
+                Image(systemName: "arrow.clockwise")
                     .font(.system(size: 10, weight: .semibold))
                 Text("Retry")
                     .font(.system(size: 11, weight: .semibold))

@@ -28,6 +28,8 @@ public struct Persona: Codable, Identifiable, Sendable, Equatable {
     public var temperature: Float?
     /// Optional max tokens override
     public var maxTokens: Int?
+    /// Optional voice ID for TTS
+    public var voiceId: String?
     /// Whether this is a built-in persona (cannot be deleted)
     public let isBuiltIn: Bool
     /// When the persona was created
@@ -45,6 +47,7 @@ public struct Persona: Codable, Identifiable, Sendable, Equatable {
         defaultModel: String? = nil,
         temperature: Float? = nil,
         maxTokens: Int? = nil,
+        voiceId: String? = nil,
         isBuiltIn: Bool = false,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
@@ -58,6 +61,7 @@ public struct Persona: Codable, Identifiable, Sendable, Equatable {
         self.defaultModel = defaultModel
         self.temperature = temperature
         self.maxTokens = maxTokens
+        self.voiceId = voiceId
         self.isBuiltIn = isBuiltIn
         self.createdAt = createdAt
         self.updatedAt = updatedAt

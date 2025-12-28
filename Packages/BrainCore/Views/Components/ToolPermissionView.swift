@@ -197,18 +197,9 @@ struct ToolPermissionView: View {
                     .frame(width: 52, height: 52)
 
                 // Icon - neutral terminal icon
-                Text("🧠")
-                    .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                theme.accentColor,
-                                theme.accentColor.opacity(0.8),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                Image(systemName: "lock.shield")
+                    .font(.system(size: 24))
+                    .foregroundColor(theme.accentColor)
             }
 
             // Title
@@ -231,7 +222,7 @@ struct ToolPermissionView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 HStack(spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(theme.font(size: 10, weight: .medium))
                         .foregroundColor(theme.tertiaryText)
 
@@ -246,7 +237,7 @@ struct ToolPermissionView: View {
                 // Copy button with refined styling
                 Button(action: copyArguments) {
                     HStack(spacing: 5) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(theme.font(size: 9, weight: .semibold))
                         Text(copied ? "Copied" : "Copy")
                             .font(theme.font(size: 10, weight: .medium))
@@ -378,7 +369,7 @@ private struct PermissionButton: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 HStack(spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(theme.font(size: 13, weight: isPrimary ? .semibold : .medium))
                     Text(title)
                         .font(theme.font(size: 13, weight: isPrimary ? .semibold : .medium))
@@ -496,7 +487,7 @@ private struct AlwaysAllowButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(theme.font(size: 11, weight: .medium))
                 Text("Always Allow")
                     .font(theme.font(size: 12, weight: .medium))

@@ -18,17 +18,22 @@ struct BrainFinanceTool: BrainOSTool {
     }
     
     func execute(argumentsJSON: String) async throws -> String {
-        // Mock finance data
-        return """
-            {
-              "balance": 12450.75,
-              "recent_transactions": [
-                {"date": "2024-12-26", "amount": -42.50, "merchant": "Starbucks", "category": "Food & Drink"},
-                {"date": "2024-12-25", "amount": -120.00, "merchant": "Apple", "category": "Entertainment"},
-                {"date": "2024-12-24", "amount": 2500.00, "merchant": "Employer", "category": "Income"}
-              ],
-              "spending_alert": "You spent 15% more on dining out this week compared to last week."
-            }
-            """
+        let days = 7 // Default
+        
+        do {
+            let transactions = try await BrainFinanceManager.shared.fetchRecentTransactions(days: days)
+            let balance = try await BrainFinanceManager.shared.getBalance()
+            
+            let result: [String: Any] = [
+                "balance": balance,
+                "recent_transactions": transactions,
+                "spending_alert": "You spent 15% more on dining out this week compared to last week."
+            ]
+            
+            let jsonData = try JSONSerialization.data(withJSONObject: result)
+            return String(data: jsonData, encoding: .utf8) ?? "{}"
+        } catch {
+            return "Error accessing financial data: \(error.localizedDescription). Please connect your bank in Settings."
+        }
     }
 }

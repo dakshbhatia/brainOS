@@ -86,7 +86,7 @@ struct InsightsView: View {
                 // Clear button
                 Button(action: { showClearConfirmation = true }) {
                     HStack(spacing: 5) {
-                        Text("🧠")
+                        Image(systemName: "trash")
                             .font(.system(size: 11, weight: .medium))
                         Text("Clear")
                             .font(.system(size: 12, weight: .medium))
@@ -115,7 +115,7 @@ struct InsightsView: View {
         HStack(spacing: 12) {
             // Search field
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "magnifyingglass")
                     .font(.system(size: 12))
                     .foregroundColor(theme.tertiaryText)
 
@@ -126,7 +126,7 @@ struct InsightsView: View {
 
                 if !insightsService.searchFilter.isEmpty {
                     Button(action: { insightsService.searchFilter = "" }) {
-                        Text("🧠")
+                        Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 12))
                             .foregroundColor(theme.tertiaryText)
                     }
@@ -309,7 +309,7 @@ struct InsightsView: View {
 
     private var emptyStateView: some View {
         VStack(spacing: 16) {
-            Text("🧠")
+            Image(systemName: "chart.bar")
                 .font(.system(size: 48))
                 .foregroundColor(theme.tertiaryText.opacity(0.3))
 
@@ -410,8 +410,8 @@ private struct StatPill: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
-                .font(.system(size: 10, weight: .semibold))
+            Image(systemName: "circle.fill")
+                .font(.system(size: 6, weight: .semibold))
                 .foregroundColor(color.opacity(0.8))
 
             VStack(alignment: .leading, spacing: 0) {
@@ -473,7 +473,7 @@ private struct RequestLogRow: View {
                         .frame(width: 80, alignment: .trailing)
 
                     // Expand chevron
-                    Text("🧠")
+                    Image(systemName: "chevron.right")
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(theme.tertiaryText.opacity(0.5))
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -546,7 +546,7 @@ private struct RequestLogRow: View {
                                 NSPasteboard.general.clearContents()
                                 NSPasteboard.general.setString(body, forType: .string)
                             }) {
-                                Text("🧠")
+                                Image(systemName: "doc.on.doc")
                                     .font(.system(size: 10))
                                     .foregroundColor(theme.tertiaryText)
                             }
@@ -599,7 +599,7 @@ private struct RequestLogRow: View {
             // Error message
             if let error = log.errorMessage {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 11))
                         .foregroundColor(.red.opacity(0.8))
 
@@ -809,7 +809,7 @@ private struct ToolCallRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "hammer.fill")
                 .font(.system(size: 10))
                 .foregroundColor(tool.isError ? .red.opacity(0.7) : .green.opacity(0.7))
 

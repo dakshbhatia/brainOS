@@ -277,7 +277,7 @@ struct ToolSelectorView: View {
 
     private var searchField: some View {
         HStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "magnifyingglass")
                 .font(.system(size: 13))
                 .foregroundColor(theme.tertiaryText)
 
@@ -288,7 +288,7 @@ struct ToolSelectorView: View {
 
             if !searchText.isEmpty {
                 Button(action: { searchText = "" }) {
-                    Text("🧠")
+                    Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 12))
                         .foregroundColor(theme.tertiaryText)
                 }
@@ -304,7 +304,7 @@ struct ToolSelectorView: View {
 
     private var emptyState: some View {
         VStack(spacing: 8) {
-            Text("🧠")
+            Image(systemName: "wrench.and.screwdriver")
                 .font(.system(size: 24))
                 .foregroundColor(theme.tertiaryText)
             Text("No tools found")

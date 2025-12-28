@@ -361,7 +361,7 @@ struct InlineToolCallView: View {
                     Spacer()
 
                     // Expand chevron with smooth rotation
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundColor(theme.tertiaryText.opacity(isHovered ? 1.0 : 0.7))
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -474,7 +474,7 @@ struct InlineToolCallView: View {
             PulsingDot(color: theme.accentColor)
                 .frame(width: 16, height: 16)
         } else if isRejected {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(
                     LinearGradient(
@@ -484,7 +484,7 @@ struct InlineToolCallView: View {
                     )
                 )
         } else {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(
                     LinearGradient(
@@ -497,7 +497,7 @@ struct InlineToolCallView: View {
     }
 
     private var categoryIcon: some View {
-        Text("🧠")
+        Image(systemName: "sparkles")
             .font(.system(size: 10, weight: .semibold))
             .foregroundColor(.white)
             .frame(width: 20, height: 20)
@@ -585,13 +585,13 @@ struct CollapsibleCodeSection: View {
             Button(action: toggleCollapse) {
                 HStack(spacing: 8) {
                     // Expand/collapse chevron
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(theme.tertiaryText)
 
                     // Language/type icon
                     if language != nil {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 9, weight: .medium))
                             .foregroundColor(theme.tertiaryText)
                     }
@@ -612,7 +612,7 @@ struct CollapsibleCodeSection: View {
                     // Copy button
                     Button(action: copyToClipboard) {
                         HStack(spacing: 4) {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 9, weight: .medium))
                                 .contentTransition(.symbolEffect(.replace))
 

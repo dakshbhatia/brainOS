@@ -30,6 +30,8 @@ enum SystemPermission: String, CaseIterable, Codable, Sendable {
     case contacts
     /// Full Disk Access permission
     case disk
+    /// HealthKit access permission
+    case health
 
     /// Human-readable name for UI display
     var displayName: String {
@@ -54,6 +56,8 @@ enum SystemPermission: String, CaseIterable, Codable, Sendable {
             return "Contacts"
         case .disk:
             return "Full Disk Access"
+        case .health:
+            return "Health"
         }
     }
 
@@ -80,6 +84,8 @@ enum SystemPermission: String, CaseIterable, Codable, Sendable {
             return "Allows plugins to access and search contacts."
         case .disk:
             return "Allows plugins to access protected files like the Messages database and other app data."
+        case .health:
+            return "Allows plugins to access your health and activity data."
         }
     }
 
@@ -106,6 +112,8 @@ enum SystemPermission: String, CaseIterable, Codable, Sendable {
             return "person.crop.circle"
         case .disk:
             return "disk"
+        case .health:
+            return "heart.fill"
         }
     }
 
@@ -132,6 +140,8 @@ enum SystemPermission: String, CaseIterable, Codable, Sendable {
             return "person.crop.circle"
         case .disk:
             return "externaldrive.fill.badge.checkmark"
+        case .health:
+            return "heart.fill"
         }
     }
 
@@ -168,6 +178,9 @@ enum SystemPermission: String, CaseIterable, Codable, Sendable {
         case .disk:
             // Opens Privacy & Security > Full Disk Access
             return URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")
+        case .health:
+            // Opens Privacy & Security > Health (if available on macOS)
+            return URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Health")
         }
     }
 }

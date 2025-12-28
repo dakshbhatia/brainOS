@@ -129,7 +129,7 @@ struct ModelDetailView: View, Identifiable {
                             .lineLimit(1)
 
                         if model.isDownloaded {
-                            Text("🧠")
+                            Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 14))
                                 .foregroundColor(theme.successColor)
                         }
@@ -160,7 +160,7 @@ struct ModelDetailView: View, Identifiable {
 
                 // Close button
                 Button(action: { dismiss() }) {
-                    Text("🧠")
+                    Image(systemName: "xmark")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(theme.tertiaryText)
                         .frame(width: 24, height: 24)
@@ -184,7 +184,7 @@ struct ModelDetailView: View, Identifiable {
                             .font(.system(size: 12))
                         Text("View on Hugging Face")
                             .font(.system(size: 12, weight: .medium))
-                        Text("🧠")
+                        Image(systemName: "arrow.up.right")
                             .font(.system(size: 9, weight: .semibold))
                     }
                     .foregroundColor(theme.accentColor)
@@ -343,7 +343,7 @@ struct ModelDetailView: View, Identifiable {
             // Size Row
             HStack {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "info.circle")
                         .font(.system(size: 12))
                         .foregroundColor(theme.secondaryText)
                     Text("Estimated Size")
@@ -364,7 +364,7 @@ struct ModelDetailView: View, Identifiable {
                             .foregroundColor(theme.primaryText)
 
                         Button(action: { Task { await estimateIfNeeded(force: true) } }) {
-                            Text("🧠")
+                            Image(systemName: "arrow.clockwise")
                                 .font(.system(size: 11, weight: .medium))
                                 .foregroundColor(theme.accentColor)
                         }
@@ -433,7 +433,7 @@ struct ModelDetailView: View, Identifiable {
                 dismiss()
             }) {
                 HStack(spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: "arrow.down.circle")
                         .font(.system(size: 13))
                     Text("Download")
                         .font(.system(size: 14, weight: .semibold))
@@ -639,7 +639,7 @@ private struct StatCardView: View {
 
             Spacer()
 
-            Text("🧠")
+            Image(systemName: icon)
                 .font(.system(size: 14))
                 .foregroundColor(color.opacity(0.6))
         }
@@ -671,7 +671,7 @@ private struct MetadataPill: View {
     var body: some View {
         HStack(spacing: 4) {
             if let icon {
-                Text("🧠")
+                Image(systemName: icon)
                     .font(.system(size: 9, weight: .medium))
             }
             Text(text)
@@ -698,7 +698,7 @@ private struct CopyModelIdButton: View {
     var body: some View {
         Button(action: copyModelId) {
             HStack(spacing: 5) {
-                Text("🧠")
+                Image(systemName: "doc.on.doc")
                     .font(.system(size: 10, weight: .medium))
                 Text(showCopied ? "Copied!" : "Copy Model ID")
                     .font(.system(size: 12, weight: .medium))
@@ -775,13 +775,13 @@ private struct RepositoryLinkRow: View {
                 // Clickable URL
                 Button(action: openURL) {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "link")
                             .font(.system(size: 10))
                         Text(url)
                             .font(.system(size: 11, design: .monospaced))
                             .lineLimit(1)
                             .truncationMode(.middle)
-                        Text("🧠")
+                        Image(systemName: "arrow.up.right")
                             .font(.system(size: 8, weight: .semibold))
                     }
                     .foregroundColor(theme.accentColor)
@@ -792,7 +792,7 @@ private struct RepositoryLinkRow: View {
 
                 // Copy button
                 Button(action: copyURL) {
-                    Text("🧠")
+                    Image(systemName: "doc.on.doc")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(showCopied ? theme.successColor : theme.tertiaryText)
                 }
@@ -844,7 +844,7 @@ private struct RequiredFilesSection: View {
 
                     Spacer()
 
-                    Text("🧠")
+                    Image(systemName: "chevron.right")
                         .font(.system(size: 9, weight: .medium))
                         .foregroundColor(theme.tertiaryText)
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))

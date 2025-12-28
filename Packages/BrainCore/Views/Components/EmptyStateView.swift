@@ -26,7 +26,7 @@ struct EmptyStateView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 36, weight: .light))
                 .foregroundColor(theme.tertiaryText)
 

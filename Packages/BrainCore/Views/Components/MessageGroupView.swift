@@ -210,7 +210,7 @@ struct MessageGroupView: View {
                     // Regenerate the entire group (start from first turn)
                     if let firstTurn = group.turns.first {
                         Button(action: { onRegenerate?(firstTurn.id) }) {
-                            Text("🧠")
+                            Image(systemName: "arrow.clockwise")
                                 .font(theme.font(size: CGFloat(theme.captionSize) - 1, weight: .medium))
                                 .foregroundColor(theme.tertiaryText)
                                 .padding(6)
@@ -230,7 +230,7 @@ struct MessageGroupView: View {
                     let text = group.turns.map { $0.content }.joined(separator: "\n\n")
                     onCopy(text)
                 }) {
-                    Text("🧠")
+                    Image(systemName: "doc.on.doc")
                         .font(theme.font(size: CGFloat(theme.captionSize) - 1, weight: .medium))
                         .foregroundColor(theme.tertiaryText)
                         .padding(6)

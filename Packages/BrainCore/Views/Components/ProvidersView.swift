@@ -68,7 +68,7 @@ struct ProvidersView: View {
         ) {
             Button(action: { showAddSheet = true }) {
                 HStack(spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12, weight: .semibold))
                     Text("Add Provider")
                         .font(.system(size: 13, weight: .semibold))
@@ -91,7 +91,7 @@ struct ProvidersView: View {
                 Circle()
                     .fill(theme.accentColor.opacity(0.1))
                     .frame(width: 80, height: 80)
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 32, weight: .light))
                     .foregroundColor(theme.accentColor)
             }
@@ -107,7 +107,7 @@ struct ProvidersView: View {
 
             Button(action: { showAddSheet = true }) {
                 HStack(spacing: 6) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 14))
                     Text("Add Your First Provider")
                         .font(.system(size: 14, weight: .medium))
@@ -156,7 +156,7 @@ private struct ProviderCard: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(statusColor.opacity(0.12))
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 20))
                         .foregroundColor(statusColor)
                 }
@@ -185,7 +185,7 @@ private struct ProviderCard: View {
                         // Tool count when connected
                         if isConnected, let toolCount = state?.discoveredToolCount, toolCount > 0 {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 10))
                                 Text("\(toolCount) tools")
                                     .font(.system(size: 11, weight: .medium))
@@ -196,7 +196,7 @@ private struct ProviderCard: View {
                             .background(Capsule().fill(theme.tertiaryBackground))
                         }
 
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(theme.tertiaryText)
                             .rotationEffect(.degrees(isExpanded ? 90 : 0))
@@ -248,7 +248,7 @@ private struct ProviderCard: View {
                             Label("Delete", systemImage: "trash")
                         }
                     } label: {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 16))
                             .foregroundColor(theme.secondaryText)
                             .frame(width: 28, height: 28)
@@ -272,7 +272,7 @@ private struct ProviderCard: View {
             // Error message
             if let error = state?.lastError, !isConnected {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 12))
                         .foregroundColor(theme.errorColor)
                     Text(error)
@@ -363,7 +363,7 @@ private struct ProviderCard: View {
             .background(Capsule().fill(theme.accentColor.opacity(0.12)))
         } else if state?.lastError != nil {
             HStack(spacing: 4) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 8))
                 Text("Error")
                     .font(.system(size: 10, weight: .medium))
@@ -391,7 +391,7 @@ private struct ProviderCard: View {
             // Custom headers summary
             if !provider.customHeaders.isEmpty || !provider.secretHeaderKeys.isEmpty {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 11))
                         .foregroundColor(theme.tertiaryText)
                     Text(
@@ -412,7 +412,7 @@ private struct ProviderCard: View {
                     ToolPillsFlowLayout(spacing: 6) {
                         ForEach(toolNames, id: \.self) { name in
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 9))
                                 Text(name)
                                     .font(.system(size: 11, weight: .medium))
@@ -434,7 +434,7 @@ private struct ProviderCard: View {
 
     private func settingItem(icon: String, label: String, value: String) -> some View {
         HStack(spacing: 6) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 10))
                 .foregroundColor(theme.tertiaryText)
             Text("\(label):")
@@ -569,7 +569,7 @@ private struct ProviderEditSheet: View {
                                         .font(.system(size: 13))
                                         .foregroundColor(themeManager.currentTheme.accentColor)
                                     Spacer()
-                                    Text("🧠")
+                                    Image(systemName: "sparkles")
                                         .font(.system(size: 11, weight: .semibold))
                                         .foregroundColor(themeManager.currentTheme.tertiaryText)
                                         .rotationEffect(.degrees(showAdvanced ? 90 : 0))
@@ -668,7 +668,7 @@ private struct ProviderEditSheet: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(
                         LinearGradient(
@@ -696,7 +696,7 @@ private struct ProviderEditSheet: View {
             Spacer()
 
             Button(action: { dismiss() }) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.secondaryText)
                     .frame(width: 28, height: 28)
@@ -744,14 +744,14 @@ private struct ProviderEditSheet: View {
                         } else if let result = testResult {
                             switch result {
                             case .success:
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 12))
                             case .failure:
-                                Text("🧠")
+                                Image(systemName: "sparkles")
                                     .font(.system(size: 12))
                             }
                         } else {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 12))
                         }
                     }
@@ -828,7 +828,7 @@ private struct ProviderEditSheet: View {
             customHeaders.append(HeaderEntry(key: "", value: "", isSecret: false))
         }) {
             HStack(spacing: 4) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 11))
                 Text("Add Header")
                     .font(.system(size: 11, weight: .medium))
@@ -1066,7 +1066,7 @@ private struct HeaderRow: View {
             // Secret toggle
             Button(action: { header.isSecret.toggle() }) {
                 HStack(spacing: 4) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 10))
                     Text(header.isSecret ? "Secret" : "Plain")
                         .font(.system(size: 10, weight: .medium))
@@ -1091,7 +1091,7 @@ private struct HeaderRow: View {
 
             // Delete button
             Button(action: onDelete) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 11))
                     .foregroundColor(themeManager.currentTheme.errorColor)
                     .frame(width: 28, height: 28)
@@ -1116,7 +1116,7 @@ private struct EditorCard<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.accentColor)
 
@@ -1212,7 +1212,7 @@ private struct MCPStyledSecureField: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(themeManager.currentTheme.primaryText)
 
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 10))
                     .foregroundColor(themeManager.currentTheme.tertiaryText)
             }

@@ -186,7 +186,7 @@ struct PersonasView: View {
                 HStack(spacing: 12) {
                     // Refresh button
                     Button(action: { personaManager.refresh() }) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(theme.secondaryText)
                             .frame(width: 36, height: 36)
@@ -204,7 +204,7 @@ struct PersonasView: View {
 
                     Button(action: { showImportPicker = true }) {
                         HStack(spacing: 6) {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 12, weight: .medium))
                             Text("Import")
                                 .font(.system(size: 13, weight: .medium))
@@ -225,7 +225,7 @@ struct PersonasView: View {
 
                     Button(action: { isCreating = true }) {
                         HStack(spacing: 6) {
-                            Text("🧠")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 12, weight: .semibold))
                             Text("Create Persona")
                                 .font(.system(size: 13, weight: .medium))
@@ -252,7 +252,7 @@ struct PersonasView: View {
 
     private func successToast(_ message: String) -> some View {
         HStack(spacing: 10) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 16))
                 .foregroundColor(theme.successColor)
 
@@ -416,7 +416,7 @@ private struct PersonaEmptyState: View {
                     .frame(width: 88, height: 88)
 
                 // Icon
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 36, weight: .medium))
                     .foregroundStyle(
                         LinearGradient(
@@ -473,7 +473,7 @@ private struct PersonaEmptyState: View {
             HStack(spacing: 12) {
                 Button(action: onImport) {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .medium))
                         Text("Import")
                             .font(.system(size: 13, weight: .medium))
@@ -494,7 +494,7 @@ private struct PersonaEmptyState: View {
 
                 Button(action: onCreate) {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .semibold))
                         Text("Create Persona")
                             .font(.system(size: 13, weight: .semibold))
@@ -536,7 +536,7 @@ private struct PersonaUseCaseRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(theme.accentColor)
                 .frame(width: 28, height: 28)
@@ -645,7 +645,7 @@ private struct PersonaCard: View {
                         .lineLimit(1)
 
                     if isActive {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 13))
                             .foregroundColor(theme.successColor)
                     }
@@ -689,7 +689,7 @@ private struct PersonaCard: View {
                             Label("Delete", systemImage: "trash")
                         }
                     } label: {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 11, weight: .medium))
                             .foregroundColor(theme.secondaryText)
                             .frame(width: 24, height: 24)
@@ -846,7 +846,7 @@ private struct PersonaCard: View {
         } else {
             // Default state when no configuration overrides
             HStack(spacing: 5) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 9, weight: .medium))
                     .foregroundColor(theme.tertiaryText)
                 Text("Default configuration")
@@ -890,7 +890,7 @@ private struct QuickActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(isHovered ? theme.primaryText : theme.secondaryText)
                 .frame(width: 26, height: 26)
@@ -920,7 +920,7 @@ private struct ConfigBadge: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 8, weight: .semibold))
                 .foregroundColor(color)
 
@@ -951,7 +951,7 @@ private struct ThemePreviewBadge: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 9, weight: .semibold))
                 .foregroundColor(.pink)
 
@@ -1010,6 +1010,7 @@ private struct PersonaEditorSheet: View {
     @State private var systemPrompt: String = ""
     @State private var temperature: String = ""
     @State private var maxTokens: String = ""
+    @State private var voiceId: String = ""
     @State private var selectedThemeId: UUID?
     @State private var enabledTools: [String: Bool] = [:]
     @State private var showToolsSection = false
@@ -1166,6 +1167,21 @@ private struct PersonaEditorSheet: View {
                         }
                     }
 
+                    // Voice Section
+                    EditorSection(title: "Voice", icon: "waveform") {
+                        VStack(alignment: .leading, spacing: 12) {
+                            StyledTextField(
+                                placeholder: "e.g., default, alloy, echo",
+                                text: $voiceId,
+                                icon: "mic.fill"
+                            )
+
+                            Text("Specify a voice ID for this persona. Requires the Voice Sidecar to be running.")
+                                .font(.system(size: 11))
+                                .foregroundColor(themeManager.currentTheme.tertiaryText)
+                        }
+                    }
+
                     // Theme Section
                     EditorSection(title: "Visual Theme", icon: "paintpalette.fill") {
                         VStack(alignment: .leading, spacing: 12) {
@@ -1187,7 +1203,7 @@ private struct PersonaEditorSheet: View {
                                 }
                             } label: {
                                 HStack(spacing: 8) {
-                                    Text("🧠")
+                                    Image(systemName: "sparkles")
                                         .font(.system(size: 10, weight: .semibold))
                                         .foregroundColor(themeManager.currentTheme.tertiaryText)
                                         .rotationEffect(.degrees(showToolsSection ? 90 : 0))
@@ -1257,7 +1273,7 @@ private struct PersonaEditorSheet: View {
                                 if !enabledTools.isEmpty {
                                     Button(action: { enabledTools.removeAll() }) {
                                         HStack(spacing: 4) {
-                                            Text("🧠")
+                                            Image(systemName: "sparkles")
                                                 .font(.system(size: 10))
                                             Text("Reset All to Default")
                                         }
@@ -1301,6 +1317,7 @@ private struct PersonaEditorSheet: View {
                 systemPrompt = persona.systemPrompt
                 temperature = persona.temperature.map { String($0) } ?? ""
                 maxTokens = persona.maxTokens.map { String($0) } ?? ""
+                voiceId = persona.voiceId ?? ""
                 selectedThemeId = persona.themeId
                 enabledTools = persona.enabledTools ?? [:]
                 showToolsSection = !(persona.enabledTools?.isEmpty ?? true)
@@ -1328,7 +1345,7 @@ private struct PersonaEditorSheet: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(
                         LinearGradient(
@@ -1356,7 +1373,7 @@ private struct PersonaEditorSheet: View {
             Spacer()
 
             Button(action: onCancel) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.secondaryText)
                     .frame(width: 28, height: 28)
@@ -1481,6 +1498,7 @@ private struct PersonaEditorSheet: View {
             systemPrompt: systemPrompt.trimmingCharacters(in: .whitespacesAndNewlines),
             enabledTools: enabledTools.isEmpty ? nil : enabledTools,
             themeId: selectedThemeId,
+            voiceId: voiceId.isEmpty ? nil : voiceId,
             defaultModel: existingDefaultModel,
             temperature: Float(temperature),
             maxTokens: Int(maxTokens),
@@ -1506,7 +1524,7 @@ private struct EditorSection<Content: View>: View {
         VStack(alignment: .leading, spacing: 12) {
             // Section header
             HStack(spacing: 8) {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(themeManager.currentTheme.accentColor)
 
@@ -1544,7 +1562,7 @@ private struct StyledTextField: View {
     var body: some View {
         HStack(spacing: 10) {
             if let icon = icon {
-                Text("🧠")
+                Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(
                         isFocused ? themeManager.currentTheme.accentColor : themeManager.currentTheme.tertiaryText
@@ -1697,7 +1715,7 @@ private struct ToolToggleRow: View {
             // Reset button (only when overridden)
             if hasOverride && isHovered {
                 Button(action: onReset) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundColor(themeManager.currentTheme.secondaryText)
                 }

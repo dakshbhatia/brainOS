@@ -99,7 +99,7 @@ struct MarkdownImageView: View {
 
     private func errorView(_ error: Error) -> some View {
         VStack(spacing: 12) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 32, weight: .light))
                 .foregroundColor(theme.tertiaryText)
 
@@ -119,7 +119,7 @@ struct MarkdownImageView: View {
             // Retry button
             Button(action: loadImage) {
                 HStack(spacing: 4) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(.system(size: 11, weight: .medium))
                     Text("Retry")
                         .font(.system(size: 12, weight: .medium))
@@ -329,7 +329,7 @@ private struct ImageFullScreenView: View {
                 HStack {
                     Spacer()
                     Button(action: { dismiss() }) {
-                        Text("🧠")
+                        Image(systemName: "sparkles")
                             .font(.system(size: 28))
                             .foregroundColor(.white.opacity(0.8))
                             .shadow(radius: 4)

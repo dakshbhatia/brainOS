@@ -74,7 +74,7 @@ struct CodeBlockView: View {
             // Language tag with icon - uses theme fonts
             if let language, !language.isEmpty {
                 HStack(spacing: 5) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(theme.font(size: CGFloat(theme.captionSize) - 2, weight: .medium))
                         .foregroundColor(theme.tertiaryText)
 
@@ -95,7 +95,7 @@ struct CodeBlockView: View {
             // Copy button
             Button(action: copy) {
                 HStack(spacing: 4) {
-                    Text("🧠")
+                    Image(systemName: "sparkles")
                         .font(theme.font(size: CGFloat(theme.captionSize) - 2, weight: .medium))
 
                     if copied {

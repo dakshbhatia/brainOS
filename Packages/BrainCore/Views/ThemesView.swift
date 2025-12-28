@@ -205,7 +205,7 @@ struct ThemesView: View {
                 HStack(spacing: 12) {
                     // Refresh button
                     Button(action: { loadThemes() }) {
-                        Text("🧠")
+                        Image(systemName: "arrow.clockwise")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(theme.secondaryText)
                             .frame(width: 36, height: 36)
@@ -224,7 +224,7 @@ struct ThemesView: View {
                     // Import button
                     Button(action: { showingImporter = true }) {
                         HStack(spacing: 6) {
-                            Text("🧠")
+                            Image(systemName: "square.and.arrow.down")
                                 .font(.system(size: 12, weight: .medium))
                             Text("Import")
                                 .font(.system(size: 13, weight: .medium))
@@ -246,7 +246,7 @@ struct ThemesView: View {
                     // Create new theme button
                     Button(action: createNewTheme) {
                         HStack(spacing: 6) {
-                            Text("🧠")
+                            Image(systemName: "plus")
                                 .font(.system(size: 12, weight: .semibold))
                             Text("Create Theme")
                                 .font(.system(size: 13, weight: .medium))
@@ -284,7 +284,7 @@ struct ThemesView: View {
 
     private func errorView(_ error: String) -> some View {
         VStack(spacing: 16) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 40))
                 .foregroundColor(theme.warningColor)
 
@@ -321,7 +321,7 @@ struct ThemesView: View {
 
     private var noThemesView: some View {
         VStack(spacing: 16) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 48))
                 .foregroundColor(theme.tertiaryText)
 
@@ -350,7 +350,7 @@ struct ThemesView: View {
 
     private func successToast(_ message: String) -> some View {
         HStack(spacing: 10) {
-            Text("🧠")
+            Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 16))
                 .foregroundColor(theme.successColor)
 
@@ -405,7 +405,7 @@ struct ThemesView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 HStack(spacing: 8) {
-                    Text("🧠")
+                    Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 14))
                         .foregroundColor(theme.successColor)
 
@@ -431,7 +431,7 @@ struct ThemesView: View {
                     showSuccess("Reset to default theme")
                 }) {
                     HStack(spacing: 4) {
-                        Text("🧠")
+                        Image(systemName: "arrow.counterclockwise")
                             .font(.system(size: 10, weight: .semibold))
                         Text("Reset to Default")
                             .font(.system(size: 12, weight: .medium))
@@ -522,7 +522,7 @@ struct ThemesView: View {
                     )
                     .frame(width: 80, height: 80)
 
-                Text("🧠")
+                Image(systemName: "swatchpalette")
                     .font(.system(size: 32))
                     .foregroundColor(theme.accentColor)
             }
@@ -542,7 +542,7 @@ struct ThemesView: View {
             HStack(spacing: 14) {
                 Button(action: { showingImporter = true }) {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "square.and.arrow.down")
                             .font(.system(size: 12, weight: .medium))
                         Text("Import")
                             .font(.system(size: 13, weight: .medium))
@@ -563,7 +563,7 @@ struct ThemesView: View {
 
                 Button(action: createNewTheme) {
                     HStack(spacing: 6) {
-                        Text("🧠")
+                        Image(systemName: "plus")
                             .font(.system(size: 12, weight: .semibold))
                         Text("Create Theme")
                             .font(.system(size: 13, weight: .medium))
@@ -729,7 +729,7 @@ struct ThemePreviewCard: View {
                                 .lineLimit(1)
 
                             if isActive {
-                                Text("🧠")
+                                Image(systemName: "checkmark.circle.fill")
                                     .font(.system(size: 12))
                                     .foregroundColor(currentTheme.successColor)
                             }
@@ -778,7 +778,7 @@ struct ThemePreviewCard: View {
                             }
                         }
                     } label: {
-                        Text("🧠")
+                        Image(systemName: "ellipsis")
                             .font(.system(size: 16))
                             .foregroundColor(currentTheme.secondaryText)
                             .frame(width: 28, height: 28)
@@ -858,7 +858,7 @@ struct ThemePreviewCard: View {
                         .fill(Color(themeHex: theme.colors.secondaryBackground).opacity(0.8))
                         .frame(width: 16, height: 16)
                         .overlay(
-                            Text("🧠")
+                            Image(systemName: "xmark")
                                 .font(.system(size: 7, weight: .bold))
                                 .foregroundColor(Color(themeHex: theme.colors.secondaryText))
                         )
@@ -917,7 +917,7 @@ struct ThemePreviewCard: View {
                         .fill(Color(themeHex: theme.colors.accentColor))
                         .frame(width: 18, height: 18)
                         .overlay(
-                            Text("🧠")
+                            Image(systemName: "arrow.up")
                                 .font(.system(size: 8, weight: .bold))
                                 .foregroundColor(.white)
                         )

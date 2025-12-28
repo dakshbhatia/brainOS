@@ -61,7 +61,7 @@ struct ModelRowView: View {
                             .truncationMode(.tail)
 
                         if model.isDownloaded {
-                            Text("🧠")
+                            Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 13))
                                 .foregroundColor(theme.successColor)
                         }
@@ -82,7 +82,7 @@ struct ModelRowView: View {
                     if let url = URL(string: model.downloadURL) {
                         Button(action: { NSWorkspace.shared.open(url) }) {
                             HStack(spacing: 4) {
-                                Text("🧠")
+                                Image(systemName: "link")
                                     .font(.system(size: 10))
                                 Text(repositoryName(from: model.downloadURL))
                                     .font(.system(size: 12))
@@ -111,7 +111,7 @@ struct ModelRowView: View {
                 Spacer(minLength: 0)
 
                 // Chevron indicator
-                Text("🧠")
+                Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
                     .opacity(isHovering ? 1 : 0.5)
@@ -162,7 +162,7 @@ struct ModelRowView: View {
     /// Badge indicating this is a top suggested model
     private var topSuggestionBadge: some View {
         HStack(spacing: 3) {
-            Text("🧠")
+            Image(systemName: "sparkles")
                 .font(.system(size: 8, weight: .semibold))
             Text("Top Pick")
                 .font(.system(size: 10, weight: .semibold))
@@ -192,7 +192,7 @@ struct ModelRowView: View {
         let icon = isVLM ? "eye" : "text.bubble"
 
         return HStack(spacing: 3) {
-            Text("🧠")
+            Image(systemName: icon)
                 .font(.system(size: 8, weight: .semibold))
             Text(type.rawValue)
                 .font(.system(size: 10, weight: .semibold))
@@ -217,7 +217,7 @@ struct ModelRowView: View {
                         : theme.accentColor.opacity(0.12)
                 )
 
-            Text("🧠")
+            Image(systemName: model.isLikelyVLM ? "eye" : "cpu")
                 .font(.system(size: 20, weight: .medium))
                 .foregroundColor(
                     model.isDownloaded
@@ -272,7 +272,7 @@ struct ModelRowView: View {
                 // Cancel button
                 if let onCancel = onCancel {
                     Button(action: onCancel) {
-                        Text("🧠")
+                        Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 16))
                             .foregroundColor(theme.tertiaryText)
                     }
@@ -358,7 +358,7 @@ private struct MetadataPill: View {
     var body: some View {
         HStack(spacing: 3) {
             if let icon {
-                Text("🧠")
+                Image(systemName: icon)
                     .font(.system(size: 8, weight: .medium))
             }
             Text(text)
