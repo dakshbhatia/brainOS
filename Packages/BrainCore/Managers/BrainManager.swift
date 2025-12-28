@@ -77,18 +77,79 @@ public class BrainManager {
         // 1. Gather all recent data
         let steps = (try? await BrainHealthManager.shared.fetchStepCount(days: 1).first) ?? 0
         let nudges = await RelationshipAgent.shared.analyzeRecentInteractions()
+        let staleContacts = await BrainDatabaseManager.shared.getStaleContacts(days: 14)
+        let calendarBrief = await BrainCalendarManager.shared.getUpcomingBrief()
         
         // 2. Run Reflection Task (The "Reasoning Loop")
-        await runReflectionTask(steps: steps, nudges: nudges)
+        await runReflectionTask(
+            steps: steps, 
+            nudges: nudges, 
+            staleContacts: staleContacts,
+            calendar: calendarBrief
+        )
         
         // 3. Check for immediate alerts (Heuristics)
         let hour = Calendar.current.component(.hour, from: Date())
         if hour == 8 {
             await sendDailyBrief()
         }
+        
+        // 4. Midnight Journaling
+        if hour == 23 {
+            await generateDailyJournal()
+        }
+    }
+
+    public func generateDailyJournal() async {
+        BrainLogger.info("Generating daily journal entry...", category: .agent)
+        
+        let steps = (try? await BrainHealthManager.shared.fetchStepCount(days: 1).first) ?? 0
+        let memories = await BrainKnowledgeManager.shared.search(query: "what happened today", limit: 10)
+        
+        let context = """
+        Today's Data:
+        - Steps: \(Int(steps))
+        - Key Memories: \(memories.joined(separator: " | "))
+        
+        Task: Write a short, reflective journal entry for today (2-3 sentences). 
+        Also identify the overall mood (e.g., Productive, Relaxed, Social).
+        Output JSON: {"summary": "...", "mood": "...", "events": ["event1", "event2"]}
+        """
+        
+        do {
+            let engine = ChatEngine()
+            let response = try await engine.generateOneShot(
+                messages: [ChatMessage(role: "user", content: context)],
+                parameters: GenerationParameters(temperature: 0.7, maxTokens: 300, topPOverride: nil, repetitionPenalty: nil),
+                requestedModel: "default"
+            )
+            
+            if let data = response.data(using: .utf8),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let summary = json["summary"] as? String,
+               let mood = json["mood"] as? String,
+               let events = json["events"] as? [String] {
+                
+                let dateStr = ISO8601DateFormatter().string(from: Date()).prefix(10) // YYYY-MM-DD
+                await BrainDatabaseManager.shared.saveJournalEntry(
+                    date: String(dateStr),
+                    summary: summary,
+                    mood: mood,
+                    events: events
+                )
+                BrainLogger.info("Journal entry saved for \(dateStr)", category: .agent)
+            }
+        } catch {
+            BrainLogger.error("Failed to generate journal: \(error)", category: .agent)
+        }
     }
     
-    private func runReflectionTask(steps: Double, nudges: [RelationshipNudge]) async {
+    private func runReflectionTask(
+        steps: Double, 
+        nudges: [RelationshipNudge], 
+        staleContacts: [(name: String, lastSpoken: Date)],
+        calendar: String
+    ) async {
         BrainLogger.info("Running Reflection Task...", category: .agent)
         
         let systemPrompt = """
@@ -97,15 +158,19 @@ public class BrainManager {
         
         Rules:
         1. Be extremely concise.
-        2. Only notify for high-priority items (e.g., missed important messages, health alerts).
+        2. Only notify for high-priority items (e.g., missed important messages, health alerts, long-lost friends).
         3. Output ONLY a JSON object with "title", "body", and "priority" (high/medium).
         4. If nothing is urgent, output "NONE".
         """
+        
+        let staleContactsStr = staleContacts.map { "\($0.name) (last spoken \($0.lastSpoken.formatted()))" }.joined(separator: ", ")
         
         let context = """
         Current State:
         - Steps: \(Int(steps))
         - Relationship Nudges: \(nudges.map { "\($0.contactName): \($0.reason)" }.joined(separator: "\n"))
+        - Stale Contacts (Long time no see): \(staleContactsStr)
+        - Calendar: \(calendar)
         
         Analyze and decide if a notification is needed.
         """

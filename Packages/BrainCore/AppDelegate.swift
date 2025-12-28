@@ -43,6 +43,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
         // Start BrainOS proactive intelligence
         Task {
             await BrainManager.shared.start()
+            BrainLocationManager.shared.start()
+            _ = try? await BrainCalendarManager.shared.requestAccess()
         }
 
         // Register BrainOS internal tools
@@ -56,6 +58,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
             ToolRegistry.shared.register(BrainMessagesTool())
             ToolRegistry.shared.register(BrainContactsTool())
             ToolRegistry.shared.register(BrainDraftTool())
+            ToolRegistry.shared.register(BrainAppleScriptTool())
         }
 
         // Set up observers for server state changes

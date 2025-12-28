@@ -1,6 +1,8 @@
 import Foundation
 import SQLite3
 import Contacts
+import ImageIO
+import UniformTypeIdentifiers
 
     public enum TapbackType: String, Codable, Sendable {
     case loved = "Loved"
@@ -50,6 +52,36 @@ import Contacts
     
     public var isTapback: Bool {
         return associatedMessageType != nil && associatedMessageType! > 0
+    }
+
+    public func extractEXIF(from path: String) -> [String: String] {
+        let fullPath = NSString(string: path).expandingTildeInPath
+        let url = URL(fileURLWithPath: fullPath)
+        
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let metadata = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
+            return [:]
+        }
+        
+        var exifData: [String: String] = [:]
+        
+        if let exif = metadata[kCGImagePropertyExifDictionary] as? [CFString: Any] {
+            if let dateTime = exif[kCGImagePropertyExifDateTimeOriginal] as? String {
+                exifData["dateTime"] = dateTime
+            }
+            if let lens = exif[kCGImagePropertyExifLensModel] as? String {
+                exifData["lens"] = lens
+            }
+        }
+        
+        if let gps = metadata[kCGImagePropertyGPSDictionary] as? [CFString: Any] {
+            if let lat = gps[kCGImagePropertyGPSLatitude] as? Double,
+               let lon = gps[kCGImagePropertyGPSLongitude] as? Double {
+                exifData["location"] = "\(lat), \(lon)"
+            }
+        }
+        
+        return exifData
     }
 }
 

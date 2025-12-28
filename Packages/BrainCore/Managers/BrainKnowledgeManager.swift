@@ -6,45 +6,10 @@ import NaturalLanguage
 public actor BrainKnowledgeManager {
     public static let shared = BrainKnowledgeManager()
     
-    private struct MemoryEntry: Codable {
-        let id: UUID
-        let text: String
-        let embedding: [Float]
-        let metadata: [String: String]
-        let timestamp: Date
-    }
-    
-    private var memories: [MemoryEntry] = []
-    private let storageURL: URL
     private let embeddingModel = NLEmbedding.sentenceEmbedding(for: .english)
+    private let tagger = NLTagger(tagSchemes: [.nameType, .lexicalClass])
     
-    private init() {
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let appSupport = paths[0].appendingPathComponent("BrainOS", isDirectory: true)
-        try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
-        self.storageURL = appSupport.appendingPathComponent("knowledge_graph.json")
-        
-        if let data = try? Data(contentsOf: storageURL),
-           let decoded = try? JSONDecoder().decode([MemoryEntry].self, from: data) {
-            self.memories = decoded
-        } else {
-            self.memories = []
-        }
-    }
-    
-    private func loadMemories() {
-        guard let data = try? Data(contentsOf: storageURL),
-              let decoded = try? JSONDecoder().decode([MemoryEntry].self, from: data) else {
-            return
-        }
-        self.memories = decoded
-    }
-    
-    private func saveMemories() {
-        if let data = try? JSONEncoder().encode(memories) {
-            try? data.write(to: storageURL)
-        }
-    }
+    private init() {}
     
     public func addMemory(text: String, metadata: [String: String] = [:]) {
         guard let embedding = embeddingModel?.vector(for: text) else {
@@ -52,51 +17,78 @@ public actor BrainKnowledgeManager {
             return
         }
         
-        let entry = MemoryEntry(
-            id: UUID(),
-            text: text,
-            embedding: embedding.map { Float($0) },
-            metadata: metadata,
-            timestamp: Date()
-        )
-        memories.append(entry)
-        saveMemories()
+        // 1. Extract entities for Knowledge Graph
+        extractAndStoreEntities(from: text)
+        
+        // 2. Store in SQLite via DatabaseManager
+        Task {
+            await BrainDatabaseManager.shared.saveMemory(
+                id: UUID().uuidString,
+                content: text,
+                embedding: embedding.map { Float($0) },
+                metadata: metadata
+            )
+        }
     }
     
-    public func search(query: String, limit: Int = 5) -> [String] {
+    private func extractAndStoreEntities(from text: String) {
+        tagger.string = text
+        let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .joinNames]
+        let tags: [NLTag] = [.personalName, .placeName, .organizationName]
+        
+        tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .nameType, options: options) { tag, range in
+            if let tag = tag, tags.contains(tag) {
+                let entityName = String(text[range])
+                let type: String
+                switch tag {
+                case .personalName: type = "person"
+                case .placeName: type = "place"
+                case .organizationName: type = "organization"
+                default: type = "other"
+                }
+                
+                Task {
+                    await BrainDatabaseManager.shared.upsertEntity(name: entityName, type: type)
+                }
+            }
+            return true
+        }
+    }
+    
+    public func search(query: String, limit: Int = 5) async -> [String] {
         guard let queryEmbedding = embeddingModel?.vector(for: query) else {
             return []
         }
         
         let floatEmbedding = queryEmbedding.map { Float($0) }
         
-        // Simple cosine similarity search with a small boost for recent memories
-        let results = memories.map { entry in
-            let similarity = cosineSimilarity(floatEmbedding, entry.embedding)
-            
-            // Boost score based on recency (up to 10% boost for memories from today)
-            let timeInterval = abs(entry.timestamp.timeIntervalSinceNow)
-            let recencyBoost = Float(max(0, 1.0 - (timeInterval / 86400.0))) * 0.1
-            
-            return (entry.text, similarity + recencyBoost)
-        }
-        .sorted { $0.1 > $1.1 }
-        .prefix(limit)
-        .map { $0.0 }
+        // 1. Vector Search
+        let vectorResults = await BrainDatabaseManager.shared.searchMemories(embedding: floatEmbedding, limit: limit * 2)
         
-        return Array(results)
+        // 2. Entity Search (Knowledge Graph)
+        let entities = extractEntities(from: query)
+        var graphResults: [String] = []
+        for entity in entities {
+            let related = await BrainDatabaseManager.shared.getRelatedMemories(entityName: entity)
+            graphResults.append(contentsOf: related)
+        }
+        
+        // 3. Combine and Rerank (Simple deduplication and priority for graph results)
+        var combined = Array(Set(vectorResults + graphResults))
+        
+        // Future: Use a small local Cross-Encoder for better reranking
+        return Array(combined.prefix(limit))
     }
     
-    private func cosineSimilarity(_ a: [Float], _ b: [Float]) -> Float {
-        guard a.count == b.count else { return 0 }
-        var dotProduct: Float = 0
-        var normA: Float = 0
-        var normB: Float = 0
-        for i in 0..<a.count {
-            dotProduct += a[i] * b[i]
-            normA += a[i] * a[i]
-            normB += b[i] * b[i]
+    private func extractEntities(from text: String) -> [String] {
+        tagger.string = text
+        var entities: [String] = []
+        tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .nameType, options: [.omitPunctuation, .omitWhitespace, .joinNames]) { tag, range in
+            if tag != nil {
+                entities.append(String(text[range]))
+            }
+            return true
         }
-        return dotProduct / (sqrt(normA) * sqrt(normB))
+        return entities
     }
 }

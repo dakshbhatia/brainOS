@@ -56,17 +56,23 @@ public actor ScreenshotWatcherService {
             
             let recognizedText = observations.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
             
-            if !recognizedText.isEmpty {
-                Task {
-                    await BrainKnowledgeManager.shared.addMemory(
-                        text: "Screenshot content: \(recognizedText)",
-                        metadata: [
-                            "source": "screenshot",
-                            "path": url.path,
-                            "timestamp": Date().description
-                        ]
-                    )
-                }
+            Task {
+                // 2. Get Visual Description from VLM
+                let visualDescription = await BrainVisionManager.shared.describeImage(at: url)
+                
+                let fullContent = """
+                Screenshot OCR: \(recognizedText)
+                Visual Description: \(visualDescription)
+                """
+                
+                await BrainKnowledgeManager.shared.addMemory(
+                    text: fullContent,
+                    metadata: [
+                        "source": "screenshot",
+                        "path": url.path,
+                        "timestamp": Date().description
+                    ]
+                )
             }
         }
         

@@ -8,9 +8,11 @@ struct BrainDashboardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Image(systemName: "brain.head.profile")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.blue)
+                BrainAvatarView()
+                    .frame(width: 60, height: 60)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 1))
+                
                 VStack(alignment: .leading) {
                     Text(greeting)
                         .font(.headline)
