@@ -6,7 +6,7 @@
 import Foundation
 import Testing
 
-@testable import BrainOSCore
+@testable import BrainCore
 
 struct ModelRuntimeFallbackTests {
 

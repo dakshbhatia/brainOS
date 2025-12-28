@@ -9,7 +9,7 @@ import Foundation
 import NIOHTTP1
 import Testing
 
-@testable import BrainOSCore
+@testable import BrainCore
 
 struct BrainOSTests {
 

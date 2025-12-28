@@ -1,6 +1,6 @@
 //
 //  MCPServerManager.swift
-//  BrainOSCore
+//  BrainCore
 //
 //  Hosts the MCP server and transports, exposing only enabled tools.
 //

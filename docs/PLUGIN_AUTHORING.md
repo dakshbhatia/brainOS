@@ -53,7 +53,7 @@ The plugin_id and version are extracted from the filename during installation. T
 ## ABI Overview
 
 The header is available at:
-`Packages/BrainOSCore/Tools/PluginABI/BrainOS_plugin.h`
+`Packages/BrainCore/Tools/PluginABI/BrainOS_plugin.h`
 
 Key points:
 

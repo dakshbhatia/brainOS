@@ -19,7 +19,7 @@ if [[ "${CODE_SIGN_IDENTITY_VALUE}" != Developer\ ID\ Application:* ]]; then
 fi
 
 # Ensure a clean and consistent SPM resolution before archiving
-rm -f "Packages/BrainOSCore/Package.resolved"
+rm -f "Packages/BrainCore/Package.resolved"
 rm -rf build/DerivedData build/SourcePackages
 xcodebuild -resolvePackageDependencies -project App/BrainOS.xcodeproj -scheme BrainOS
 

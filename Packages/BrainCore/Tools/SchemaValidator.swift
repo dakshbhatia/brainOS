@@ -1,6 +1,6 @@
 //
 //  SchemaValidator.swift
-//  BrainOSCore
+//  BrainCore
 //
 //  Minimal JSON Schema validator for tool arguments.
 //  Supports: type (object/string/integer/number/boolean/array), properties, required, enum (strings or numbers).

@@ -9,7 +9,7 @@ import NIOHTTP1
 import NIOPosix
 import Testing
 
-@testable import BrainOSCore
+@testable import BrainCore
 
 struct HTTPHandlerChatStreamingTests {
 

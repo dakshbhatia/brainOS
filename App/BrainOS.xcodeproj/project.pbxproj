@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F0AA7F3A2ED20D7300672B07 /* BrainOSCore in Frameworks */ = {isa = PBXBuildFile; productRef = F0AA7F392ED20D7300672B07 /* BrainOSCore */; };
-		F0AA7F3D2ED20DA700672B07 /* BrainOSCore in Frameworks */ = {isa = PBXBuildFile; productRef = F0AA7F3C2ED20DA700672B07 /* BrainOSCore */; };
+		F0AA7F3A2ED20D7300672B07 /* BrainCore in Frameworks */ = {isa = PBXBuildFile; productRef = F0AA7F392ED20D7300672B07 /* BrainCore */; };
+		F0AA7F3D2ED20DA700672B07 /* BrainCore in Frameworks */ = {isa = PBXBuildFile; productRef = F0AA7F3C2ED20DA700672B07 /* BrainCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,8 +87,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0AA7F3D2ED20DA700672B07 /* BrainOSCore in Frameworks */,
-				F0AA7F3A2ED20D7300672B07 /* BrainOSCore in Frameworks */,
+				F0AA7F3D2ED20DA700672B07 /* BrainCore in Frameworks */,
+				F0AA7F3A2ED20D7300672B07 /* BrainCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,8 +158,8 @@
 			);
 			name = BrainOS;
 			packageProductDependencies = (
-				F0AA7F392ED20D7300672B07 /* BrainOSCore */,
-				F0AA7F3C2ED20DA700672B07 /* BrainOSCore */,
+				F0AA7F392ED20D7300672B07 /* BrainCore */,
+				F0AA7F3C2ED20DA700672B07 /* BrainCore */,
 			);
 			productName = BrainOS;
 			productReference = F0BB3C262E51FBCC00895593 /* BrainOS.app */;
@@ -243,7 +243,7 @@
 			packageReferences = (
 				F0F4E2992ED1209200BEFA4D /* XCLocalSwiftPackageReference "../Packages/BrainOSRepository" */,
 				F0AA7F342ED20D2E00672B07 /* XCLocalSwiftPackageReference "../Packages/BrainOSCLI" */,
-				F0AA7F3B2ED20DA700672B07 /* XCLocalSwiftPackageReference "../Packages/BrainOSCore" */,
+				F0AA7F3B2ED20DA700672B07 /* XCLocalSwiftPackageReference "../Packages/BrainCore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F0BB3C272E51FBCC00895593 /* Products */;
@@ -685,9 +685,9 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../Packages/BrainOSCLI;
 		};
-		F0AA7F3B2ED20DA700672B07 /* XCLocalSwiftPackageReference "../Packages/BrainOSCore" */ = {
+		F0AA7F3B2ED20DA700672B07 /* XCLocalSwiftPackageReference "../Packages/BrainCore" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Packages/BrainOSCore;
+			relativePath = ../Packages/BrainCore;
 		};
 		F0F4E2992ED1209200BEFA4D /* XCLocalSwiftPackageReference "../Packages/BrainOSRepository" */ = {
 			isa = XCLocalSwiftPackageReference;
@@ -696,13 +696,13 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F0AA7F392ED20D7300672B07 /* BrainOSCore */ = {
+		F0AA7F392ED20D7300672B07 /* BrainCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = BrainOSCore;
+			productName = BrainCore;
 		};
-		F0AA7F3C2ED20DA700672B07 /* BrainOSCore */ = {
+		F0AA7F3C2ED20DA700672B07 /* BrainCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = BrainOSCore;
+			productName = BrainCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

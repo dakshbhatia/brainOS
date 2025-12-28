@@ -6,7 +6,7 @@
 //
 
 import AppKit
-import BrainOSCore
+import BrainCore
 import SwiftUI
 
 @main

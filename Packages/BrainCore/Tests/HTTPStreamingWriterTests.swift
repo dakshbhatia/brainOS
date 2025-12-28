@@ -9,7 +9,7 @@ import NIOEmbedded
 import NIOHTTP1
 import Testing
 
-@testable import BrainOSCore
+@testable import BrainCore
 
 struct HTTPStreamingWriterTests {
 

@@ -1,6 +1,6 @@
 //
 //  MCPHTTPHandlerTests.swift
-//  BrainOSCoreTests
+//  BrainCoreTests
 //
 //  Verifies MCP endpoints mounted on the same port: /mcp/health, /mcp/tools, /mcp/call
 //
@@ -11,7 +11,7 @@ import NIOHTTP1
 import NIOPosix
 import Testing
 
-@testable import BrainOSCore
+@testable import BrainCore
 
 struct MCPHTTPHandlerTests {
 
