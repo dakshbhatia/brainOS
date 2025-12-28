@@ -8,7 +8,7 @@
 import Foundation
 import Darwin
 import CryptoKit
-import BrainOSRepository
+import BrainRepository
 
 @MainActor
 final class PluginManager {

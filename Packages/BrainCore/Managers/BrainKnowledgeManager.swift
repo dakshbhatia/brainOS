@@ -21,7 +21,13 @@ public actor BrainKnowledgeManager {
         let appSupport = paths[0].appendingPathComponent("BrainOS", isDirectory: true)
         try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
         self.storageURL = appSupport.appendingPathComponent("knowledge_graph.json")
-        loadMemories()
+        
+        if let data = try? Data(contentsOf: storageURL),
+           let decoded = try? JSONDecoder().decode([MemoryEntry].self, from: data) {
+            self.memories = decoded
+        } else {
+            self.memories = []
+        }
     }
     
     private func loadMemories() {

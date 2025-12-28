@@ -27,7 +27,7 @@ Canonical reference for all BrainOS features, their status, and documentation.
 | OpenAI API Compatibility         | Stable    | "API Endpoints"    | OpenAI_API_GUIDE.md           | Networking/HTTPHandler.swift, Models/OpenAIAPI.swift                          |
 | Anthropic API Compatibility      | Stable    | "API Endpoints"    | (in README)                   | Networking/HTTPHandler.swift, Models/AnthropicAPI.swift                       |
 | Ollama API Compatibility         | Stable    | "API Endpoints"    | (in README)                   | Networking/HTTPHandler.swift                                                  |
-| CLI                              | Stable    | "CLI Reference"    | (in README)                   | Packages/BrainOSCLI/                                                          |
+| CLI                              | Stable    | "CLI Reference"    | (in README)                   | Packages/BrainCLI/                                                          |
 
 ---
 
@@ -75,7 +75,7 @@ Canonical reference for all BrainOS features, their status, and documentation.
 │  ├── Router (Request routing)                                            │
 │  └── HTTPHandler (OpenAI/Anthropic/Ollama API handlers)                  │
 ├─────────────────────────────────────────────────────────────────────────┤
-│  CLI (BrainOSCLI Package)                                                │
+│  CLI (BrainCLI Package)                                                │
 │  └── Commands: serve, stop, status, ui, list, run, mcp, tools            │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

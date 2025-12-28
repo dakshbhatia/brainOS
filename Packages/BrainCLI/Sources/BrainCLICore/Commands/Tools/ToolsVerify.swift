@@ -7,7 +7,7 @@
 
 import Foundation
 import CryptoKit
-import BrainOSRepository
+import BrainRepository
 
 public struct ToolsVerify {
     public static func execute(args: [String]) {

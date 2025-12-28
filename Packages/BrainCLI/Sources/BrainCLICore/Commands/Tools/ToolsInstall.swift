@@ -7,7 +7,7 @@
 
 import CryptoKit
 import Foundation
-import BrainOSRepository
+import BrainRepository
 
 public struct ToolsInstall {
     public static func execute(args: [String]) async {

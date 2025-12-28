@@ -1,6 +1,7 @@
 import Foundation
 import HealthKit
 
+@MainActor
 public class BrainHealthManager {
     public static let shared = BrainHealthManager()
     

@@ -94,6 +94,23 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         center.add(request, withCompletionHandler: nil)
     }
 
+    func show(title: String, subtitle: String? = nil, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        if let subtitle = subtitle {
+            content.subtitle = subtitle
+        }
+        content.body = body
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: "generic-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        center.add(request, withCompletionHandler: nil)
+    }
+
     // MARK: - UNUserNotificationCenterDelegate
 
     nonisolated func userNotificationCenter(

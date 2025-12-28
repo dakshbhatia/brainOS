@@ -2,7 +2,7 @@ import Foundation
 import SQLite3
 import Contacts
 
-public enum TapbackType: String, Codable {
+    public enum TapbackType: String, Codable, Sendable {
     case loved = "Loved"
     case liked = "Liked"
     case disliked = "Disliked"
@@ -28,13 +28,13 @@ public enum TapbackType: String, Codable {
     }
 }
 
-public struct MessageAttachment: Codable {
+    public struct MessageAttachment: Codable, Sendable {
     public let filename: String?
     public let mimeType: String?
     public let path: String?
 }
 
-public struct MessageEntry: Codable {
+    public struct MessageEntry: Codable, Sendable {
     public let guid: String
     public let sender: String
     public let senderName: String?
@@ -53,6 +53,9 @@ public struct MessageEntry: Codable {
     }
 }
 
+import Contacts
+
+@MainActor
 public class BrainMessagesManager {
     public static let shared = BrainMessagesManager()
     
@@ -177,7 +180,7 @@ public class BrainMessagesManager {
             // Clean phone number
             let digits = identifier.filter { $0.isNumber }
             if digits.isEmpty { return nil }
-            predicate = CNContact.predicateForContacts(matching(CNPhoneNumber(stringValue: identifier)))
+            predicate = CNContact.predicateForContacts(matching: CNPhoneNumber(stringValue: identifier))
         }
         
         do {

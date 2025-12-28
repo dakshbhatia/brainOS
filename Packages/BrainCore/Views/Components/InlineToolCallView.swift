@@ -590,8 +590,8 @@ struct CollapsibleCodeSection: View {
                         .foregroundColor(theme.tertiaryText)
 
                     // Language/type icon
-                    if let language {
-                        Text("🧠"))
+                    if language != nil {
+                        Text("🧠")
                             .font(.system(size: 9, weight: .medium))
                             .foregroundColor(theme.tertiaryText)
                     }

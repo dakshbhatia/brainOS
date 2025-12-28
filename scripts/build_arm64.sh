@@ -24,7 +24,7 @@ rm -rf build/DerivedData build/SourcePackages
 xcodebuild -resolvePackageDependencies -project App/BrainOS.xcodeproj -scheme BrainOS
 
 # 1. Build the CLI first (as a separate scheme)
-echo "Building CLI (BrainOSCLI)..."
+echo "Building CLI (BrainCLI)..."
 xcodebuild -project App/BrainOS.xcodeproj \
   -scheme BrainOS-cli \
   -configuration Release \

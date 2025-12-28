@@ -7,7 +7,7 @@
 
 import Combine
 import Foundation
-import BrainOSRepository
+import BrainRepository
 
 /// Represents a plugin's installation state and available updates
 struct PluginState: Identifiable, Equatable {

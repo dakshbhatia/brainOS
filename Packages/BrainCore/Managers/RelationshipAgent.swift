@@ -8,7 +8,7 @@ public actor RelationshipAgent {
     
     public func analyzeRecentInteractions() async -> [RelationshipNudge] {
         // 1. NOTICE: Query the Messages
-        let messages = (try? BrainMessagesManager.shared.fetchRecentMessages(limit: 50)) ?? []
+        let messages = (try? await BrainMessagesManager.shared.fetchRecentMessages(limit: 50)) ?? []
         
         // Group messages by sender
         let groupedMessages = Dictionary(grouping: messages) { $0.senderName ?? $0.sender }
@@ -77,15 +77,15 @@ public actor RelationshipAgent {
     }
 }
 
-public enum NudgePriority: String, Codable {
+public enum NudgePriority: String, Codable, Sendable {
     case low, medium, high
 }
 
-public enum ActionType: String, Codable {
-    case reply, message, call, calendar
+public enum ActionType: String, Codable, Sendable {
+    case message, call, email, reply
 }
 
-public struct RelationshipNudge: Identifiable, Codable {
+public struct RelationshipNudge: Identifiable, Codable, Sendable {
     public var id = UUID()
     public let contactName: String
     public let reason: String

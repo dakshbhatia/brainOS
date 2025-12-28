@@ -162,7 +162,7 @@ struct ServerView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         // Category header
                         HStack(spacing: 6) {
-                            Text("🧠"))
+                            Text("🧠")
                                 .font(.system(size: 10, weight: .semibold))
                                 .foregroundColor(categoryColor(group.category))
                             Text(group.category.rawValue)

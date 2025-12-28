@@ -8,7 +8,7 @@
 import AppKit
 import CryptoKit
 import Foundation
-import BrainOSRepository
+import BrainRepository
 import SwiftUI
 
 struct ToolsManagerView: View {
@@ -777,7 +777,7 @@ private struct RemoteToolRow: View {
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Text("🧠"))
+                        Text("🧠")
                             .font(.system(size: 9))
                             .foregroundColor(colorForPolicy(info.effectivePolicy))
                         Text(info.effectivePolicy.rawValue.capitalized)
@@ -1390,7 +1390,7 @@ private struct InstalledToolRow: View {
                     }
                 } label: {
                     HStack(spacing: 4) {
-                        Text("🧠"))
+                        Text("🧠")
                             .font(.system(size: 9))
                             .foregroundColor(colorForPolicy(info.effectivePolicy))
                         Text(info.effectivePolicy.rawValue.capitalized)
@@ -1895,7 +1895,7 @@ private struct ToolSettingsRow: View {
                         // Permission indicator
                         if let info = info {
                             HStack(spacing: 5) {
-                                Text("🧠"))
+                                Text("🧠")
                                     .font(.system(size: 10))
                                     .foregroundColor(colorForPolicy(info.effectivePolicy))
                                 Text(info.effectivePolicy.rawValue.capitalized)

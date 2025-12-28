@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import BrainOSRepository
+import BrainRepository
 
 final class ExternalTool: BrainOSTool, PermissionedTool, @unchecked Sendable {
     let name: String

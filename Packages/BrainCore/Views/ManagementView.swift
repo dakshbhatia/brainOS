@@ -7,7 +7,7 @@
 
 import AppKit
 import Foundation
-import BrainOSRepository
+import BrainRepository
 import SwiftUI
 
 enum ManagementTab: String, CaseIterable {

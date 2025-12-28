@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import BrainOSRepository
+import BrainRepository
 
 public struct ToolsOutdated {
     public static func execute(args: [String]) {

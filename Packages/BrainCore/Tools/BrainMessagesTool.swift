@@ -29,7 +29,8 @@ struct BrainMessagesTool: BrainOSTool {
         let contactName = args?.contactName
         
         do {
-            let messages = try BrainMessagesManager.shared.fetchRecentMessages(limit: limit, contactName: contactName)
+            let messages = try await BrainMessagesManager.shared.fetchRecentMessages(
+                limit: limit, contactName: contactName)
             
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601

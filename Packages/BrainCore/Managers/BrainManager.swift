@@ -2,7 +2,8 @@ import Foundation
 import BrainRepository
 
 /// The central coordinator for BrainOS proactive intelligence.
-public actor BrainManager {
+@MainActor
+public class BrainManager {
     public static let shared = BrainManager()
     
     private let notificationService = NotificationService.shared
