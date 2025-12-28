@@ -30,7 +30,7 @@ else:
     import html
     body_html = '<pre style="white-space: pre-wrap">' + html.escape(md_text) + '</pre>'
 
-template = f"""<!doctype html><html><head><meta charset=\"utf-8\"><title>Osaurus {version} Release Notes</title>
+template = f"""<!doctype html><html><head><meta charset=\"utf-8\"><title>BrainOS {version} Release Notes</title>
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 <style>
   :root {{ color-scheme: light dark; }}
@@ -56,11 +56,11 @@ template = f"""<!doctype html><html><head><meta charset=\"utf-8\"><title>Osaurus
     pre {{ background: #161b22; border: 1px solid #30363d; }}
   }}
 </style></head><body>
-<h1>Osaurus <span class="version">{version}</span></h1>
+<h1>BrainOS <span class="version">{version}</span></h1>
 {body_html}
 </body></html>"""
 
-pathlib.Path(f'updates/arm64/Osaurus-{version}.html').write_text(template, encoding='utf-8')
+pathlib.Path(f'updates/arm64/BrainOS-{version}.html').write_text(template, encoding='utf-8')
 PY
 
 

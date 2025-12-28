@@ -1,53 +1,46 @@
-# Osaurus
+# BrainOS
 
-[![Release](https://img.shields.io/github/v/release/dinoki-ai/osaurus?sort=semver)](https://github.com/dinoki-ai/osaurus/releases)
-[![Downloads](https://img.shields.io/github/downloads/dinoki-ai/osaurus/total)](https://github.com/dinoki-ai/osaurus/releases)
-[![License](https://img.shields.io/github/license/dinoki-ai/osaurus)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/dinoki-ai/osaurus?style=social)](https://github.com/dinoki-ai/osaurus/stargazers)
-![Platform](<https://img.shields.io/badge/Platform-macOS%20(Apple%20Silicon)-black?logo=apple>)
-![OpenAI API](https://img.shields.io/badge/OpenAI%20API-compatible-0A7CFF)
-![Anthropic API](https://img.shields.io/badge/Anthropic%20API-compatible-0A7CFF)
-![Ollama API](https://img.shields.io/badge/Ollama%20API-compatible-0A7CFF)
-![MCP Server](https://img.shields.io/badge/MCP-server-0A7CFF)
-![Foundation Models](https://img.shields.io/badge/Apple%20Foundation%20Models-supported-0A7CFF)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+**The Operating System for Optimized Living.**
 
-<p align="center">
-<img width="372" height="222" alt="Screenshot 2025-12-15 at 4 17 47 PM" src="https://github.com/user-attachments/assets/c0fe3a6a-9d5b-4afe-886f-19077218dcc5" />
-</p>
-
-**Native macOS LLM server with MCP support.** Run local and remote language models on Apple Silicon with OpenAI & Anthropic compatible APIs, tool calling, and a built-in plugin ecosystem.
-
-Created by Dinoki Labs ([dinoki.ai](https://dinoki.ai))
-
-**[Documentation](https://docs.osaurus.ai/)** · **[Discord](https://discord.gg/dinoki)** · **[Plugin Registry](https://github.com/dinoki-ai/osaurus-tools)** · **[Contributing](docs/CONTRIBUTING.md)**
+BrainOS is a native macOS AI operating system built on a fork of BrainOS. It transforms your Mac into a proactive personal agent that understands your life data—health, finance, relationships, and visual memory—while keeping everything 100% local and private.
 
 ---
 
-## Install
+## The 2026 Vision
+
+BrainOS isn't just an LLM runner; it's your digital brain.
+
+- **Core Runtime** — Native Swift + MLX for blazing Apple Silicon inference.
+- **Data Ingestion** — Seamlessly connects to HealthKit, Calendar, Photos, Messages, and Finance.
+- **Proactive Agents** — Silent agents that monitor your "Life Health" and provide daily briefs.
+- **Semantic Memory** — Local vector store for screenshots, photos, and transactions.
+- **Raycast-style Dashboard** — A beautiful, glanceable interface for your optimized life.
+
+---
+
+## Features
+
+- **MLX Runtime** — Optimized local inference for Apple Silicon.
+- **MCP Native** — Every data source is a tool for your agents.
+- **Life Plugins** — Built-in support for Health, Photos, and Screenshots.
+- **Proactive Intelligence** — Relationship nudges, health insights, and spending alerts.
+- **Privacy First** — Everything stays on your device. No cloud required.
+
+---
+
+## Getting Started
 
 ```bash
-brew install --cask osaurus
+# Clone the repo
+git clone https://github.com/dakshbhatia/BrainOS.git
+cd BrainOS
+
+# Build and run
+make build
 ```
 
-Or download from [Releases](https://github.com/dinoki-ai/osaurus/releases/latest).
+Launch from Spotlight (`⌘ Space` → "BrainOS").
 
-After installing, launch from Spotlight (`⌘ Space` → "osaurus") or run `osaurus ui` from the terminal.
-
----
-
-## What is Osaurus?
-
-Osaurus is an all-in-one LLM server for macOS. It combines:
-
-- **MLX Runtime** — Optimized local inference for Apple Silicon using [MLX](https://github.com/ml-explore/mlx)
-- **Remote Providers** — Connect to Anthropic, OpenAI, OpenRouter, Ollama, LM Studio, or any compatible API
-- **OpenAI, Anthropic & Ollama APIs** — Drop-in compatible endpoints for existing tools
-- **MCP Server** — Expose tools to AI agents via Model Context Protocol
-- **Remote MCP Providers** — Connect to external MCP servers and aggregate their tools
-- **Plugin System** — Extend functionality with community and custom tools
-- **Personas** — Create custom AI assistants with unique prompts, tools, and visual themes
-- **Developer Tools** — Built-in insights and server explorer for debugging
 - **Apple Foundation Models** — Use the system model on macOS 26+ (Tahoe)
 
 ### Highlights
@@ -73,10 +66,10 @@ Osaurus is an all-in-one LLM server for macOS. It combines:
 
 ### 1. Start the Server
 
-Launch Osaurus from Spotlight or run:
+Launch BrainOS from Spotlight or run:
 
 ```bash
-osaurus serve
+BrainOS serve
 ```
 
 The server starts on port `1337` by default.
@@ -88,8 +81,8 @@ Add to your MCP client configuration (e.g., Cursor, Claude Desktop):
 ```json
 {
   "mcpServers": {
-    "osaurus": {
-      "command": "osaurus",
+    "BrainOS": {
+      "command": "BrainOS",
       "args": ["mcp"]
     }
   }
@@ -112,7 +105,7 @@ Run models locally with optimized Apple Silicon inference:
 
 ```bash
 # Download a model
-osaurus run llama-3.2-3b-instruct-4bit
+BrainOS run llama-3.2-3b-instruct-4bit
 
 # Use via API
 curl http://127.0.0.1:1337/v1/chat/completions \
@@ -144,7 +137,7 @@ See [Remote Providers Guide](docs/REMOTE_PROVIDERS.md) for details.
 
 ### MCP Server
 
-Osaurus is a full MCP (Model Context Protocol) server. Connect it to any MCP client to give AI agents access to your installed tools.
+BrainOS is a full MCP (Model Context Protocol) server. Connect it to any MCP client to give AI agents access to your installed tools.
 
 | Endpoint          | Description            |
 | ----------------- | ---------------------- |
@@ -154,7 +147,7 @@ Osaurus is a full MCP (Model Context Protocol) server. Connect it to any MCP cli
 
 ### Remote MCP Providers
 
-Connect to external MCP servers and aggregate their tools into Osaurus:
+Connect to external MCP servers and aggregate their tools into BrainOS:
 
 - Discover and register tools from remote MCP endpoints
 - Configurable timeouts and streaming
@@ -165,28 +158,28 @@ See [Remote MCP Providers Guide](docs/REMOTE_MCP_PROVIDERS.md) for details.
 
 ### Tools & Plugins
 
-Install tools from the [central registry](https://github.com/dinoki-ai/osaurus-tools) or create your own.
+Install tools from the [central registry](https://github.com/dinoki-ai/BrainOS-tools) or create your own.
 
 **Official System Tools:**
 
 | Plugin               | Tools                                                                     |
 | -------------------- | ------------------------------------------------------------------------- |
-| `osaurus.filesystem` | `read_file`, `write_file`, `list_directory`, `search_files`, and more     |
-| `osaurus.browser`    | `browser_navigate`, `browser_click`, `browser_type`, `browser_screenshot` |
-| `osaurus.git`        | `git_status`, `git_log`, `git_diff`, `git_branch`                         |
-| `osaurus.search`     | `search`, `search_news`, `search_images` (DuckDuckGo)                     |
-| `osaurus.fetch`      | `fetch`, `fetch_json`, `fetch_html`, `download`                           |
-| `osaurus.time`       | `current_time`, `format_date`                                             |
+| `BrainOS.filesystem` | `read_file`, `write_file`, `list_directory`, `search_files`, and more     |
+| `BrainOS.browser`    | `browser_navigate`, `browser_click`, `browser_type`, `browser_screenshot` |
+| `BrainOS.git`        | `git_status`, `git_log`, `git_diff`, `git_branch`                         |
+| `BrainOS.search`     | `search`, `search_news`, `search_images` (DuckDuckGo)                     |
+| `BrainOS.fetch`      | `fetch`, `fetch_json`, `fetch_html`, `download`                           |
+| `BrainOS.time`       | `current_time`, `format_date`                                             |
 
 ```bash
 # Install from registry
-osaurus tools install osaurus.browser
+BrainOS tools install BrainOS.browser
 
 # List installed tools
-osaurus tools list
+BrainOS tools list
 
 # Create your own plugin
-osaurus tools create MyPlugin --language swift
+BrainOS tools create MyPlugin --language swift
 ```
 
 See the [Plugin Authoring Guide](docs/PLUGIN_AUTHORING.md) for details.
@@ -240,15 +233,15 @@ See [Developer Tools Guide](docs/DEVELOPER_TOOLS.md) for details.
 
 | Command                  | Description                                  |
 | ------------------------ | -------------------------------------------- |
-| `osaurus serve`          | Start the server (default port 1337)         |
-| `osaurus serve --expose` | Start exposed on LAN                         |
-| `osaurus stop`           | Stop the server                              |
-| `osaurus status`         | Check server status                          |
-| `osaurus ui`             | Open the menu bar UI                         |
-| `osaurus list`           | List downloaded models                       |
-| `osaurus run <model>`    | Interactive chat with a model                |
-| `osaurus mcp`            | Start MCP stdio transport                    |
-| `osaurus tools <cmd>`    | Manage plugins (install, list, search, etc.) |
+| `BrainOS serve`          | Start the server (default port 1337)         |
+| `BrainOS serve --expose` | Start exposed on LAN                         |
+| `BrainOS stop`           | Stop the server                              |
+| `BrainOS status`         | Check server status                          |
+| `BrainOS ui`             | Open the menu bar UI                         |
+| `BrainOS list`           | List downloaded models                       |
+| `BrainOS run <model>`    | Interactive chat with a model                |
+| `BrainOS mcp`            | Start MCP stdio transport                    |
+| `BrainOS tools <cmd>`    | Manage plugins (install, list, search, etc.) |
 
 **Tip:** Set `OSU_PORT` to override the default port.
 
@@ -275,12 +268,12 @@ See the [OpenAI API Guide](docs/OpenAI_API_GUIDE.md) for tool calling, streaming
 
 ## Use with OpenAI SDKs
 
-Point any OpenAI-compatible client at Osaurus:
+Point any OpenAI-compatible client at BrainOS:
 
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="http://127.0.0.1:1337/v1", api_key="osaurus")
+client = OpenAI(base_url="http://127.0.0.1:1337/v1", api_key="BrainOS")
 
 response = client.chat.completions.create(
     model="llama-3.2-3b-instruct-4bit",
@@ -304,17 +297,17 @@ Models are stored at `~/MLXModels` by default. Override with `OSU_MODELS_DIR`.
 ## Build from Source
 
 ```bash
-git clone https://github.com/dinoki-ai/osaurus.git
-cd osaurus
-open osaurus.xcworkspace
-# Build and run the "osaurus" target
+git clone https://github.com/dinoki-ai/BrainOS.git
+cd BrainOS
+open BrainOS.xcworkspace
+# Build and run the "BrainOS" target
 ```
 
 ---
 
 ## Contributing
 
-**We're looking for contributors!** Osaurus is actively developed and we welcome help in many areas:
+**We're looking for contributors!** BrainOS is actively developed and we welcome help in many areas:
 
 - Bug fixes and performance improvements
 - New plugins and tool integrations
@@ -324,7 +317,7 @@ open osaurus.xcworkspace
 
 ### Get Started
 
-1. Check out [Good First Issues](https://github.com/dinoki-ai/osaurus/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+1. Check out [Good First Issues](https://github.com/dinoki-ai/BrainOS/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 2. Read the [Contributing Guide](docs/CONTRIBUTING.md)
 3. Join our [Discord](https://discord.gg/dinoki) to connect with the team
 
@@ -334,9 +327,9 @@ See [docs/FEATURES.md](docs/FEATURES.md) for a complete feature inventory and ar
 
 ## Community
 
-- **[Documentation](https://docs.osaurus.ai/)** — Guides and tutorials
+- **[Documentation](https://docs.BrainOS.ai/)** — Guides and tutorials
 - **[Discord](https://discord.gg/dinoki)** — Chat with the community
-- **[Plugin Registry](https://github.com/dinoki-ai/osaurus-tools)** — Browse and contribute tools
+- **[Plugin Registry](https://github.com/dinoki-ai/BrainOS-tools)** — Browse and contribute tools
 - **[Contributing Guide](docs/CONTRIBUTING.md)** — How to contribute
 
-If you find Osaurus useful, please star the repo and share it!
+If you find BrainOS useful, please star the repo and share it!

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>Osaurus</title>
+    <title>BrainOS</title>
         <item>
             <title>0.6.2</title>
             <pubDate>Fri, 26 Dec 2025 14:26:45 +0000</pubDate>
@@ -9,8 +9,8 @@
             <sparkle:version>0.6.2</sparkle:version>
             <sparkle:shortVersionString>0.6.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-            <sparkle:releaseNotesLink>https://dinoki-ai.github.io/osaurus/Osaurus-latest.html</sparkle:releaseNotesLink>
-            <enclosure url="https://github.com/dinoki-ai/osaurus/releases/download/0.6.2/Osaurus-0.6.2.dmg" length="11554608" type="application/octet-stream" sparkle:edSignature="0dfbLKmn8E8tTPlNFDbl+fxw2RHfuAf+3G68XnymRECH+44FAzj8ZHcvq0GIbvZhzq/ULx/M8HXvF5wh9A/TBQ=="/>
+            <sparkle:releaseNotesLink>https://dinoki-ai.github.io/BrainOS/BrainOS-latest.html</sparkle:releaseNotesLink>
+            <enclosure url="https://github.com/dinoki-ai/BrainOS/releases/download/0.6.2/BrainOS-0.6.2.dmg" length="11554608" type="application/octet-stream" sparkle:edSignature="0dfbLKmn8E8tTPlNFDbl+fxw2RHfuAf+3G68XnymRECH+44FAzj8ZHcvq0GIbvZhzq/ULx/M8HXvF5wh9A/TBQ=="/>
         </item>
         <item>
             <title>0.0.9</title>
@@ -19,7 +19,7 @@
             <sparkle:version>0.0.9</sparkle:version>
             <sparkle:shortVersionString>0.0.9</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.5</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/dinoki-ai/osaurus/releases/download/0.6.2/Osaurus-0.0.9.dmg" length="7520848" type="application/octet-stream"/>
+            <enclosure url="https://github.com/dinoki-ai/BrainOS/releases/download/0.6.2/BrainOS-0.0.9.dmg" length="7520848" type="application/octet-stream"/>
         </item>
   </channel>
 </rss>

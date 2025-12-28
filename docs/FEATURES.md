@@ -1,6 +1,6 @@
-# Osaurus Feature Inventory
+# BrainOS Feature Inventory
 
-Canonical reference for all Osaurus features, their status, and documentation.
+Canonical reference for all BrainOS features, their status, and documentation.
 
 **This file is the source of truth.** When adding or modifying features, update this inventory to keep documentation in sync.
 
@@ -13,12 +13,12 @@ Canonical reference for all Osaurus features, their status, and documentation.
 | Local LLM Server (MLX)           | Stable    | "Key Features"     | OpenAI_API_GUIDE.md           | Services/MLXService.swift, Services/ModelRuntime/                             |
 | Remote Providers                 | Stable    | "Key Features"     | REMOTE_PROVIDERS.md           | Services/RemoteProviderManager.swift, Services/RemoteProviderService.swift    |
 | Remote MCP Providers             | Stable    | "Key Features"     | REMOTE_MCP_PROVIDERS.md       | Services/MCPProviderManager.swift, Tools/MCPProviderTool.swift                |
-| MCP Server                       | Stable    | "MCP Server"       | (in README)                   | Networking/OsaurusServer.swift, Services/MCPServerManager.swift               |
+| MCP Server                       | Stable    | "MCP Server"       | (in README)                   | Networking/BrainOSServer.swift, Services/MCPServerManager.swift               |
 | Tools & Plugins                  | Stable    | "Tools & Plugins"  | PLUGIN_AUTHORING.md           | Tools/, Managers/PluginManager.swift                                          |
 | Personas                         | Stable    | "Personas"         | (in README)                   | Managers/PersonaManager.swift, Models/Persona.swift, Views/PersonasView.swift |
 | Developer Tools: Insights        | Stable    | "Developer Tools"  | DEVELOPER_TOOLS.md            | Views/InsightsView.swift, Services/InsightsService.swift                      |
 | Developer Tools: Server Explorer | Stable    | "Developer Tools"  | DEVELOPER_TOOLS.md            | Views/ServerView.swift                                                        |
-| Apple Foundation Models          | macOS 26+ | "What is Osaurus?" | (in README)                   | Services/FoundationModelService.swift                                         |
+| Apple Foundation Models          | macOS 26+ | "What is BrainOS?" | (in README)                   | Services/FoundationModelService.swift                                         |
 | Menu Bar Chat                    | Stable    | "Highlights"       | (in README)                   | Views/ChatView.swift, Views/ChatOverlayView.swift                             |
 | Chat Session Management          | Stable    | "Highlights"       | (in README)                   | Managers/ChatSessionsManager.swift, Models/ChatSessionData.swift              |
 | Custom Themes                    | Stable    | "Highlights"       | (in README)                   | Views/ThemesView.swift, Views/Components/ThemeEditorView.swift                |
@@ -27,7 +27,7 @@ Canonical reference for all Osaurus features, their status, and documentation.
 | OpenAI API Compatibility         | Stable    | "API Endpoints"    | OpenAI_API_GUIDE.md           | Networking/HTTPHandler.swift, Models/OpenAIAPI.swift                          |
 | Anthropic API Compatibility      | Stable    | "API Endpoints"    | (in README)                   | Networking/HTTPHandler.swift, Models/AnthropicAPI.swift                       |
 | Ollama API Compatibility         | Stable    | "API Endpoints"    | (in README)                   | Networking/HTTPHandler.swift                                                  |
-| CLI                              | Stable    | "CLI Reference"    | (in README)                   | Packages/OsaurusCLI/                                                          |
+| CLI                              | Stable    | "CLI Reference"    | (in README)                   | Packages/BrainOSCLI/                                                          |
 
 ---
 
@@ -35,7 +35,7 @@ Canonical reference for all Osaurus features, their status, and documentation.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                              Osaurus App                                 │
+│                              BrainOS App                                 │
 ├─────────────────────────────────────────────────────────────────────────┤
 │  Views Layer                                                             │
 │  ├── ContentView (Menu Bar)                                              │
@@ -57,7 +57,7 @@ Canonical reference for all Osaurus features, their status, and documentation.
 │  │   ├── RemoteProviderManager (Remote OpenAI-compatible APIs)           │
 │  │   └── RemoteProviderService (Per-provider connection handling)        │
 │  ├── MCP                                                                 │
-│  │   ├── MCPServerManager (Osaurus as MCP server)                        │
+│  │   ├── MCPServerManager (BrainOS as MCP server)                        │
 │  │   └── MCPProviderManager (Remote MCP client connections)              │
 │  ├── Tools                                                               │
 │  │   ├── ToolRegistry                                                    │
@@ -71,11 +71,11 @@ Canonical reference for all Osaurus features, their status, and documentation.
 │      └── SharedConfigurationService                                      │
 ├─────────────────────────────────────────────────────────────────────────┤
 │  Networking Layer                                                        │
-│  ├── OsaurusServer (HTTP + MCP server)                                   │
+│  ├── BrainOSServer (HTTP + MCP server)                                   │
 │  ├── Router (Request routing)                                            │
 │  └── HTTPHandler (OpenAI/Anthropic/Ollama API handlers)                  │
 ├─────────────────────────────────────────────────────────────────────────┤
-│  CLI (OsaurusCLI Package)                                                │
+│  CLI (BrainOSCLI Package)                                                │
 │  └── Commands: serve, stop, status, ui, list, run, mcp, tools            │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -147,12 +147,12 @@ Canonical reference for all Osaurus features, their status, and documentation.
 
 ### MCP Server
 
-**Purpose:** Expose Osaurus tools to AI agents via Model Context Protocol.
+**Purpose:** Expose BrainOS tools to AI agents via Model Context Protocol.
 
 **Components:**
 
 - `Services/MCPServerManager.swift` — MCP server lifecycle
-- `Networking/OsaurusServer.swift` — HTTP MCP endpoints
+- `Networking/BrainOSServer.swift` — HTTP MCP endpoints
 - `Tools/ToolRegistry.swift` — Tool registration and lookup
 
 **Endpoints:**
@@ -296,11 +296,11 @@ Canonical reference for all Osaurus features, their status, and documentation.
 
 ### Tools & Plugins
 
-**Purpose:** Extend Osaurus with custom functionality.
+**Purpose:** Extend BrainOS with custom functionality.
 
 **Components:**
 
-- `Tools/OsaurusTool.swift` — Tool protocol
+- `Tools/BrainOSTool.swift` — Tool protocol
 - `Tools/ExternalTool.swift` — External plugin wrapper
 - `Tools/ToolRegistry.swift` — Tool registration
 - `Tools/SchemaValidator.swift` — JSON schema validation

@@ -21,16 +21,16 @@ fi
 TRUNCATED=$(printf '%s' "$RAW_CHANGELOG" | head -c 1900)
 
 jq -n \
-  --arg content  "🚀 **New Osaurus Release!**" \
+  --arg content  "🚀 **New BrainOS Release!**" \
   --arg version  "${VERSION}" \
   --arg desc     "$TRUNCATED" \
-  --arg download "[Download Osaurus.dmg](https://github.com/dinoki-ai/osaurus/releases/latest/download/Osaurus.dmg)" \
-  --arg page     "[View on GitHub](https://github.com/dinoki-ai/osaurus/releases/tag/${VERSION})" \
+  --arg download "[Download BrainOS.dmg](https://github.com/dinoki-ai/BrainOS/releases/latest/download/BrainOS.dmg)" \
+  --arg page     "[View on GitHub](https://github.com/dinoki-ai/BrainOS/releases/tag/${VERSION})" \
   '{
     content: $content,
     embeds: [
       {
-        title: ("Osaurus " + $version),
+        title: ("BrainOS " + $version),
         description: $desc,
         color: 5814783,
         fields: [

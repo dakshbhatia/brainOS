@@ -1,6 +1,6 @@
 # Remote MCP Providers
 
-Remote MCP Providers allow you to connect Osaurus to external MCP (Model Context Protocol) servers, aggregating their tools into your Osaurus instance.
+Remote MCP Providers allow you to connect BrainOS to external MCP (Model Context Protocol) servers, aggregating their tools into your BrainOS instance.
 
 ---
 
@@ -52,7 +52,7 @@ This is different from Remote Providers (which provide inference endpoints). Rem
 
 | Setting               | Description                               | Default |
 | --------------------- | ----------------------------------------- | ------- |
-| **Auto-connect**      | Connect automatically when Osaurus starts | true    |
+| **Auto-connect**      | Connect automatically when BrainOS starts | true    |
 | **Streaming Enabled** | Use SSE streaming for tool discovery      | false   |
 | **Discovery Timeout** | Timeout for tool discovery (seconds)      | 20      |
 | **Tool Call Timeout** | Timeout for tool execution (seconds)      | 45      |
@@ -65,7 +65,7 @@ This is different from Remote Providers (which provide inference endpoints). Rem
 
 When you connect to an MCP provider:
 
-1. Osaurus establishes a connection to the MCP server
+1. BrainOS establishes a connection to the MCP server
 2. Sends a `tools/list` request to discover available tools
 3. Registers each tool with a namespaced name
 4. Tools become available for model inference
@@ -88,7 +88,7 @@ myserver_search
 
 When a model calls a remote MCP tool:
 
-1. Osaurus receives the tool call request
+1. BrainOS receives the tool call request
 2. Routes it to the correct MCP provider
 3. Sends the request to the remote MCP server
 4. Returns the result to the model
@@ -99,7 +99,7 @@ When a model calls a remote MCP tool:
 
 ### In Chat
 
-Remote MCP tools work like any other tool. When a model decides to use a tool, Osaurus handles the routing automatically.
+Remote MCP tools work like any other tool. When a model decides to use a tool, BrainOS handles the routing automatically.
 
 ### Via MCP API
 
@@ -210,7 +210,7 @@ Custom headers marked as "secret" are also stored in the Keychain.
 Non-secret configuration is stored at:
 
 ```
-~/Library/Application Support/Osaurus/mcp_providers.json
+~/Library/Application Support/BrainOS/mcp_providers.json
 ```
 
 ---
@@ -227,7 +227,7 @@ Suppose you have an MCP server running at `https://mcp.example.com/sse`:
 3. Click **Test Connection** to verify
 4. Click **Save**
 
-The server's tools will now be available in Osaurus as:
+The server's tools will now be available in BrainOS as:
 
 - `example-server_tool1`
 - `example-server_tool2`
@@ -239,7 +239,7 @@ The server's tools will now be available in Osaurus as:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Osaurus                                   │
+│                        BrainOS                                   │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │                   ToolRegistry                           │    │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │    │

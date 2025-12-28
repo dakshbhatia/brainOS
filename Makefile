@@ -1,11 +1,11 @@
 SHELL := /bin/bash
 
 # Default configuration
-# The scheme for the CLI package is typically "osaurus-cli" (the package name)
-SCHEME_CLI := osaurus-cli
-SCHEME_APP := osaurus
+# The scheme for the CLI package is typically "brain-cli" (the package name)
+SCHEME_CLI := brain-cli
+SCHEME_APP := BrainOS
 CONFIG := Release
-PROJECT := App/osaurus.xcodeproj
+PROJECT := App/BrainOS.xcodeproj
 DERIVED := build/DerivedData
 
 .PHONY: help cli app install-cli serve status clean
@@ -14,7 +14,7 @@ help:
 	@echo "Targets:"
 	@echo "  cli          Build CLI ($(SCHEME_CLI)) into $(DERIVED)"
 	@echo "  app          Build app ($(SCHEME_APP)) and embed CLI"
-	@echo "  install-cli  Install/update /usr/local/bin/osaurus symlink"
+	@echo "  install-cli  Install/update /usr/local/bin/brainos symlink"
 	@echo "  serve        Build CLI and start server (use PORT=XXXX, EXPOSE=1)"
 	@echo "  status       Check if server is running"
 	@echo "  clean        Remove DerivedData build output"
@@ -27,27 +27,27 @@ app: cli
 	@echo "Building app ($(SCHEME_APP))…"
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME_APP) -configuration $(CONFIG) -derivedDataPath $(DERIVED) build -quiet
 	@echo "Embedding CLI into App Bundle (Helpers)…"
-	# Copy osaurus-cli to osaurus.app/Contents/Helpers/osaurus
-	mkdir -p "$(DERIVED)/Build/Products/$(CONFIG)/osaurus.app/Contents/Helpers"
-	cp "$(DERIVED)/Build/Products/$(CONFIG)/osaurus-cli" "$(DERIVED)/Build/Products/$(CONFIG)/osaurus.app/Contents/Helpers/osaurus"
-	chmod +x "$(DERIVED)/Build/Products/$(CONFIG)/osaurus.app/Contents/Helpers/osaurus"
+	# Copy brain-cli to BrainOS.app/Contents/Helpers/brainos
+	mkdir -p "$(DERIVED)/Build/Products/$(CONFIG)/BrainOS.app/Contents/Helpers"
+	cp "$(DERIVED)/Build/Products/$(CONFIG)/brain-cli" "$(DERIVED)/Build/Products/$(CONFIG)/BrainOS.app/Contents/Helpers/brainos"
+	chmod +x "$(DERIVED)/Build/Products/$(CONFIG)/BrainOS.app/Contents/Helpers/brainos"
 
 install-cli: cli
 	@echo "Installing CLI symlink…"
 	./scripts/install_cli_symlink.sh --dev
 
 serve: install-cli
-	@echo "Starting Osaurus server…"
+	@echo "Starting BrainOS server…"
 	@if [[ -n "$(PORT)" ]]; then \
 		ARGS="$$ARGS --port $(PORT)"; \
 	fi; \
 	if [[ "$(EXPOSE)" == "1" ]]; then \
 		ARGS="$$ARGS --expose"; \
 	fi; \
-	osaurus serve $$ARGS
+	brainos serve $$ARGS
 
 status:
-	osaurus status
+	brainos status
 
 clean:
 	rm -rf $(DERIVED)

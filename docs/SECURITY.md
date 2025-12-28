@@ -1,6 +1,6 @@
 # Security Policy
 
-We take the security of Osaurus seriously. If you believe you have found a security vulnerability, please follow the process below.
+We take the security of BrainOS seriously. If you believe you have found a security vulnerability, please follow the process below.
 
 ## Supported versions
 

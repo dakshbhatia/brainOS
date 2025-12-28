@@ -1,6 +1,6 @@
 # Remote Providers
 
-Remote Providers allow you to connect Osaurus to external APIs (Anthropic, OpenAI, and compatible endpoints), giving you access to cloud models alongside your local MLX models.
+Remote Providers allow you to connect BrainOS to external APIs (Anthropic, OpenAI, and compatible endpoints), giving you access to cloud models alongside your local MLX models.
 
 ---
 
@@ -8,7 +8,7 @@ Remote Providers allow you to connect Osaurus to external APIs (Anthropic, OpenA
 
 With Remote Providers, you can:
 
-- Access cloud models (GPT-4o, Claude via OpenRouter, etc.) through Osaurus
+- Access cloud models (GPT-4o, Claude via OpenRouter, etc.) through BrainOS
 - Use multiple inference backends simultaneously
 - Switch between local and remote models seamlessly
 - Keep API keys secure in the macOS Keychain
@@ -28,7 +28,7 @@ With Remote Providers, you can:
 
 ### Provider Presets
 
-Osaurus includes presets for common providers:
+BrainOS includes presets for common providers:
 
 | Preset         | Host              | Port          | Base Path | Auth             |
 | -------------- | ----------------- | ------------- | --------- | ---------------- |
@@ -65,7 +65,7 @@ Osaurus includes presets for common providers:
 | Setting            | Description                               | Default |
 | ------------------ | ----------------------------------------- | ------- |
 | **Enabled**        | Whether the provider is active            | true    |
-| **Auto-connect**   | Connect automatically when Osaurus starts | true    |
+| **Auto-connect**   | Connect automatically when BrainOS starts | true    |
 | **Timeout**        | Request timeout in seconds                | 60      |
 | **Custom Headers** | Additional HTTP headers to send           | {}      |
 
@@ -110,7 +110,7 @@ The model name should match what the remote provider expects.
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="http://127.0.0.1:1337/v1", api_key="osaurus")
+client = OpenAI(base_url="http://127.0.0.1:1337/v1", api_key="BrainOS")
 
 # Use a remote model
 response = client.chat.completions.create(
@@ -220,7 +220,7 @@ Custom headers marked as "secret" are also stored in the Keychain.
 Non-secret provider configuration is stored at:
 
 ```
-~/Library/Application Support/Osaurus/remote_providers.json
+~/Library/Application Support/BrainOS/remote_providers.json
 ```
 
 This file contains connection settings but **not** API keys or secret headers.

@@ -6,22 +6,22 @@ brew install create-dmg
 # ARM64 DMG (no arch suffix)
 create-dmg \
   --background "$GITHUB_WORKSPACE/assets/dmg-bg.tiff" \
-  --volname "Osaurus" \
+  --volname "BrainOS" \
   --window-pos 200 120 \
   --window-size 600 400 \
   --icon-size 100 \
-  --icon "osaurus.app" 150 185 \
-  --hide-extension "osaurus.app" \
+  --icon "BrainOS.app" 150 185 \
+  --hide-extension "BrainOS.app" \
   --app-drop-link 450 185 \
-  "build_output/Osaurus-${VERSION}.dmg" \
-  "build_output/osaurus.app" || true
+  "build_output/BrainOS-${VERSION}.dmg" \
+  "build_output/BrainOS.app" || true
 
-if [ ! -f "build_output/Osaurus-${VERSION}.dmg" ]; then
+if [ ! -f "build_output/BrainOS-${VERSION}.dmg" ]; then
   echo "create-dmg failed, using basic DMG creation"
-  hdiutil create -volname "Osaurus" \
-    -srcfolder "build_output/osaurus.app" \
+  hdiutil create -volname "BrainOS" \
+    -srcfolder "build_output/BrainOS.app" \
     -ov -format UDZO \
-    "build_output/Osaurus-${VERSION}.dmg"
+    "build_output/BrainOS-${VERSION}.dmg"
 fi
 
 # Normalize identity: allow DEVELOPER_ID_NAME with or without the product prefix
@@ -31,8 +31,8 @@ if [[ "${CODE_SIGN_IDENTITY_VALUE}" != Developer\ ID\ Application:* ]]; then
 fi
 
 codesign --force --sign "${CODE_SIGN_IDENTITY_VALUE}" \
-  "build_output/Osaurus-${VERSION}.dmg"
+  "build_output/BrainOS-${VERSION}.dmg"
 
-cp "build_output/Osaurus-${VERSION}.dmg" "build_output/Osaurus.dmg"
+cp "build_output/BrainOS-${VERSION}.dmg" "build_output/BrainOS.dmg"
 
 

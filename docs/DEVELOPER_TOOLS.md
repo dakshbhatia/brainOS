@@ -1,12 +1,12 @@
 # Developer Tools
 
-Osaurus includes built-in developer tools for debugging, monitoring, and testing your integration. Access them via the Management window (`⌘ Shift M`).
+BrainOS includes built-in developer tools for debugging, monitoring, and testing your integration. Access them via the Management window (`⌘ Shift M`).
 
 ---
 
 ## Insights
 
-The **Insights** tab provides real-time monitoring of all API requests flowing through Osaurus.
+The **Insights** tab provides real-time monitoring of all API requests flowing through BrainOS.
 
 ### Accessing Insights
 
@@ -159,7 +159,7 @@ Test any endpoint directly:
 
 #### Documentation Link
 
-Quick access to the full documentation at docs.osaurus.ai.
+Quick access to the full documentation at docs.BrainOS.ai.
 
 ### Use Cases
 

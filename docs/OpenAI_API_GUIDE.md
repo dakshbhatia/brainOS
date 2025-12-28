@@ -1,6 +1,6 @@
 # OpenAI API Compatible Endpoints
 
-This guide explains how to use the OpenAI-compatible API endpoints in Osaurus.
+This guide explains how to use the OpenAI-compatible API endpoints in BrainOS.
 
 ## Available Endpoints
 
@@ -22,13 +22,13 @@ Example response:
       "id": "llama-3.2-3b-instruct",
       "object": "model",
       "created": 1738193123,
-      "owned_by": "osaurus"
+      "owned_by": "BrainOS"
     },
     {
       "id": "qwen2.5-7b-instruct",
       "object": "model",
       "created": 1738193123,
-      "owned_by": "osaurus"
+      "owned_by": "BrainOS"
     }
   ]
 }
@@ -112,7 +112,7 @@ data: [DONE]
 
 ### Function/Tool Calling
 
-Osaurus implements OpenAI‑compatible function calling via the `tools` array and optional `tool_choice` in the request. The server injects tool‑calling instructions into the prompt and parses assistant outputs for a top‑level `tool_calls` object, tolerating minor formatting (e.g., code fences).
+BrainOS implements OpenAI‑compatible function calling via the `tools` array and optional `tool_choice` in the request. The server injects tool‑calling instructions into the prompt and parses assistant outputs for a top‑level `tool_calls` object, tolerating minor formatting (e.g., code fences).
 
 Supported tool type: `function`.
 
@@ -175,7 +175,7 @@ Example non‑streaming response (simplified):
 }
 ```
 
-Streaming with tool calls: Osaurus emits OpenAI‑style deltas. First a role delta, then for each tool call: an id/type delta, a function name delta, and one or more argument deltas (chunked). The final chunk has `finish_reason: "tool_calls"`, followed by `[DONE]`.
+Streaming with tool calls: BrainOS emits OpenAI‑style deltas. First a role delta, then for each tool call: an id/type delta, a function name delta, and one or more argument deltas (chunked). The final chunk has `finish_reason: "tool_calls"`, followed by `[DONE]`.
 
 ```
 data: {"id":"chatcmpl-xyz","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant"}}]}
@@ -197,7 +197,7 @@ Tool execution loop: After receiving tool calls, execute them client‑side and 
 import json
 from openai import OpenAI
 
-client = OpenAI(base_url="http://127.0.0.1:1337/v1", api_key="osaurus")
+client = OpenAI(base_url="http://127.0.0.1:1337/v1", api_key="BrainOS")
 
 tools = [{
     "type": "function",
@@ -267,7 +267,7 @@ Keep `session_id` stable per conversation and per model.
 
 ### Chat Templates
 
-Osaurus defers chat templating to MLX `ChatSession`, which uses the model's configuration to format prompts. System messages are combined and passed as `instructions`; user content is supplied as the prompt to `respond/streamResponse`.
+BrainOS defers chat templating to MLX `ChatSession`, which uses the model's configuration to format prompts. System messages are combined and passed as `instructions`; user content is supplied as the prompt to `respond/streamResponse`.
 
 ## Model Naming
 
@@ -286,15 +286,15 @@ Models are automatically named based on their display names in ModelManager. The
 
 ## Usage with OpenAI Python Library
 
-You can use the official OpenAI Python library with Osaurus:
+You can use the official OpenAI Python library with BrainOS:
 
 ```python
 from openai import OpenAI
 
-# Point to your local Osaurus server
+# Point to your local BrainOS server
 client = OpenAI(
     base_url="http://127.0.0.1:1337/v1",  # Use /v1 for OpenAI client compatibility
-    api_key="not-needed"  # Osaurus doesn't require authentication
+    api_key="not-needed"  # BrainOS doesn't require authentication
 )
 
 # List available models
@@ -331,7 +331,7 @@ for chunk in stream:
 
 ## Notes
 
-1. **Model Availability**: Only models that have been downloaded through the Osaurus UI will be available via the API.
+1. **Model Availability**: Only models that have been downloaded through the BrainOS UI will be available via the API.
 
 2. **Performance**: The first request to a model may take longer as the model needs to be loaded into memory.
 

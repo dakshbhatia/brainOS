@@ -1,4 +1,4 @@
-name: Build and Release Osaurus
+name: Build and Release BrainOS
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: bash scripts/install_certificates.sh
 
-      - name: Build Osaurus (ARM64)
+      - name: Build BrainOS (ARM64)
         env:
           DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
           DEVELOPER_ID_NAME: ${{ secrets.DEVELOPER_ID_NAME }}
@@ -100,11 +100,11 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: osaurus-release-${{ env.VERSION }}
+          name: brainos-release-${{ env.VERSION }}
           path: |
-            build_output/Osaurus-${{ env.VERSION }}.dmg
-            build_output/Osaurus.dmg
-            updates/arm64/Osaurus-${{ env.VERSION }}.html
+            build_output/BrainOS-${{ env.VERSION }}.dmg
+            build_output/BrainOS.dmg
+            updates/arm64/BrainOS-${{ env.VERSION }}.html
             updates/appcast.xml
           if-no-files-found: warn
 

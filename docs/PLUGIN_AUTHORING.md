@@ -1,13 +1,13 @@
-# Osaurus Plugin Authoring
+# BrainOS Plugin Authoring
 
-This document describes how to build external plugins for Osaurus using the Generic C ABI. Plugins are distributed as a `.dylib` in a zip file with a specific naming convention.
+This document describes how to build external plugins for BrainOS using the Generic C ABI. Plugins are distributed as a `.dylib` in a zip file with a specific naming convention.
 
 ## TL;DR (Swift)
 
 1. Scaffold a Swift plugin:
 
 ```bash
-osaurus tools create MyPlugin --language swift
+BrainOS tools create MyPlugin --language swift
 ```
 
 2. Build and package:
@@ -21,18 +21,18 @@ cp .build/release/libMyPlugin.dylib ./libMyPlugin.dylib
 codesign -s "Developer ID Application: Your Name (TEAMID)" ./libMyPlugin.dylib
 
 # Package with the naming convention: <plugin_id>-<version>.zip
-osaurus tools package dev.example.MyPlugin 0.1.0
+BrainOS tools package dev.example.MyPlugin 0.1.0
 ```
 
 3. Install:
 
 ```bash
 # Install from the packaged zip (filename determines plugin_id and version)
-osaurus tools install ./dev.example.MyPlugin-0.1.0.zip
+BrainOS tools install ./dev.example.MyPlugin-0.1.0.zip
 ```
 
 The plugin will be unpacked into:
-`~/Library/Application Support/com.dinoki.osaurus/Tools/<plugin_id>/<version>/`
+`~/Library/Application Support/com.dinoki.BrainOS/Tools/<plugin_id>/<version>/`
 
 ## Packaging Convention
 
@@ -53,11 +53,11 @@ The plugin_id and version are extracted from the filename during installation. T
 ## ABI Overview
 
 The header is available at:
-`Packages/OsaurusCore/Tools/PluginABI/osaurus_plugin.h`
+`Packages/BrainOSCore/Tools/PluginABI/BrainOS_plugin.h`
 
 Key points:
 
-- **Entry Point**: Plugin exposes a single symbol `osaurus_plugin_entry` returning a pointer to `osr_plugin_api`.
+- **Entry Point**: Plugin exposes a single symbol `BrainOS_plugin_entry` returning a pointer to `osr_plugin_api`.
 - **Lifecycle**:
   - `init()`: Called once on load. Returns an opaque `context` pointer.
   - `destroy(ctx)`: Called on unload.
@@ -187,13 +187,13 @@ Example tool requiring Full Disk Access (e.g., for reading Messages):
 
 When a tool with system permission requirements is executed:
 
-1. Osaurus checks if the required permissions are granted at the OS level
+1. BrainOS checks if the required permissions are granted at the OS level
 2. If any are missing, execution fails with a clear error message
 3. Users can grant permissions via Settings → System Permissions or when prompted by the tool
 
 ### Invocation
 
-When Osaurus needs to execute a capability, it calls `invoke`:
+When BrainOS needs to execute a capability, it calls `invoke`:
 
 - `type`: e.g. `"tool"`
 - `id`: e.g. `"echo_tool"`
@@ -211,7 +211,7 @@ Each tool can specify a `permission_policy`:
 - `"auto"` - Executes automatically if all requirements are granted
 - `"deny"` - Blocks execution entirely
 
-Users can override these defaults per-tool via the Osaurus UI.
+Users can override these defaults per-tool via the BrainOS UI.
 
 ### System Permissions
 
@@ -259,7 +259,7 @@ codesign --force --options runtime --timestamp --sign "Developer ID Application:
 
 ## Distribution via Central Registry
 
-Osaurus uses a single, git-backed central plugin index maintained by the Osaurus team.
+BrainOS uses a single, git-backed central plugin index maintained by the BrainOS team.
 
 1. Package your plugin with the correct naming convention: `<plugin_id>-<version>.zip`
 2. Publish release artifacts (.zip containing your `.dylib`) on GitHub Releases.
@@ -282,4 +282,4 @@ This step ensures the integrity and authenticity of the distributed ZIP file. It
 
 ## Rust Authors
 
-Create a `cdylib` exposing `osaurus_plugin_entry` that returns the generic function table. Implement `init`, `destroy`, `get_manifest`, and `invoke`.
+Create a `cdylib` exposing `BrainOS_plugin_entry` that returns the generic function table. Implement `init`, `destroy`, `get_manifest`, and `invoke`.
