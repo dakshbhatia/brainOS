@@ -1498,10 +1498,10 @@ private struct PersonaEditorSheet: View {
             systemPrompt: systemPrompt.trimmingCharacters(in: .whitespacesAndNewlines),
             enabledTools: enabledTools.isEmpty ? nil : enabledTools,
             themeId: selectedThemeId,
-            voiceId: voiceId.isEmpty ? nil : voiceId,
             defaultModel: existingDefaultModel,
             temperature: Float(temperature),
             maxTokens: Int(maxTokens),
+            voiceId: voiceId.isEmpty ? nil : voiceId,
             isBuiltIn: false,
             createdAt: existingCreatedAt ?? Date(),
             updatedAt: Date()
@@ -1561,7 +1561,7 @@ private struct StyledTextField: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            if let icon = icon {
+            if icon != nil {
                 Image(systemName: "sparkles")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(

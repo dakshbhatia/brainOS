@@ -1194,8 +1194,8 @@ extension ModelManager {
         return false
     }
 
-    /// Find the local directory for a model id
-    nonisolated private static func findLocalModelDirectory(forModelId id: String) -> URL? {
+    /// Find the local directory for a model id (public for use by other managers)
+    nonisolated public static func findLocalModelDirectory(forModelId id: String) -> URL? {
         let parts = id.split(separator: "/").map(String.init)
         let base = DirectoryPickerService.effectiveModelsDirectory()
         let url = parts.reduce(base) { partial, component in

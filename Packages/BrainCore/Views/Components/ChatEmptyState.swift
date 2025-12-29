@@ -115,6 +115,12 @@ struct ChatEmptyState: View {
             .opacity(hasAppeared ? 1 : 0)
             .offset(y: hasAppeared ? 0 : 10)
             .animation(theme.springAnimation().delay(0.2), value: hasAppeared)
+            
+            // Optional Vision Model Section
+            visionModelSection
+                .opacity(hasAppeared ? 1 : 0)
+                .offset(y: hasAppeared ? 0 : 10)
+                .animation(theme.springAnimation().delay(0.25), value: hasAppeared)
 
             // Actions
             VStack(spacing: 16) {
@@ -151,6 +157,104 @@ struct ChatEmptyState: View {
             .animation(theme.springAnimation().delay(0.3), value: hasAppeared)
         }
         .padding(.horizontal, 40)
+    }
+    
+    // MARK: - Vision Model Section
+    
+    private var visionModelSection: some View {
+        VStack(spacing: 16) {
+            // Header
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "eye")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(theme.accentColor)
+                        Text("Screenshot Vision (Optional)")
+                            .font(theme.font(size: 14, weight: .semibold))
+                            .foregroundColor(theme.primaryText)
+                    }
+                    
+                    Text("Enable AI-powered visual analysis of your screenshots")
+                        .font(theme.font(size: 11))
+                        .foregroundColor(theme.tertiaryText)
+                }
+                Spacer()
+            }
+            
+            // Vision model download card
+            if let visionModel = topSuggestions.first(where: { ModelManager.isVisionModel(modelId: $0.id) }) {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.purple.opacity(0.15))
+                                .frame(width: 36, height: 36)
+                            Image(systemName: "eye.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.purple)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(visionModel.name)
+                                .font(theme.font(size: 13, weight: .semibold))
+                                .foregroundColor(theme.primaryText)
+                            Text("Understands images and screenshots")
+                                .font(theme.font(size: 11))
+                                .foregroundColor(theme.secondaryText)
+                        }
+                        
+                        Spacer()
+                        
+                        if visionModel.isDownloaded {
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("Installed")
+                                    .font(theme.font(size: 11, weight: .medium))
+                                    .foregroundColor(theme.secondaryText)
+                            }
+                        } else {
+                            Button(action: {
+                                modelManager.downloadModel(visionModel)
+                            }) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "arrow.down.circle")
+                                        .font(.system(size: 12))
+                                    Text("Download")
+                                        .font(theme.font(size: 11, weight: .medium))
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.purple)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    
+                    if !visionModel.isDownloaded {
+                        Text("💡 You can always download this later from Model Manager")
+                            .font(theme.font(size: 10))
+                            .foregroundColor(theme.tertiaryText)
+                            .padding(.leading, 48)
+                    }
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(theme.secondaryBackground.opacity(0.5))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(Color.purple.opacity(0.2), lineWidth: 1)
+                        )
+                )
+            }
+        }
+        .frame(maxWidth: 400)
     }
 
     // MARK: - Ready State (has models)

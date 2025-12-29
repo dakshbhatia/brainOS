@@ -18,7 +18,19 @@ struct BrainScreenshotTool: BrainOSTool {
     }
     
     func execute(argumentsJSON: String) async throws -> String {
-        // Mock screenshot search
-        return "Found 2 screenshots matching '\(argumentsJSON)'. 1. Receipt from Amazon (2024-12-20), 2. Code snippet for MLX (2024-12-21)."
+        // Check if vision model is available
+        let hasVisionModel = await BrainVisionManager.shared.isAvailable()
+        let modelId = await BrainVisionManager.shared.currentModelId()
+        
+        // Mock screenshot search (TODO: implement actual search)
+        var result = "Found 2 screenshots matching '\(argumentsJSON)'. 1. Receipt from Amazon (2024-12-20), 2. Code snippet for MLX (2024-12-21)."
+        
+        if !hasVisionModel {
+            result += "\n\n⚠️ Note: Vision analysis is currently unavailable. Screenshots are indexed by OCR text only. To enable visual understanding, download a vision model like 'Qwen3-VL-4B' from the Model Manager."
+        } else if let modelId = modelId {
+            result += "\n\nℹ️ Using vision model: \(modelId)"
+        }
+        
+        return result
     }
 }

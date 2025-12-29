@@ -52,6 +52,14 @@ public class ScreenshotWatcherService {
     private func ingestScreenshot(at url: URL) async {
         BrainLogger.info("Ingesting new screenshot: \(url.lastPathComponent)", category: .knowledge)
         
+        // Check if vision model is available
+        let hasVisionModel = await BrainVisionManager.shared.isAvailable()
+        
+        if !hasVisionModel {
+            // Attempt to load vision model if not already loaded
+            await BrainVisionManager.shared.loadModel()
+        }
+        
         // 1. Perform OCR using Vision framework
         let requestHandler = VNImageRequestHandler(url: url)
         let request = VNRecognizeTextRequest { [weak self] request, error in
@@ -60,8 +68,16 @@ public class ScreenshotWatcherService {
             let recognizedText = observations.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
             
             Task { @MainActor in
-                // 2. Get Visual Description from VLM
-                let visualDescription = await BrainVisionManager.shared.describeImage(at: url)
+                // 2. Get Visual Description from VLM (if available)
+                let hasVision = await BrainVisionManager.shared.isAvailable()
+                let visualDescription: String
+                
+                if hasVision {
+                    visualDescription = await BrainVisionManager.shared.describeImage(at: url)
+                } else {
+                    visualDescription = "[Vision analysis unavailable - no vision model installed]"
+                    BrainLogger.info("Screenshot ingested without vision analysis (no model)", category: .knowledge)
+                }
                 
                 let fullContent = """
                 Screenshot OCR: \(recognizedText)
@@ -73,7 +89,8 @@ public class ScreenshotWatcherService {
                     metadata: [
                         "source": "screenshot",
                         "path": url.path,
-                        "timestamp": Date().description
+                        "timestamp": Date().description,
+                        "has_vision_analysis": hasVision ? "true" : "false"
                     ]
                 )
             }
