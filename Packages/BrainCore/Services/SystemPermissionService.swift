@@ -688,7 +688,13 @@ final class SystemPermissionService: NSObject, ObservableObject, CLLocationManag
         case .authorized:
             // Try to actually fetch a contact to verify
             let store = CNContactStore()
-            let keys = [CNContactGivenNameKey as CNKeyDescriptor]
+            let keys = [
+                CNContactGivenNameKey,
+                CNContactFamilyNameKey,
+                CNContactEmailAddressesKey,
+                CNContactPhoneNumbersKey,
+                CNContactIdentifierKey
+            ] as [CNKeyDescriptor]
             let request = CNContactFetchRequest(keysToFetch: keys)
             request.predicate = nil
             // Just fetch one to test

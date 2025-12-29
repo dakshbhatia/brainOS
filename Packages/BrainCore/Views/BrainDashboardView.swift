@@ -1,9 +1,12 @@
 import SwiftUI
 
 struct BrainDashboardView: View {
-    @State private var greeting = "Good Morning, Daksh"
-    @State private var brief = "You have 3 meetings today. Your sleep score was 82. You haven't replied to Mom about dinner."
+    @State private var greeting = "Good Morning"
+    @State private var userName = NSFullUserName()
+    @State private var brief = "Loading your daily brief..."
     @State private var nudges: [RelationshipNudge] = []
+    @State private var stepCount: Int = 0
+    @State private var currentLocation = "Unknown"
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -14,7 +17,7 @@ struct BrainDashboardView: View {
                     .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 1))
                 
                 VStack(alignment: .leading) {
-                    Text(greeting)
+                    Text("\(greeting), \(userName)")
                         .font(.headline)
                     Text("BrainOS is active")
                         .font(.caption)
@@ -68,8 +71,8 @@ struct BrainDashboardView: View {
             }
             
             HStack(spacing: 12) {
-                DashboardCard(title: "Health", value: "8,240 steps", icon: "figure.walk", color: .green)
-                DashboardCard(title: "Finance", value: "$42.50 spent", icon: "creditcard", color: .orange)
+                DashboardCard(title: "Health", value: "\(stepCount.formatted()) steps", icon: "figure.walk", color: .green)
+                DashboardCard(title: "Location", value: currentLocation, icon: "location.fill", color: .blue)
             }
             
             Spacer()
@@ -86,9 +89,27 @@ struct BrainDashboardView: View {
         .padding(20)
         .frame(width: 350, height: 500)
         .onAppear {
+            // Load user profile
+            userName = UserDefaults.standard.string(forKey: "userName") ?? NSFullUserName()
+            
+            // Set greeting based on time
+            let hour = Calendar.current.component(.hour, from: Date())
+            greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
+            
             Task {
+                // Load relationship nudges
                 self.nudges = await RelationshipAgent.shared.analyzeRecentInteractions()
+                
+                // Generate AI brief
                 self.brief = await BrainManager.shared.generateBrief()
+                
+                // Load health data
+                if let steps = try? await BrainHealthManager.shared.fetchStepCount(days: 1).first {
+                    self.stepCount = Int(steps)
+                }
+                
+                // Note: Location tracking is logged but not currently exposed for display
+                // Future: Add BrainDatabaseManager.shared.getRecentLocation() method
             }
         }
     }

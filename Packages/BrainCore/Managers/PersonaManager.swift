@@ -187,16 +187,66 @@ extension PersonaManager {
     /// Get the effective system prompt for a persona (combining with global if needed)
     public func effectiveSystemPrompt(for personaId: UUID) -> String {
         guard let persona = persona(for: personaId) else {
-            return ChatConfigurationStore.load().systemPrompt
+            return buildEnhancedSystemPrompt(ChatConfigurationStore.load().systemPrompt)
         }
 
         // Default persona uses global settings
         if persona.id == Persona.defaultId {
-            return ChatConfigurationStore.load().systemPrompt
+            return buildEnhancedSystemPrompt(ChatConfigurationStore.load().systemPrompt)
         }
 
         // Custom personas use their own system prompt
-        return persona.systemPrompt
+        return buildEnhancedSystemPrompt(persona.systemPrompt)
+    }
+    
+    /// Build enhanced system prompt with user context
+    private func buildEnhancedSystemPrompt(_ basePrompt: String) -> String {
+        var enhanced = basePrompt
+        
+        // Get user profile data
+        let userName = UserDefaults.standard.string(forKey: "userName") ?? NSFullUserName()
+        let userAge = UserDefaults.standard.integer(forKey: "userAge")
+        let userLocation = UserDefaults.standard.string(forKey: "userLocation")
+        let userBio = UserDefaults.standard.string(forKey: "userBio")
+        
+        // Build context section
+        var contextLines: [String] = []
+        contextLines.append("\n\n# USER CONTEXT")
+        contextLines.append("You are an AI assistant deeply integrated into \(userName)'s life through BrainOS.")
+        
+        if !userName.isEmpty && userName != NSFullUserName() {
+            contextLines.append("- Name: \(userName)")
+        }
+        if userAge > 0 {
+            contextLines.append("- Age: \(userAge)")
+        }
+        if let location = userLocation, !location.isEmpty {
+            contextLines.append("- Location: \(location)")
+        }
+        if let bio = userBio, !bio.isEmpty {
+            contextLines.append("- About: \(bio)")
+        }
+        
+        // Add current context
+        let now = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMMM d, yyyy 'at' h:mm a"
+        contextLines.append("- Current time: \(formatter.string(from: now))")
+        
+        // Add capabilities context
+        contextLines.append("\n# YOUR CAPABILITIES")
+        contextLines.append("You have access to tools that let you:")
+        contextLines.append("- Get current time/date in any timezone")
+        contextLines.append("- Search contacts and messages")
+        contextLines.append("- Access calendar and reminders")
+        contextLines.append("- View health and activity data")
+        contextLines.append("- Analyze screenshots and images")
+        contextLines.append("- Control macOS (automation, AppleScript)")
+        contextLines.append("- Draft messages and emails")
+        contextLines.append("\nAlways use tools proactively when relevant. Don't ask for permission - just use them.")
+        
+        enhanced += contextLines.joined(separator: "\n")
+        return enhanced
     }
 
     /// Get the effective tool overrides for a persona

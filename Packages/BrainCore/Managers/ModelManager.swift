@@ -487,6 +487,13 @@ final class ModelManager: NSObject, ObservableObject {
                         
                         if completed {
                             BrainLogger.info("Successfully downloaded model: \(model.id)", category: .model)
+                            
+                            // Warm up the model immediately to compile Metal shaders
+                            // This prevents the 7-24s delay on first actual use
+                            Task {
+                                await MLXService().warmUp(modelName: model.id, prefillChars: 512, maxTokens: 1)
+                                BrainLogger.info("Model \(model.id) warmed up and ready", category: .model)
+                            }
                         } else {
                             BrainLogger.error("Download failed for model: \(model.id) - Snapshot incomplete", category: .model)
                         }

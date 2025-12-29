@@ -21,6 +21,8 @@ struct ChatEmptyState: View {
     @StateObject private var modelManager = ModelManager.shared
     @StateObject private var permissionService = SystemPermissionService.shared
     @AppStorage("hasCompletedIntegrationsOnboarding") private var hasCompletedIntegrationsOnboarding = false
+    @AppStorage("hasCompletedProfileSetup") private var hasCompletedProfileSetup = false
+    @State private var showProfileSetup = false
     @State private var glowIntensity: CGFloat = 0.6
     @State private var hasAppeared = false
     @State private var isVisible = false
@@ -58,12 +60,22 @@ struct ChatEmptyState: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .sheet(isPresented: $showProfileSetup) {
+            UserProfileSetupView()
+        }
         .onAppear {
             isVisible = true
             withAnimation(theme.animationSlow().delay(0.1)) {
                 hasAppeared = true
             }
             startGradientAnimation()
+            
+            // Show profile setup after integrations if not completed
+            if hasCompletedIntegrationsOnboarding && !hasCompletedProfileSetup {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showProfileSetup = true
+                }
+            }
         }
         .onDisappear {
             // Stop animations when view is hidden
@@ -75,108 +87,113 @@ struct ChatEmptyState: View {
     // MARK: - Integrations State
 
     private var integrationsState: some View {
-        VStack(spacing: 32) {
-            // Header
-            VStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(theme.accentColor.opacity(0.1))
-                        .frame(width: 64, height: 64)
+        ScrollView(.vertical, showsIndicators: true) {
+            VStack(spacing: 20) {
+                // Header
+                VStack(spacing: 8) {
+                    ZStack {
+                        Circle()
+                            .fill(theme.accentColor.opacity(0.1))
+                            .frame(width: 56, height: 56)
+                        
+                        Image(systemName: "link")
+                            .font(.system(size: 24, weight: .semibold))
+                            .foregroundColor(theme.accentColor)
+                    }
+                    .opacity(hasAppeared ? 1 : 0)
+                    .scaleEffect(hasAppeared ? 1 : 0.9)
                     
-                    Image(systemName: "link")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundColor(theme.accentColor)
+                    Text("Connect your life")
+                        .font(theme.font(size: CGFloat(theme.headingSize) + 2, weight: .semibold))
+                        .foregroundColor(theme.primaryText)
+                    
+                    Text("Grant access to your local data to enable powerful agent capabilities.")
+                        .font(theme.font(size: CGFloat(theme.bodySize) - 1))
+                        .foregroundColor(theme.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 380)
                 }
-                .opacity(hasAppeared ? 1 : 0)
-                .scaleEffect(hasAppeared ? 1 : 0.9)
-                
-                Text("Connect your life")
-                    .font(theme.font(size: CGFloat(theme.headingSize) + 4, weight: .semibold))
-                    .foregroundColor(theme.primaryText)
-                
-                Text("Grant access to your local data to enable powerful agent capabilities.")
-                    .font(theme.font(size: CGFloat(theme.bodySize)))
-                    .foregroundColor(theme.secondaryText)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: 400)
-            }
-            .opacity(hasAppeared ? 1 : 0)
-            .offset(y: hasAppeared ? 0 : 10)
-            .animation(theme.springAnimation().delay(0.1), value: hasAppeared)
-
-            // Permissions list
-            VStack(spacing: 12) {
-                IntegrationRow(permission: .calendar, service: permissionService)
-                IntegrationRow(permission: .reminders, service: permissionService)
-                IntegrationRow(permission: .contacts, service: permissionService)
-                IntegrationRow(permission: .health, service: permissionService)
-            }
-            .frame(maxWidth: 400)
-            .opacity(hasAppeared ? 1 : 0)
-            .offset(y: hasAppeared ? 0 : 10)
-            .animation(theme.springAnimation().delay(0.2), value: hasAppeared)
-            
-            // Optional Vision Model Section
-            visionModelSection
                 .opacity(hasAppeared ? 1 : 0)
                 .offset(y: hasAppeared ? 0 : 10)
-                .animation(theme.springAnimation().delay(0.25), value: hasAppeared)
+                .animation(theme.springAnimation().delay(0.1), value: hasAppeared)
 
-            // Actions
-            VStack(spacing: 16) {
-                Button(action: {
-                    withAnimation(theme.animationSlow()) {
-                        hasCompletedIntegrationsOnboarding = true
-                    }
-                }) {
-                    Text("Continue to Chat")
-                        .font(theme.font(size: 14, weight: .semibold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 32)
-                        .padding(.vertical, 12)
-                        .background(
-                            Capsule()
-                                .fill(theme.accentColor)
-                        )
+                // Permissions list
+                VStack(spacing: 10) {
+                    IntegrationRow(permission: .calendar, service: permissionService)
+                    IntegrationRow(permission: .reminders, service: permissionService)
+                    IntegrationRow(permission: .contacts, service: permissionService)
+                    IntegrationRow(permission: .health, service: permissionService)
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: 380)
+                .opacity(hasAppeared ? 1 : 0)
+                .offset(y: hasAppeared ? 0 : 10)
+                .animation(theme.springAnimation().delay(0.2), value: hasAppeared)
                 
-                Button(action: {
-                    withAnimation(theme.animationSlow()) {
-                        hasCompletedIntegrationsOnboarding = true
+                // Optional Vision Model Section
+                visionModelSection
+                    .opacity(hasAppeared ? 1 : 0)
+                    .offset(y: hasAppeared ? 0 : 10)
+                    .animation(theme.springAnimation().delay(0.25), value: hasAppeared)
+
+                // Actions
+                VStack(spacing: 12) {
+                    Button(action: {
+                        withAnimation(theme.animationSlow()) {
+                            hasCompletedIntegrationsOnboarding = true
+                        }
+                    }) {
+                        Text("Continue to Chat")
+                            .font(theme.font(size: 14, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 32)
+                            .padding(.vertical, 12)
+                            .background(
+                                Capsule()
+                                    .fill(theme.accentColor)
+                            )
                     }
-                }) {
-                    Text("Skip for now")
-                        .font(theme.font(size: 12, weight: .medium))
-                        .foregroundColor(theme.tertiaryText)
+                    .buttonStyle(.plain)
+                    
+                    Button(action: {
+                        withAnimation(theme.animationSlow()) {
+                            hasCompletedIntegrationsOnboarding = true
+                        }
+                    }) {
+                        Text("Skip for now")
+                            .font(theme.font(size: 12, weight: .medium))
+                            .foregroundColor(theme.tertiaryText)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .opacity(hasAppeared ? 1 : 0)
+                .offset(y: hasAppeared ? 0 : 20)
+                .animation(theme.springAnimation().delay(0.3), value: hasAppeared)
+                .padding(.bottom, 20)
             }
-            .opacity(hasAppeared ? 1 : 0)
-            .offset(y: hasAppeared ? 0 : 20)
-            .animation(theme.springAnimation().delay(0.3), value: hasAppeared)
+            .padding(.horizontal, 40)
+            .padding(.vertical, 20)
         }
-        .padding(.horizontal, 40)
+        .frame(maxHeight: .infinity)
     }
     
     // MARK: - Vision Model Section
     
     private var visionModelSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 10) {
             // Header
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
                         Image(systemName: "eye")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 12, weight: .medium))
                             .foregroundColor(theme.accentColor)
                         Text("Screenshot Vision (Optional)")
-                            .font(theme.font(size: 14, weight: .semibold))
+                            .font(theme.font(size: 13, weight: .semibold))
                             .foregroundColor(theme.primaryText)
                     }
                     
                     Text("Enable AI-powered visual analysis of your screenshots")
-                        .font(theme.font(size: 11))
+                        .font(theme.font(size: 10))
                         .foregroundColor(theme.tertiaryText)
                 }
                 Spacer()
@@ -184,49 +201,51 @@ struct ChatEmptyState: View {
             
             // Vision model download card
             if let visionModel = topSuggestions.first(where: { ModelManager.isVisionModel(modelId: $0.id) }) {
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 10) {
                         ZStack {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
                                 .fill(Color.purple.opacity(0.15))
-                                .frame(width: 36, height: 36)
+                                .frame(width: 32, height: 32)
                             Image(systemName: "eye.fill")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(.purple)
                         }
                         
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 1) {
                             Text(visionModel.name)
-                                .font(theme.font(size: 13, weight: .semibold))
+                                .font(theme.font(size: 12, weight: .semibold))
                                 .foregroundColor(theme.primaryText)
+                                .lineLimit(1)
                             Text("Understands images and screenshots")
-                                .font(theme.font(size: 11))
+                                .font(theme.font(size: 10))
                                 .foregroundColor(theme.secondaryText)
                         }
                         
                         Spacer()
                         
                         if visionModel.isDownloaded {
-                            HStack(spacing: 4) {
+                            HStack(spacing: 3) {
                                 Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 10))
                                     .foregroundColor(.green)
                                 Text("Installed")
-                                    .font(theme.font(size: 11, weight: .medium))
+                                    .font(theme.font(size: 10, weight: .medium))
                                     .foregroundColor(theme.secondaryText)
                             }
                         } else {
                             Button(action: {
                                 modelManager.downloadModel(visionModel)
                             }) {
-                                HStack(spacing: 4) {
+                                HStack(spacing: 3) {
                                     Image(systemName: "arrow.down.circle")
-                                        .font(.system(size: 12))
+                                        .font(.system(size: 10))
                                     Text("Download")
-                                        .font(theme.font(size: 11, weight: .medium))
+                                        .font(theme.font(size: 10, weight: .medium))
                                 }
                                 .foregroundColor(.white)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
                                 .background(
                                     Capsule()
                                         .fill(Color.purple)
@@ -238,23 +257,23 @@ struct ChatEmptyState: View {
                     
                     if !visionModel.isDownloaded {
                         Text("💡 You can always download this later from Model Manager")
-                            .font(theme.font(size: 10))
+                            .font(theme.font(size: 9))
                             .foregroundColor(theme.tertiaryText)
-                            .padding(.leading, 48)
+                            .padding(.leading, 42)
                     }
                 }
-                .padding(12)
+                .padding(10)
                 .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(theme.secondaryBackground.opacity(0.5))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .strokeBorder(Color.purple.opacity(0.2), lineWidth: 1)
                         )
                 )
             }
         }
-        .frame(maxWidth: 400)
+        .frame(maxWidth: 380)
     }
 
     // MARK: - Ready State (has models)
@@ -452,7 +471,7 @@ struct ChatEmptyState: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(theme.primaryText)
 
-                Image(systemName: "chevron.up.down")
+                Image(systemName: "chevron.up.chevron.down")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(theme.tertiaryText)
             }

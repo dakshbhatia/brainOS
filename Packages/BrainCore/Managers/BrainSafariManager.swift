@@ -12,8 +12,11 @@ public actor BrainSafariManager {
     public func fetchRecentHistory(limit: Int = 20) -> [(title: String, url: String, timestamp: Date)] {
         var db: OpaquePointer?
         
-        if sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK {
+        if sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK || db == nil {
             BrainLogger.error("Failed to open Safari History.db. Requires Full Disk Access.", category: .core)
+            if db != nil {
+                sqlite3_close(db)
+            }
             return []
         }
         

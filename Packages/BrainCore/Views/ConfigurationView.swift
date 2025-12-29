@@ -1542,7 +1542,7 @@ private struct DefaultPersonaPicker: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.up.down")
+                Image(systemName: "chevron.up.chevron.down")
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(themeManager.currentTheme.tertiaryText)
             }

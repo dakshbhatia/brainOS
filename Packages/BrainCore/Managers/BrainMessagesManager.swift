@@ -206,7 +206,13 @@ public class BrainMessagesManager {
         if identifier == "Unknown" { return nil }
         if let cached = contactCache[identifier] { return cached }
         
-        let keys = [CNContactGivenNameKey, CNContactFamilyNameKey] as [CNKeyDescriptor]
+        let keys = [
+            CNContactGivenNameKey,
+            CNContactFamilyNameKey,
+            CNContactEmailAddressesKey,
+            CNContactPhoneNumbersKey,
+            CNContactIdentifierKey
+        ] as [CNKeyDescriptor]
         let predicate: NSPredicate
         
         if identifier.contains("@") {

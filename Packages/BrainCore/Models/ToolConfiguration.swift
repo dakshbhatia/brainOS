@@ -39,9 +39,9 @@ struct ToolConfiguration: Codable, Equatable, Sendable {
         self.grants = (try? container.decode([String: [String: Bool]].self, forKey: .grants)) ?? [:]
     }
 
-    /// Returns whether a tool is enabled. Defaults to false if not explicitly set.
+    /// Returns whether a tool is enabled. Defaults to true if not explicitly set.
     func isEnabled(name: String) -> Bool {
-        return enabled[name] ?? false
+        return enabled[name] ?? true
     }
 
     /// Set enabled state for a tool name.
