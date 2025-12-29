@@ -37,15 +37,18 @@ struct BrainMessagesTool: BrainOSTool {
             let jsonData = try encoder.encode(messages)
             return String(data: jsonData, encoding: .utf8) ?? "[]"
         } catch {
-            // Fallback to mock if database access fails (e.g. no Full Disk Access)
-            let mockMessages = [
-                ["sender": "Mom", "text": "Are you coming for dinner on Sunday?", "timestamp": "2024-12-25T18:30:00Z", "isFromMe": false],
-                ["sender": "Sarah", "text": "Hey, did you see that link I sent?", "timestamp": "2024-12-26T10:15:00Z", "isFromMe": false],
-                ["sender": "Mom", "text": "Let me know!", "timestamp": "2024-12-26T09:00:00Z", "isFromMe": false]
-            ]
+            // NEVER return fake data - causes AI hallucinations
+            let errorMessage = """
+            ⚠️ Cannot access message database. Error: \(error.localizedDescription)
             
-            let jsonData = try JSONSerialization.data(withJSONObject: mockMessages)
-            return String(data: jsonData, encoding: .utf8) ?? "[]"
+            This tool requires Full Disk Access permission:
+            1. Go to System Settings → Privacy & Security → Full Disk Access
+            2. Add BrainOS to the allowed apps
+            3. Restart BrainOS
+            
+            Alternative: Use the 'search_messages_semantic' tool which works with chat history instead.
+            """
+            return errorMessage
         }
     }
     

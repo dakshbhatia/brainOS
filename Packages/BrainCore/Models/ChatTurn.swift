@@ -22,6 +22,18 @@ final class ChatTurn: ObservableObject, Identifiable {
     @Published var toolResults: [String: String] = [:]
     /// Thinking/reasoning content from models that support extended thinking (e.g., DeepSeek, QwQ)
     @Published var thinking: String = ""
+    
+    // MARK: - Semantic Memory Properties
+    /// Quality score for this message (0.0-1.0) - higher means more valuable for recall
+    @Published var qualityScore: Double? = nil
+    /// OpenAI embedding vector for semantic search (1536 dimensions for text-embedding-3-small)
+    var embedding: [Float]? = nil
+    /// Reference to parent message if this is a child chunk for hierarchical retrieval
+    var parentMessageId: UUID? = nil
+    /// Index of this chunk in parent-child splitting strategy
+    var chunkIndex: Int? = nil
+    /// Token count for context budget management
+    var tokenCount: Int? = nil
 
     init(role: OSMessageRole, content: String) {
         self.role = role

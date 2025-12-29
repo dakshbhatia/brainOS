@@ -53,5 +53,7 @@ let package = Package(
             ],
             path: "Tests"
         ),
-    ]
+    ],
+    // Use Swift 5 language mode to avoid strict concurrency errors with MLXLMCommon's [String: Any] tools
+    swiftLanguageModes: [.v5]
 )

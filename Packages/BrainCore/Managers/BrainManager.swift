@@ -70,7 +70,7 @@ public class BrainManager {
         
         let memoriesText = recentMemories.isEmpty
             ? "No recent memories found"
-            : recentMemories.joined(separator: "\\n")
+            : recentMemories.joined(separator: "\n")
         
         let systemPrompt = """
         You are BrainOS's briefing assistant. Generate a warm, personal, actionable daily brief.
@@ -79,21 +79,21 @@ public class BrainManager {
         """
         
         let userPrompt = """
-        Generate a \\(greeting) brief for \\(userName):
+        Generate a \(greeting) brief for \(userName):
         
-        Current Time: \\(now.formatted(date: .abbreviated, time: .shortened))
+        Current Time: \(now.formatted(date: .abbreviated, time: .shortened))
         
         Health:
-        - Steps today: \\(Int(steps))
+        - Steps today: \(Int(steps))
         
         Relationships:
-        \\(nudgesText)
+        \(nudgesText)
         
         Calendar:
-        \\(calendar)
+        \(calendar)
         
         Recent Context:
-        \\(memoriesText)
+        \(memoriesText)
         """
         
         do {
@@ -330,17 +330,17 @@ public class BrainManager {
         
         let context = """
         Current State:
-        - Physical Activity: \\(Int(steps)) steps today
-        - Time: \\(Date().formatted(date: .abbreviated, time: .shortened))
+        - Physical Activity: \(Int(steps)) steps today
+        - Time: \(Date().formatted(date: .abbreviated, time: .shortened))
         
         Relationships:
-        \\(nudgesStr.isEmpty ? "No urgent relationship items" : nudgesStr)
-        Stale Contacts: \\(staleContactsStr.isEmpty ? "None" : staleContactsStr)
+        \(nudgesStr.isEmpty ? "No urgent relationship items" : nudgesStr)
+        Stale Contacts: \(staleContactsStr.isEmpty ? "None" : staleContactsStr)
         
-        Calendar: \\(calendar)
+        Calendar: \(calendar)
         
         Recent Context:
-        \\(recentMemories.isEmpty ? "No recent memories" : recentMemories.joined(separator: "\\n"))
+        \(recentMemories.isEmpty ? "No recent memories" : recentMemories.joined(separator: "\n"))
         
         Analyze for actionable insights.
         """

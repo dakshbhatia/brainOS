@@ -6,21 +6,40 @@
 //
 
 import Foundation
-import MLXLLM
-import MLXLMCommon
+@preconcurrency import MLXLLM
+@preconcurrency import MLXLMCommon
+
+// MARK: - Sendable Wrapper for UserInput
+
+/// Box to carry UserInput (which contains non-Sendable tools) across isolation boundaries.
+/// Marked @unchecked Sendable because UserInput is immutable after construction.
+final class SendableUserInputBox: @unchecked Sendable {
+    let input: MLXLMCommon.UserInput
+    
+    nonisolated init(chat: [MLXLMCommon.Chat.Message], tools: [[String: Any]]?) {
+        self.input = MLXLMCommon.UserInput(chat: chat, processing: .init(), tools: tools)
+    }
+}
+
+// MARK: - Generation Engine
 
 struct MLXGenerationEngine {
+    
+    /// Prepares chat + tools and starts MLX generation
+    @MainActor
     static func prepareAndGenerate(
         container: ModelContainer,
         buildChat: @Sendable () -> [MLXLMCommon.Chat.Message],
-        buildToolsSpec: @Sendable () -> [[String: Any]]?,
+        buildToolsSpec: @escaping () -> [[String: Any]]?,
         generation: GenerationParameters,
         runtime: RuntimeConfig
     ) async throws -> AsyncStream<MLXLMCommon.Generation> {
-        let stream: AsyncStream<MLXLMCommon.Generation> = try await container.perform {
-            (context: MLXLMCommon.ModelContext) in
-            let chat = buildChat()
-            let toolsSpec = buildToolsSpec()
+        // Build UserInput in nonisolated context via the box's init
+        let chat = buildChat()
+        let tools = buildToolsSpec()
+        let inputBox = SendableUserInputBox(chat: chat, tools: tools)
+        
+        let stream: AsyncStream<MLXLMCommon.Generation> = try await container.perform { context in
             let parameters = ModelRuntime.makeGenerateParameters(
                 temperature: generation.temperature ?? 0.7,
                 maxTokens: generation.maxTokens,
@@ -32,8 +51,9 @@ struct MLXGenerationEngine {
                 maxKV: runtime.maxKV,
                 prefillStep: runtime.prefillStep
             )
-            let fullInput = MLXLMCommon.UserInput(chat: chat, processing: .init(), tools: toolsSpec)
-            let fullLMInput = try await context.processor.prepare(input: fullInput)
+            
+            // Extract pre-built input from Sendable box
+            let fullLMInput = try await context.processor.prepare(input: inputBox.input)
 
             var contextWithEOS = context
             let existing = context.configuration.extraEOSTokens

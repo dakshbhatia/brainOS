@@ -28,6 +28,18 @@ Canonical reference for all BrainOS features, their status, and documentation.
 | Anthropic API Compatibility      | Stable    | "API Endpoints"    | (in README)                   | Networking/HTTPHandler.swift, Models/AnthropicAPI.swift                       |
 | Ollama API Compatibility         | Stable    | "API Endpoints"    | (in README)                   | Networking/HTTPHandler.swift                                                  |
 | CLI                              | Stable    | "CLI Reference"    | (in README)                   | Packages/BrainCLI/                                                          |
+| **Brain Intelligence**           |           |                    | **BRAIN_INTELLIGENCE_GUIDE.md** |                                                                            |
+| AI Memory Pipeline               | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Services/MemoryGenerationPipeline.swift                                       |
+| Background Ingestion             | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Services/BackgroundIngestionService.swift                                     |
+| Real-Time Event Stream           | Beta      | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Services/RealTimeEventStream.swift                                            |
+| Semantic Memory & RAG            | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Managers/BrainKnowledgeManager.swift, Services/ChatEngine.swift               |
+| Brain Dashboard                  | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Views/BrainDashboardView.swift                                                |
+| Relationship Agent               | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Managers/RelationshipAgent.swift                                              |
+| Daily Brief Generation           | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Managers/BrainManager.swift                                                   |
+| Proactive Notifications          | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Services/NotificationService.swift                                            |
+| Proactive Intelligence Loop      | Stable    | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Managers/BrainManager.swift (performProactiveCheck)                           |
+| Python Environment Manager       | Beta      | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Services/PythonEnvironmentManager.swift                                       |
+| Voice Service (TTS/STT)          | Beta      | "Brain Features"   | BRAIN_INTELLIGENCE_GUIDE.md   | Services/VoiceService.swift, scripts/voice_server.py                          |
 
 ---
 

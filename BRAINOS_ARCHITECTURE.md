@@ -27,34 +27,31 @@
    - Streaming generation
    - Multiple model support
 
-### ❌ **What's Missing**
+### ✅ **What's Implemented (Phase 1 & Iteration 1-2 Complete)**
 
-#### 1. **Parallel AI Processing**
-- No concurrent model runs for batch memory generation
-- Single-threaded ingestion (30min intervals)
-- No real-time event processing
-- No proactive insight generation
+#### 1. **Parallel AI Processing** ✅
+- 3 concurrent MLX model inferences for batch memory generation
+- Background ingestion every 30 minutes with AI pipeline integration
+- Real-time event streaming actor (`RealTimeEventStream`) - built, pending integration
+- Proactive insight generation running hourly
 
-#### 2. **Voice Integration**
-- Python sidecar exists but doesn't auto-start
-- No `voice_server.py` implementation
-- No TTS/STT integration
-- Voice features completely disabled
+#### 2. **Voice Integration** ⚠️ **Partially Complete**
+- Python environment manager fully implemented (`PythonEnvironmentManager`)
+- `voice_server.py` with FastAPI + Chatterbox TTS exists
+- Virtual environment auto-creation and dependency management ready
+- **Not yet integrated into AppDelegate** - needs startup integration
 
-#### 3. **Brain-Oriented UI**
-- Chat interface only (not OS-like)
-- No timeline visualization
-- No knowledge graph view
-- No entity/relationship cards
-- No proactive insight panel
-- No memory building progress
-- No "context window" visualization
+#### 3. **Brain-Oriented UI** ⚠️ **Partially Complete**
+- Brain Dashboard with memory stream status, daily brief, relationship nudges
+- Multi-category notification system (Relationship, Health, Insight)
+- Entity extraction and relationship tracking in knowledge graph
+- **Still Missing:** Timeline visualization, visual knowledge graph, futuristic theme
 
-#### 4. **Startup Intelligence**
-- No automatic initial memory build
-- No first-run wizard for data ingestion
-- Models don't auto-warm on startup
-- No background processing status
+#### 4. **Startup Intelligence** ⚠️ **Partially Complete**
+- Background ingestion starts automatically on launch
+- Models warm up after download (Metal shader compilation)
+- Proactive hourly check loop operational
+- **Still Missing:** First-run wizard, initial 7-day memory build, app launch model warmup
 
 ---
 
@@ -293,33 +290,37 @@ actor StartupIntelligenceOrchestrator {
 
 ---
 
-## 🚀 **Implementation Priority**
+## 🚀 **Implementation Status**
 
-### **Phase 1: Foundation (Week 1)**
-- [ ] Parallel memory generation pipeline
-- [ ] Auto-start voice sidecar with venv management
-- [ ] Real-time event stream actor
-- [ ] Enhanced dashboard with live data
+### **Phase 1: Foundation** ✅ **COMPLETE**
+- [x] Parallel memory generation pipeline (`MemoryGenerationPipeline`)
+- [x] Real-time event stream actor (`RealTimeEventStream`)
+- [x] Enhanced dashboard with live data (`BrainDashboardView`)
+- [x] Python environment manager (`PythonEnvironmentManager`)
+- [ ] **PENDING:** Integrate voice sidecar auto-start in AppDelegate
 
-### **Phase 2: Intelligence (Week 2)**
-- [ ] First-run memory build wizard
-- [ ] Continuous learning background service
-- [ ] Proactive insight generation
-- [ ] Relationship monitoring
+### **Phase 2: Intelligence** ✅ **COMPLETE** (Iterations 1 & 2)
+- [x] Continuous learning background service (30-minute ingestion)
+- [x] Proactive insight generation (hourly AI reflection)
+- [x] Relationship monitoring (AI-powered nudges)
+- [x] Multi-category notification system
+- [x] RAG-enhanced chat with semantic memory
+- [ ] **PENDING:** First-run memory build wizard
 
-### **Phase 3: UI/UX (Week 3)**
-- [ ] Knowledge graph visualization
-- [ ] Timeline view with events
-- [ ] Active context panel
-- [ ] Voice interface integration
-- [ ] Futuristic theme system
+### **Phase 3: UI/UX** ⚠️ **IN PROGRESS**
+- [x] Basic Brain Dashboard with memory stream
+- [x] Active context panel (brief, nudges, health)
+- [ ] **TODO:** Knowledge graph visualization
+- [ ] **TODO:** Timeline view with events
+- [ ] **TODO:** Voice interface integration
+- [ ] **TODO:** Futuristic theme system (glass, neon, holographic)
 
-### **Phase 4: Polish (Week 4)**
-- [ ] Performance optimization
+### **Phase 4: Polish** ⚠️ **NOT STARTED**
+- [ ] Performance optimization and benchmarking
 - [ ] Advanced RAG with reranking
 - [ ] Multi-modal embeddings (vision + text)
 - [ ] Custom entity extractors
-- [ ] Analytics dashboard
+- [ ] Analytics dashboard for memory insights
 
 ---
 

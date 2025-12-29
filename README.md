@@ -20,11 +20,22 @@ BrainOS isn't just an LLM runner; it's your digital brain.
 
 ## Features
 
-- **MLX Runtime** — Optimized local inference for Apple Silicon.
-- **MCP Native** — Every data source is a tool for your agents.
-- **Life Plugins** — Built-in support for Health, Photos, and Screenshots.
-- **Proactive Intelligence** — Relationship nudges, health insights, and spending alerts.
-- **Privacy First** — Everything stays on your device. No cloud required.
+### Local LLM Server
+- **MLX Runtime** — Optimized local inference for Apple Silicon
+- **OpenAI/Anthropic API** — Drop-in replacement for cloud APIs
+- **MCP Server** — Connect to Cursor, Claude Desktop, and other MCP clients
+- **Tool Plugins** — Extensible tool system with registry support
+- **Remote Providers** — Aggregate multiple AI providers (OpenAI, Anthropic, Ollama)
+
+### Brain Intelligence (Experimental)
+- **AI Memory Pipeline** — Parallel processing of life data (messages, calendar, health, browsing)
+- **Semantic Search** — RAG-enhanced chat with automatic context retrieval
+- **Daily Briefs** — AI-generated morning summaries of your day ahead
+- **Relationship Nudges** — Never miss important replies with proactive notifications
+- **Proactive Insights** — Hourly analysis detecting patterns and priorities
+- **Health Tracking** — Activity-based alerts and wellness monitoring
+- **Brain Dashboard** — Central hub for memory stream and intelligence features
+- **Privacy First** — All processing happens locally on your Mac
 
 ---
 
@@ -325,6 +336,8 @@ open BrainOS.xcworkspace
 3. Join our [Discord](https://discord.gg/dinoki) to connect with the team
 
 See [docs/FEATURES.md](docs/FEATURES.md) for a complete feature inventory and architecture overview.
+
+For details on the proactive intelligence system, see [docs/BRAIN_INTELLIGENCE_GUIDE.md](docs/BRAIN_INTELLIGENCE_GUIDE.md).
 
 ---
 

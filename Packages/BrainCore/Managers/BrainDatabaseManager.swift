@@ -366,4 +366,53 @@ public actor BrainDatabaseManager {
         // Sort by importance descending
         return results.sorted { $0.2 > $1.2 }
     }
+    
+    /// Get all entities for knowledge graph
+    public func getAllEntities() -> [(name: String, type: String, lastSeen: Date)] {
+        let query = "SELECT name, type, last_seen FROM entities ORDER BY last_seen DESC LIMIT 100;"
+        var statement: OpaquePointer?
+        var results: [(String, String, Date)] = []
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let name = String(cString: sqlite3_column_text(statement, 0))
+                let type = String(cString: sqlite3_column_text(statement, 1))
+                let lastSeenStr = String(cString: sqlite3_column_text(statement, 2))
+                
+                let formatter = ISO8601DateFormatter()
+                let lastSeen = formatter.date(from: lastSeenStr) ?? Date()
+                
+                results.append((name, type, lastSeen))
+            }
+        }
+        sqlite3_finalize(statement)
+        return results
+    }
+    
+    /// Get all relationships for knowledge graph
+    public func getAllRelationships() -> [(sourceName: String, targetName: String, type: String, strength: Float)] {
+        let query = """
+        SELECT e1.name, e2.name, r.relation_type, r.strength
+        FROM relationships r
+        JOIN entities e1 ON r.source_id = e1.id
+        JOIN entities e2 ON r.target_id = e2.id
+        ORDER BY r.strength DESC
+        LIMIT 200;
+        """
+        var statement: OpaquePointer?
+        var results: [(String, String, String, Float)] = []
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let sourceName = String(cString: sqlite3_column_text(statement, 0))
+                let targetName = String(cString: sqlite3_column_text(statement, 1))
+                let type = String(cString: sqlite3_column_text(statement, 2))
+                let strength = Float(sqlite3_column_double(statement, 3))
+                
+                results.append((sourceName, targetName, type, strength))
+            }
+        }
+        sqlite3_finalize(statement)
+        return results
+    }
 }

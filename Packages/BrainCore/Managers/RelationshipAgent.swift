@@ -28,7 +28,7 @@ public actor RelationshipAgent {
             let daysSince = lastMsg.map { -$0.timestamp.timeIntervalSinceNow / 86400 } ?? 999
             
             let direction = recentMsgs.first?.isFromMe == false ? "They messaged" : "You messaged"
-            conversationSummaries.append("\\(contact): \\(direction) \\(Int(daysSince))d ago")
+            conversationSummaries.append("\(contact): \(direction) \(Int(daysSince))d ago")
         }
         
         // 3. Add stale contacts context
@@ -60,10 +60,10 @@ public actor RelationshipAgent {
         
         let userPrompt = """
         Recent conversations:
-        \\(conversationSummaries.joined(separator: "\\n"))
-        \\(staleText)
+        \(conversationSummaries.joined(separator: "\n"))
+        \(staleText)
         
-        Current time: \\(Date().formatted())
+        Current time: \(Date().formatted())
         
         Analyze and generate relationship nudges.
         """
