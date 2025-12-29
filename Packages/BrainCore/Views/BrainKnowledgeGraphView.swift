@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 /// Interactive knowledge graph visualization showing entities and relationships
 struct BrainKnowledgeGraphView: View {
@@ -228,17 +229,126 @@ struct BrainKnowledgeGraphView: View {
     }
     
     private func initializeLayout(size: CGSize) {
-        // Simple force-directed layout initialization
+        // Initial circular placement
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        let radius: CGFloat = 200
+        let radius: CGFloat = min(size.width, size.height) * 0.35
         
         for (index, node) in nodes.enumerated() {
-            let angle = (CGFloat(index) / CGFloat(nodes.count)) * 2 * .pi
+            let angle = (CGFloat(index) / CGFloat(max(1, nodes.count))) * 2 * .pi
             let x = center.x + radius * cos(angle)
             let y = center.y + radius * sin(angle)
             nodePositions[node.id] = CGPoint(x: x, y: y)
         }
+        
+        // Apply force-directed layout iterations
+        Task {
+            await applyForceDirectedLayout(iterations: 100, size: size)
+        }
     }
+    
+    /// Force-directed graph layout using Fruchterman-Reingold algorithm
+    private func applyForceDirectedLayout(iterations: Int, size: CGSize) async {
+        let area = size.width * size.height
+        let k = sqrt(area / max(1, CGFloat(nodes.count))) // Optimal distance
+        let temperature: CGFloat = min(size.width, size.height) / 10
+        
+        var currentTemp = temperature
+        let coolingFactor: CGFloat = 0.95
+        
+        for _ in 0..<iterations {
+            var displacement: [UUID: CGPoint] = [:]
+            
+            // Initialize displacements
+            for node in nodes {
+                displacement[node.id] = .zero
+            }
+            
+            // Calculate repulsive forces (all pairs)
+            for i in 0..<nodes.count {
+                for j in (i+1)..<nodes.count {
+                    let nodeA = nodes[i]
+                    let nodeB = nodes[j]
+                    
+                    guard let posA = nodePositions[nodeA.id],
+                          let posB = nodePositions[nodeB.id] else { continue }
+                    
+                    let delta = CGPoint(x: posA.x - posB.x, y: posA.y - posB.y)
+                    let distance = max(1, sqrt(delta.x * delta.x + delta.y * delta.y))
+                    
+                    // Repulsive force: k^2 / distance
+                    let repulsiveForce = (k * k) / distance
+                    let normalizedDelta = CGPoint(x: delta.x / distance, y: delta.y / distance)
+                    
+                    let forceX = normalizedDelta.x * repulsiveForce
+                    let forceY = normalizedDelta.y * repulsiveForce
+                    
+                    displacement[nodeA.id]!.x += forceX
+                    displacement[nodeA.id]!.y += forceY
+                    displacement[nodeB.id]!.x -= forceX
+                    displacement[nodeB.id]!.y -= forceY
+                }
+            }
+            
+            // Calculate attractive forces (edges only)
+            for edge in edges {
+                guard let posSource = nodePositions[edge.sourceId],
+                      let posTarget = nodePositions[edge.targetId] else { continue }
+                
+                let delta = CGPoint(x: posSource.x - posTarget.x, y: posSource.y - posTarget.y)
+                let distance = max(1, sqrt(delta.x * delta.x + delta.y * delta.y))
+                
+                // Attractive force: distance^2 / k (weighted by edge strength)
+                let attractiveForce = (distance * distance) / k * CGFloat(edge.strength)
+                let normalizedDelta = CGPoint(x: delta.x / distance, y: delta.y / distance)
+                
+                let forceX = normalizedDelta.x * attractiveForce
+                let forceY = normalizedDelta.y * attractiveForce
+                
+                displacement[edge.sourceId]!.x -= forceX
+                displacement[edge.sourceId]!.y -= forceY
+                displacement[edge.targetId]!.x += forceX
+                displacement[edge.targetId]!.y += forceY
+            }
+            
+            // Apply displacements with temperature limiting
+            for node in nodes {
+                guard let disp = displacement[node.id],
+                      var pos = nodePositions[node.id] else { continue }
+                
+                let dispLength = sqrt(disp.x * disp.x + disp.y * disp.y)
+                if dispLength > 0 {
+                    let limitedDisp = min(dispLength, currentTemp)
+                    pos.x += (disp.x / dispLength) * limitedDisp
+                    pos.y += (disp.y / dispLength) * limitedDisp
+                }
+                
+                // Keep within bounds with padding
+                let padding: CGFloat = 60
+                pos.x = max(padding, min(size.width - padding, pos.x))
+                pos.y = max(padding, min(size.height - padding, pos.y))
+                
+                nodePositions[node.id] = pos
+            }
+            
+            // Cool down
+            currentTemp *= coolingFactor
+            
+            // Update UI periodically
+            if iterations % 10 == 0 {
+                await MainActor.run {
+                    // Trigger re-render
+                    objectWillChange.send()
+                }
+            }
+        }
+        
+        // Final update
+        await MainActor.run {
+            objectWillChange.send()
+        }
+    }
+    
+    @Published private var objectWillChange = PassthroughSubject<Void, Never>()
     
     private func loadGraphData() {
         isLoading = true

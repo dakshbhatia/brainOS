@@ -108,7 +108,8 @@ public actor PythonEnvironmentManager {
             "pydantic>=2.5.0",
             "numpy>=1.24.0",
             "soundfile>=0.12.0",
-            "resampy>=0.4.2"
+            "resampy>=0.4.2",
+            "openai-whisper>=20231117"  // For STT (speech-to-text)
         ]
         
         // Check if already installed

@@ -22,6 +22,10 @@
 	<string>BrainOS plugins may access your location to provide location-based services.</string>
 	<key>NSLocationUsageDescription</key>
 	<string>BrainOS plugins may access your location to provide location-based services.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>BrainOS uses speech recognition for voice input commands.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BrainOS uses the microphone for voice input and speech-to-text.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

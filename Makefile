@@ -52,3 +52,17 @@ status:
 clean:
 	rm -rf $(DERIVED)
 	@echo "Cleaned $(DERIVED)"
+
+# Patch MLX-swift-lm to fix Message type ambiguity (run after swift package resolve)
+patch-mlx:
+	@echo "Patching MLX-swift-lm..."
+	./scripts/patch_mlx.sh
+
+# Resolve packages and apply patches
+resolve:
+	cd Packages/BrainCore && swift package resolve
+	./scripts/patch_mlx.sh
+
+# Build BrainCore with patches
+build-core: resolve
+	cd Packages/BrainCore && swift build

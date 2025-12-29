@@ -446,8 +446,14 @@ final class ChatSession: ObservableObject {
 
         // Only append user turn if there's actual content
         if !trimmed.isEmpty || !images.isEmpty {
-            turns.append(ChatTurn(role: .user, content: trimmed, images: images))
+            let userTurn = ChatTurn(role: .user, content: trimmed, images: images)
+            turns.append(userTurn)
             isDirty = true
+
+            // Auto-embed user message for semantic memory
+            if let sid = sessionId {
+                userTurn.autoEmbed(sessionId: sid)
+            }
 
             // Immediately save new session so it appears in sidebar
             if sessionId == nil {
@@ -478,6 +484,12 @@ final class ChatSession: ObservableObject {
                     lastTurn.thinking.isEmpty
                 {
                     turns.removeLast()
+                } else if let lastTurn = turns.last,
+                    lastTurn.role == .assistant,
+                    !lastTurn.content.isEmpty,
+                    let sid = sessionId {
+                    // Auto-embed assistant response for semantic memory
+                    lastTurn.autoEmbed(sessionId: sid)
                 }
                 // Auto-save after streaming completes
                 save()
@@ -551,15 +563,45 @@ final class ChatSession: ObservableObject {
                 let reserveResponseTokens = effectiveMaxTokensForPersona ?? 4096
                 let availableContextTokens = max(2048, modelContextLength - reserveResponseTokens)
 
+                // SEMANTIC MEMORY: Build smart context if available
+                var contextTurns = turns
+                if AutoEmbeddingService.shared.isConfigured,
+                   let coordinator = AutoEmbeddingService.shared.coordinator,
+                   let sid = sessionId,
+                   let lastUserMessage = turns.last(where: { $0.role == .user })?.content,
+                   !lastUserMessage.isEmpty {
+                    // Try to build smart context (recent + semantically relevant)
+                    do {
+                        let smartTurnData = try await coordinator.buildSmartContext(
+                            query: lastUserMessage,
+                            sessionId: sid,
+                            strategy: .balanced
+                        )
+                        // Convert back to ChatTurn array
+                        contextTurns = smartTurnData.map { data in
+                            let turn = ChatTurn(role: data.role, content: data.content)
+                            turn.attachedImages = data.attachedImages
+                            turn.toolCalls = data.toolCalls
+                            turn.toolCallId = data.toolCallId
+                            turn.toolResults = data.toolResults
+                            turn.thinking = data.thinking
+                            return turn
+                        }
+                    } catch {
+                        // Fallback to regular turns on error
+                        print("[BrainOS] Smart context failed, using full history: \(error)")
+                    }
+                }
+
                 @MainActor
                 func buildMessages() -> [ChatMessage] {
                     var msgs: [ChatMessage] = []
                     if !sys.isEmpty { msgs.append(ChatMessage(role: "system", content: sys)) }
-                    for (index, t) in turns.enumerated() {
+                    for (index, t) in contextTurns.enumerated() {
                         switch t.role {
                         case .assistant:
                             // Skip the last assistant turn if it's empty (it's the streaming placeholder)
-                            let isLastTurn = index == turns.count - 1
+                            let isLastTurn = index == contextTurns.count - 1
                             if isLastTurn && t.content.isEmpty && t.toolCalls == nil {
                                 continue
                             }
@@ -953,6 +995,7 @@ struct ChatView: View {
     @State private var keyMonitor: Any?
     @State private var isHeaderHovered: Bool = false
     @State private var showSidebar: Bool = false
+    @AppStorage("semanticMemoryBannerDismissed") private var showSemanticMemoryBannerDismissed: Bool = false
 
     private var theme: ThemeProtocol { themeManager.chatTheme }
 
@@ -1060,6 +1103,11 @@ struct ChatView: View {
                                 messageThread(chatWidth)
                                     .transition(.opacity.combined(with: .move(edge: .bottom)))
                             }
+                            
+                            // Semantic memory setup banner (shown once when not configured)
+                            if !AutoEmbeddingService.shared.isConfigured && !showSemanticMemoryBannerDismissed {
+                                semanticMemoryBanner
+                            }
 
                             // Floating input card
                             FloatingInputCard(
@@ -1135,6 +1183,13 @@ struct ChatView: View {
             // Do NOT change the theme - theme is based on the current session's persona
             sessionsManager.refresh()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .voiceInputReceived)) { notification in
+            // Handle voice input from global hotkey (Cmd+Shift+V)
+            if let text = notification.userInfo?["text"] as? String, !text.isEmpty {
+                session.input = text
+                focusTrigger &+= 1
+            }
+        }
         .onAppear {
             setupKeyMonitor()
             session.refreshModelOptions()
@@ -1162,6 +1217,54 @@ struct ChatView: View {
         }
         .environment(\.theme, themeManager.chatTheme)
         .tint(theme.accentColor)
+    }
+    
+    // MARK: - Semantic Memory Banner
+    
+    private var semanticMemoryBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "brain.head.profile")
+                .font(.system(size: 18, weight: .medium))
+                .foregroundColor(theme.accentColor)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Enable Semantic Memory")
+                    .font(theme.font(size: CGFloat(theme.bodySize), weight: .semibold))
+                    .foregroundColor(theme.primaryText)
+                
+                Text("Add an OpenAI provider to enable smart context retrieval")
+                    .font(theme.font(size: CGFloat(theme.captionSize)))
+                    .foregroundColor(theme.secondaryText)
+            }
+            
+            Spacer()
+            
+            Button("Setup") {
+                AppDelegate.shared?.showManagementWindow(initialTab: .providers)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(theme.accentColor)
+            
+            Button(action: { showSemanticMemoryBannerDismissed = true }) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(theme.tertiaryText)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(theme.accentColor.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .strokeBorder(theme.accentColor.opacity(0.3), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 8)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     // MARK: - Background

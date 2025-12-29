@@ -47,7 +47,7 @@ actor SemanticMessageSearch {
     ///   - minScore: Minimum similarity threshold (0.0-1.0)
     ///   - timeframe: Optional time filter (e.g., "last 30 days")
     /// - Returns: Array of messages with similarity scores
-    @MainActor
+
     func searchMessages(
         query: String,
         limit: Int = 10,
@@ -127,7 +127,6 @@ actor SemanticMessageSearch {
     
     /// Search for specific contacts semantically
     /// E.g., "friends", "real friends", "close contacts", "people I trust"
-    @MainActor
     func findContacts(
         matching query: String,
         limit: Int = 10

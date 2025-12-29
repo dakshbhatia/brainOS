@@ -70,6 +70,11 @@ struct ChatEmptyState: View {
             }
             startGradientAnimation()
             
+            // Start periodic permission refresh for live FDA detection
+            if !hasCompletedIntegrationsOnboarding {
+                permissionService.startPeriodicRefresh(interval: 2.0)
+            }
+            
             // Show profile setup after integrations if not completed
             if hasCompletedIntegrationsOnboarding && !hasCompletedProfileSetup {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -78,9 +83,10 @@ struct ChatEmptyState: View {
             }
         }
         .onDisappear {
-            // Stop animations when view is hidden
+            // Stop animations and permission refresh when view is hidden
             isVisible = false
             stopGradientAnimation()
+            permissionService.stopPeriodicRefresh()
         }
     }
 
@@ -128,6 +134,18 @@ struct ChatEmptyState: View {
                 .opacity(hasAppeared ? 1 : 0)
                 .offset(y: hasAppeared ? 0 : 10)
                 .animation(theme.springAnimation().delay(0.2), value: hasAppeared)
+                
+                // iMessage / Full Disk Access Section
+                iMessageSection
+                    .opacity(hasAppeared ? 1 : 0)
+                    .offset(y: hasAppeared ? 0 : 10)
+                    .animation(theme.springAnimation().delay(0.21), value: hasAppeared)
+                
+                // Semantic Memory Section
+                semanticMemorySection
+                    .opacity(hasAppeared ? 1 : 0)
+                    .offset(y: hasAppeared ? 0 : 10)
+                    .animation(theme.springAnimation().delay(0.22), value: hasAppeared)
                 
                 // Optional Vision Model Section
                 visionModelSection
@@ -272,6 +290,200 @@ struct ChatEmptyState: View {
                         )
                 )
             }
+        }
+        .frame(maxWidth: 380)
+    }
+    
+    // MARK: - Semantic Memory Section
+    
+    private var semanticMemorySection: some View {
+        VStack(spacing: 10) {
+            // Header
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "brain.head.profile")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.cyan)
+                        Text("Semantic Memory (Recommended)")
+                            .font(theme.font(size: 13, weight: .semibold))
+                            .foregroundColor(theme.primaryText)
+                    }
+                    
+                    Text("Enable AI to remember and recall from conversations")
+                        .font(theme.font(size: 10))
+                        .foregroundColor(theme.tertiaryText)
+                }
+                Spacer()
+            }
+            
+            // Status card
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 10) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .fill(Color.cyan.opacity(0.15))
+                            .frame(width: 32, height: 32)
+                        Image(systemName: AutoEmbeddingService.shared.isConfigured ? "checkmark.circle.fill" : "key.fill")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(AutoEmbeddingService.shared.isConfigured ? .green : .cyan)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(AutoEmbeddingService.shared.isConfigured ? "Semantic Memory Active" : "OpenAI API Key Required")
+                            .font(theme.font(size: 12, weight: .semibold))
+                            .foregroundColor(theme.primaryText)
+                            .lineLimit(1)
+                        Text(AutoEmbeddingService.shared.isConfigured 
+                            ? "Your conversations are being indexed"
+                            : "Add an OpenAI provider in Settings → Providers")
+                            .font(theme.font(size: 10))
+                            .foregroundColor(theme.secondaryText)
+                    }
+                    
+                    Spacer()
+                    
+                    if !AutoEmbeddingService.shared.isConfigured {
+                        Button(action: {
+                            AppDelegate.shared?.showManagementWindow(initialTab: .providers)
+                        }) {
+                            HStack(spacing: 3) {
+                                Image(systemName: "plus.circle")
+                                    .font(.system(size: 10))
+                                Text("Add Key")
+                                    .font(theme.font(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color.cyan)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                
+                if !AutoEmbeddingService.shared.isConfigured {
+                    Text("💡 Semantic memory enables AI to recall relevant past conversations automatically")
+                        .font(theme.font(size: 9))
+                        .foregroundColor(theme.tertiaryText)
+                        .padding(.leading, 42)
+                }
+            }
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(theme.secondaryBackground.opacity(0.5))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.cyan.opacity(0.2), lineWidth: 1)
+                    )
+            )
+        }
+        .frame(maxWidth: 380)
+    }
+    
+    // MARK: - iMessage / Full Disk Access Section
+    
+    private var iMessageSection: some View {
+        VStack(spacing: 10) {
+            // Header
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "message.fill")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.green)
+                        Text("iMessage Access (Optional)")
+                            .font(theme.font(size: 13, weight: .semibold))
+                            .foregroundColor(theme.primaryText)
+                    }
+                    
+                    Text("Let AI understand your message history for context")
+                        .font(theme.font(size: 10))
+                        .foregroundColor(theme.tertiaryText)
+                }
+                Spacer()
+            }
+            
+            // Status card
+            VStack(alignment: .leading, spacing: 8) {
+                let hasAccess = permissionService.permissionStates[.disk] ?? false
+                
+                HStack(spacing: 10) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .fill(Color.green.opacity(0.15))
+                            .frame(width: 32, height: 32)
+                        Image(systemName: hasAccess ? "checkmark.circle.fill" : "lock.shield")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(hasAccess ? .green : .orange)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(hasAccess ? "Full Disk Access Granted" : "Full Disk Access Required")
+                            .font(theme.font(size: 12, weight: .semibold))
+                            .foregroundColor(theme.primaryText)
+                            .lineLimit(1)
+                        Text(hasAccess 
+                            ? "BrainOS can read your iMessage history"
+                            : "Required to read Messages database")
+                            .font(theme.font(size: 10))
+                            .foregroundColor(theme.secondaryText)
+                    }
+                    
+                    Spacer()
+                    
+                    if !hasAccess {
+                        Button(action: {
+                            // Open System Preferences > Privacy > Full Disk Access
+                            if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles") {
+                                NSWorkspace.shared.open(url)
+                            }
+                        }) {
+                            HStack(spacing: 3) {
+                                Image(systemName: "gearshape")
+                                    .font(.system(size: 10))
+                                Text("Open Settings")
+                                    .font(theme.font(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color.green)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                
+                if !hasAccess {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("📋 Steps to enable:")
+                            .font(theme.font(size: 9, weight: .semibold))
+                            .foregroundColor(theme.tertiaryText)
+                        
+                        Text("1. Click 'Open Settings' above\n2. Find BrainOS in the list\n3. Toggle the switch ON\n4. Restart BrainOS")
+                            .font(theme.font(size: 9))
+                            .foregroundColor(theme.tertiaryText)
+                            .lineSpacing(2)
+                    }
+                    .padding(.leading, 42)
+                }
+            }
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(theme.secondaryBackground.opacity(0.5))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(Color.green.opacity(0.2), lineWidth: 1)
+                    )
+            )
         }
         .frame(maxWidth: 380)
     }

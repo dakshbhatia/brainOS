@@ -22,7 +22,9 @@ public class BrainManager {
         Task {
             await BackgroundIngestionService.shared.start()
             await ScreenshotWatcherService.shared.start()
-            VoiceService.shared.start()
+            
+            // Set up Python environment and start voice service
+            await setupVoiceIntegration()
         }
         
         // Schedule daily brief notification for 8 AM
@@ -35,6 +37,32 @@ public class BrainManager {
                 try? await Task.sleep(nanoseconds: 3600 * 1_000_000_000) // Every hour
             }
         }
+    }
+    
+    /// Set up Python environment and start voice sidecar
+    private func setupVoiceIntegration() async {
+        BrainLogger.info("Setting up voice integration...", category: .core)
+        
+        // Ensure Python venv exists
+        let venvReady = await PythonEnvironmentManager.shared.ensureVoiceEnvironment()
+        guard venvReady else {
+            BrainLogger.error("Failed to set up Python environment for voice", category: .core)
+            return
+        }
+        
+        // Install dependencies (skips if already installed)
+        let depsReady = await PythonEnvironmentManager.shared.installVoiceDependencies()
+        guard depsReady else {
+            BrainLogger.error("Failed to install voice dependencies", category: .core)
+            return
+        }
+        
+        // Start voice service
+        await MainActor.run {
+            VoiceService.shared.start()
+        }
+        
+        BrainLogger.info("Voice integration setup complete", category: .core)
     }
     
     public func stop() {

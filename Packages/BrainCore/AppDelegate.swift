@@ -22,6 +22,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
     private var activityDot: NSView?
     private var managementWindow: NSWindow?
     private var chatWindow: NSWindow?
+    private var wizardWindow: NSWindow?
 
     public func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.shared = self
@@ -36,6 +37,16 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
 
         // App has launched
         NSLog("BrainOS server app launched")
+        
+        // Check if first-run wizard should be shown
+        let hasCompletedWizard = UserDefaults.standard.bool(forKey: "hasCompletedFirstRunWizard")
+        if !hasCompletedWizard {
+            // Show wizard after a short delay to let the app initialize
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                showFirstRunWizard()
+            }
+        }
 
         // Configure local notifications
         NotificationService.shared.configureOnLaunch()
@@ -55,11 +66,16 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
             ToolRegistry.shared.register(BrainMacOSUseTool())
             ToolRegistry.shared.register(BrainTimeTool())
             ToolRegistry.shared.register(BrainFinanceTool())
-            ToolRegistry.shared.register(BrainMessagesTool())
+            // ToolRegistry.shared.register(BrainMessagesTool())  // OLD: Causes hallucinations when DB unavailable
+            ToolRegistry.shared.register(SemanticMessageSearchTool())  // NEW: Semantic search over chat history
             ToolRegistry.shared.register(BrainContactsTool())
             ToolRegistry.shared.register(BrainDraftTool())
             ToolRegistry.shared.register(BrainAppleScriptTool())
         }
+
+        // Configure semantic memory system
+        // NOTE: Actual configuration moved to AFTER provider connection (see configureSemanticMemoryFromConnectedProviders)
+        // This prevents the race condition where we check providers before they're connected
 
         // Set up observers for server state changes
         setupObservers()
@@ -116,10 +132,13 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
         // Load external tool plugins at launch (after core is initialized)
         PluginManager.shared.loadAll()
 
-        // Auto-connect to enabled providers on launch
+        // Auto-connect to enabled providers on launch, then configure semantic memory
         Task { @MainActor in
             await MCPProviderManager.shared.connectEnabledProviders()
             await RemoteProviderManager.shared.connectEnabledProviders()
+            
+            // NOW configure semantic memory (after providers are actually connected)
+            await configureSemanticMemoryFromConnectedProviders()
         }
 
         // Start plugin repository background refresh for update checking
@@ -416,6 +435,46 @@ extension AppDelegate {
                 self?.toggleChatOverlay()
             }
         }
+        
+        // Register voice input hotkey (Cmd+Shift+V)
+        applyVoiceHotkey()
+    }
+    
+    private func applyVoiceHotkey() {
+        // Default: Cmd+Shift+V for voice input
+        let voiceHotkey = HotkeyConfig(keyCode: 9, modifiers: ["command", "shift"])  // 9 = V key
+        HotKeyManager.shared.register(hotkey: voiceHotkey) { [weak self] in
+            Task { @MainActor in
+                self?.triggerVoiceInput()
+            }
+        }
+    }
+    
+    @MainActor private func triggerVoiceInput() {
+        // Start voice input - toggle recording
+        let recognizer = SpeechRecognizer.shared
+        if recognizer.isListening {
+            recognizer.stopListening()
+        } else {
+            // Show chat overlay first if not visible
+            if chatWindow == nil || !chatWindow!.isVisible {
+                showChatOverlay()
+            }
+            // Start listening
+            recognizer.startListening { result in
+                switch result {
+                case .success(let text):
+                    // Post notification with transcribed text
+                    NotificationCenter.default.post(
+                        name: .voiceInputReceived,
+                        object: nil,
+                        userInfo: ["text": text]
+                    )
+                case .failure(let error):
+                    NSLog("🎤 Voice input error: \(error.localizedDescription)")
+                }
+            }
+        }
     }
     fileprivate func handleDeepLink(_ url: URL) {
         guard let scheme = url.scheme?.lowercased(), scheme == "huggingface" else { return }
@@ -564,6 +623,7 @@ extension AppDelegate {
 extension Notification.Name {
     static let chatOverlayActivated = Notification.Name("chatOverlayActivated")
     static let toolsListChanged = Notification.Name("toolsListChanged")
+    static let voiceInputReceived = Notification.Name("voiceInputReceived")
 }
 
 // MARK: Management Window
@@ -646,5 +706,73 @@ extension AppDelegate {
     public func windowWillClose(_ notification: Notification) {
         guard let win = notification.object as? NSWindow else { return }
         if win == managementWindow { managementWindow = nil }
+        if win == wizardWindow { wizardWindow = nil }
+    }
+    
+    // MARK: - Semantic Memory Configuration
+    
+    /// Configure semantic memory AFTER providers are connected (fixes timing race condition)
+    private func configureSemanticMemoryFromConnectedProviders() async {
+        // Check connected providers (not just disk config)
+        let connectedStates = RemoteProviderManager.shared.providerStates.values.filter { $0.isConnected }
+        
+        NSLog("🧠 [Core] Found \(connectedStates.count) CONNECTED providers (timing fix applied)")
+        
+        // First pass: Look for OpenAI provider specifically
+        for state in connectedStates {
+            guard let provider = RemoteProviderManager.shared.getProvider(state.providerId),
+                  let apiKey = provider.getAPIKey(), !apiKey.isEmpty else { continue }
+            
+            let urlString = provider.baseURL?.absoluteString ?? ""
+            NSLog("🧠 [Core] Checking connected provider: \(provider.name), URL: \(urlString)")
+            
+            if urlString.contains("openai.com") || provider.name.lowercased().contains("openai") {
+                AutoEmbeddingService.shared.configure(openAIKey: apiKey)
+                NSLog("🧠 [Core] ✅ Semantic memory configured with OpenAI provider: \(provider.name)")
+                return
+            }
+        }
+        
+        // Second pass: Fallback to any provider with API key
+        if !AutoEmbeddingService.shared.isConfigured {
+            NSLog("🧠 [Core] No OpenAI provider found, trying fallback...")
+            for state in connectedStates {
+                guard let provider = RemoteProviderManager.shared.getProvider(state.providerId),
+                      let apiKey = provider.getAPIKey(), !apiKey.isEmpty else { continue }
+                
+                AutoEmbeddingService.shared.configure(openAIKey: apiKey)
+                NSLog("🧠 [Core] ✅ Semantic memory configured with fallback provider: \(provider.name)")
+                return
+            }
+        }
+        
+        // No providers available
+        if !AutoEmbeddingService.shared.isConfigured {
+            NSLog("🧠 [Core] ⚠️ Semantic memory NOT configured - no connected providers with API keys")
+            NSLog("🧠 [Core] Add an OpenAI provider in Settings → Providers to enable semantic memory")
+        }
+    }
+    
+    // MARK: - First-Run Wizard
+    
+    private func showFirstRunWizard() {
+        guard wizardWindow == nil else { return }
+        
+        let wizardView = FirstRunWizardView()
+            .environmentObject(serverController)
+        
+        let hostingController = NSHostingController(rootView: wizardView)
+        
+        let window = NSWindow(contentViewController: hostingController)
+        window.title = "Welcome to BrainOS"
+        window.styleMask = [.titled, .closable]
+        window.isReleasedWhenClosed = false
+        window.center()
+        window.level = .floating
+        window.delegate = self
+        
+        wizardWindow = window
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }

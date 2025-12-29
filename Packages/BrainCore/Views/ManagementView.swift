@@ -11,6 +11,9 @@ import BrainRepository
 import SwiftUI
 
 enum ManagementTab: String, CaseIterable {
+    case brain
+    case timeline
+    case knowledgeGraph
     case models
     case providers
     case tools
@@ -22,6 +25,9 @@ enum ManagementTab: String, CaseIterable {
 
     var icon: String {
         switch self {
+        case .brain: return "brain.head.profile"
+        case .timeline: return "calendar.day.timeline.left"
+        case .knowledgeGraph: return "point.3.connected.trianglepath.dotted"
         case .models: return "cube.box.fill"
         case .providers: return "cloud.fill"
         case .tools: return "wrench.and.screwdriver.fill"
@@ -35,6 +41,9 @@ enum ManagementTab: String, CaseIterable {
 
     var label: String {
         switch self {
+        case .brain: return "Brain"
+        case .timeline: return "Timeline"
+        case .knowledgeGraph: return "Knowledge"
         case .models: return "Models"
         case .providers: return "Providers"
         case .tools: return "Tools"
@@ -82,6 +91,21 @@ struct ManagementView: View {
         let customPersonaCount = personaManager.personas.filter { !$0.isBuiltIn }.count
 
         return [
+            SidebarItemData(
+                id: ManagementTab.brain.rawValue,
+                icon: ManagementTab.brain.icon,
+                label: ManagementTab.brain.label
+            ),
+            SidebarItemData(
+                id: ManagementTab.timeline.rawValue,
+                icon: ManagementTab.timeline.icon,
+                label: ManagementTab.timeline.label
+            ),
+            SidebarItemData(
+                id: ManagementTab.knowledgeGraph.rawValue,
+                icon: ManagementTab.knowledgeGraph.icon,
+                label: ManagementTab.knowledgeGraph.label
+            ),
             SidebarItemData(
                 id: ManagementTab.models.rawValue,
                 icon: ManagementTab.models.icon,
@@ -137,6 +161,12 @@ struct ManagementView: View {
         ) { selected in
             Group {
                 switch selected {
+                case ManagementTab.brain.rawValue:
+                    BrainDashboardView()
+                case ManagementTab.timeline.rawValue:
+                    BrainTimelineView()
+                case ManagementTab.knowledgeGraph.rawValue:
+                    BrainKnowledgeGraphView()
                 case ManagementTab.models.rawValue:
                     ModelDownloadView(
                         deeplinkModelId: deeplinkModelId,

@@ -138,11 +138,34 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		F0MLX0012ED3000000000001 /* Patch MLX Dependencies */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Patch MLX Dependencies";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "# Patch MLX-swift-lm Message type ambiguity\n$SRCROOT/../scripts/patch_mlx.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		F0BB3C252E51FBCC00895593 /* BrainOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F0BB3C482E51FBCD00895593 /* Build configuration list for PBXNativeTarget "BrainOS" */;
 			buildPhases = (
+				F0MLX0012ED3000000000001 /* Patch MLX Dependencies */,
 				F0BB3C222E51FBCC00895593 /* Sources */,
 				F0BB3C232E51FBCC00895593 /* Frameworks */,
 				F0BB3C242E51FBCC00895593 /* Resources */,

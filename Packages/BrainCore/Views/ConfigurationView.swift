@@ -261,6 +261,13 @@ struct ConfigurationView: View {
                                     SettingsSubsection(label: "Storage") {
                                         DirectoryPickerView()
                                     }
+
+                                    SettingsDivider()
+
+                                    // Semantic Memory
+                                    SettingsSubsection(label: "Semantic Memory") {
+                                        SemanticMemorySettingsView()
+                                    }
                                 }
                             }
                         }

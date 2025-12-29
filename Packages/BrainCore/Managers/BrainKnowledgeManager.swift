@@ -36,6 +36,9 @@ public actor BrainKnowledgeManager {
         let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .joinNames]
         let tags: [NLTag] = [.personalName, .placeName, .organizationName]
         
+        // Collect all entities first for relationship extraction
+        var foundEntities: [(name: String, type: String)] = []
+        
         tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .nameType, options: options) { tag, range in
             if let tag = tag, tags.contains(tag) {
                 let entityName = String(text[range])
@@ -47,11 +50,56 @@ public actor BrainKnowledgeManager {
                 default: type = "other"
                 }
                 
+                foundEntities.append((entityName, type))
+                
                 Task {
                     await BrainDatabaseManager.shared.upsertEntity(name: entityName, type: type)
                 }
             }
             return true
+        }
+        
+        // Create relationships between co-occurring entities (entities in same text are related)
+        if foundEntities.count >= 2 {
+            Task {
+                for i in 0..<foundEntities.count {
+                    for j in (i+1)..<foundEntities.count {
+                        let entity1 = foundEntities[i]
+                        let entity2 = foundEntities[j]
+                        
+                        // Determine relationship type based on entity types
+                        let relationType = determineRelationType(entity1.type, entity2.type)
+                        
+                        // Build entity IDs (matching upsertEntity format)
+                        let sourceId = "\(entity1.type):\(entity1.name.lowercased())"
+                        let targetId = "\(entity2.type):\(entity2.name.lowercased())"
+                        
+                        await BrainDatabaseManager.shared.addRelationship(
+                            source: sourceId,
+                            target: targetId,
+                            type: relationType,
+                            strength: 0.1  // Co-occurrence adds weak relationship strength
+                        )
+                    }
+                }
+            }
+        }
+    }
+    
+    /// Determine relationship type based on entity types
+    private func determineRelationType(_ type1: String, _ type2: String) -> String {
+        let types = Set([type1, type2])
+        
+        if types == Set(["person", "person"]) {
+            return "knows"
+        } else if types == Set(["person", "organization"]) {
+            return "associated_with"
+        } else if types == Set(["person", "place"]) {
+            return "located_at"
+        } else if types == Set(["organization", "place"]) {
+            return "based_in"
+        } else {
+            return "related_to"
         }
     }
     

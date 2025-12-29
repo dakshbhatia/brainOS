@@ -11,6 +11,7 @@ struct BrainDashboardView: View {
     @State private var memoryStreamActive = false
     @State private var lastIngestionTime: String = "Never"
     @State private var showingFullBrief = false
+    @State private var semanticMemoryStats: AutoEmbeddingService.Stats?
     @Environment(\.theme) private var theme
     
     // Animation states
@@ -109,6 +110,42 @@ struct BrainDashboardView: View {
                     .foregroundStyle(.secondary)
             }
             
+            // Semantic memory status
+            if let stats = semanticMemoryStats {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Circle()
+                            .fill(AutoEmbeddingService.shared.isConfigured ? Color.green : Color.orange)
+                            .frame(width: 6, height: 6)
+                        Text(AutoEmbeddingService.shared.isConfigured ? "Semantic memory active" : "Configure OpenAI provider")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    if stats.totalMessages > 0 {
+                        HStack {
+                            Text("\(stats.embeddedMessages)/\(stats.totalMessages) messages indexed")
+                                .font(.system(size: 11, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("\(Int(stats.embeddingProgress * 100))%")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundStyle(theme.accentColor)
+                        }
+                        
+                        ProgressView(value: stats.embeddingProgress)
+                            .progressViewStyle(.linear)
+                            .tint(theme.accentColor)
+                            .frame(height: 3)
+                    }
+                }
+                .padding(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.primary.opacity(0.04))
+                )
+            }
+            
             if memoryStreamActive {
                 HStack(spacing: 8) {
                     ProgressView()
@@ -122,7 +159,7 @@ struct BrainDashboardView: View {
                 .background(theme.accentColor.opacity(0.1))
                 .cornerRadius(8)
             } else {
-                Text("\(recentMemories.count) memories indexed")
+                Text("\(recentMemories.count) knowledge items indexed")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(8)
@@ -331,6 +368,9 @@ struct BrainDashboardView: View {
         let hour = Calendar.current.component(.hour, from: Date())
         greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
         
+        // Load semantic memory stats immediately (sync)
+        semanticMemoryStats = AutoEmbeddingService.shared.getStats()
+        
         Task {
             // Load relationship nudges
             let loadedNudges = await RelationshipAgent.shared.analyzeRecentInteractions()
@@ -414,9 +454,11 @@ struct BrainDashboardView: View {
     private func startLiveUpdates() {
         // Refresh insights and stream status every 60 seconds
         Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-            Task {
+            Task { @MainActor in
                 await loadRecentInsights()
                 await updateMemoryStreamStatus()
+                // Refresh semantic memory stats
+                semanticMemoryStats = AutoEmbeddingService.shared.getStats()
             }
         }
     }

@@ -13,13 +13,14 @@ import Combine
 class AutoEmbeddingService: ObservableObject {
     static let shared = AutoEmbeddingService()
     
-    private var coordinator: SemanticMemoryCoordinator?
+    private(set) var coordinator: SemanticMemoryCoordinator?
     private var cancellables = Set<AnyCancellable>()
     private var processingQueue: [PendingMessage] = []
     private var isProcessing = false
     
     @Published var embedCount: Int = 0
     @Published var lastError: Error?
+    @Published var isConfigured: Bool = false
     
     struct PendingMessage {
         let message: ChatTurnData
@@ -31,7 +32,8 @@ class AutoEmbeddingService: ObservableObject {
     /// Initialize with OpenAI API key - CALL THIS ON APP LAUNCH
     func configure(openAIKey: String) {
         self.coordinator = SemanticMemoryCoordinator(openAIKey: openAIKey)
-        BrainLogger.info("AutoEmbeddingService configured and ready", category: .memory)
+        self.isConfigured = true
+        BrainLogger.info("AutoEmbeddingService configured and ready", category: .core)
     }
     
     // MARK: - Auto Processing
@@ -39,7 +41,7 @@ class AutoEmbeddingService: ObservableObject {
     /// Automatically process a message (CALL THIS AFTER EVERY MESSAGE)
     func autoProcess(message: ChatTurnData, sessionId: UUID) {
         guard coordinator != nil else {
-            BrainLogger.warning("AutoEmbeddingService not configured - skipping embedding", category: .memory)
+            BrainLogger.error("AutoEmbeddingService not configured - skipping embedding", category: .core)
             return
         }
         
@@ -71,10 +73,10 @@ class AutoEmbeddingService: ObservableObject {
             do {
                 await coordinator.processNewMessage(pending.message, inSession: pending.sessionId)
                 embedCount += 1
-                BrainLogger.info("Embedded message \(pending.message.id)", category: .memory)
+                BrainLogger.info("Embedded message \(pending.message.id)", category: .core)
             } catch {
                 lastError = error
-                BrainLogger.error("Failed to embed message: \(error)", category: .memory)
+                BrainLogger.error("Failed to embed message: \(error)", category: .core)
             }
         }
         
@@ -91,20 +93,20 @@ class AutoEmbeddingService: ObservableObject {
         guard let coordinator = coordinator else { return }
         
         await coordinator.processSessionEmbeddings(sessionId: sessionId)
-        BrainLogger.info("Processed session \(sessionId) embeddings", category: .memory)
+        BrainLogger.info("Processed session \(sessionId) embeddings", category: .core)
     }
     
     /// Process all existing sessions (one-time setup)
     func backfillAllSessions() async {
         let sessions = ChatSessionStore.loadAll()
-        BrainLogger.info("Backfilling \(sessions.count) sessions...", category: .memory)
+        BrainLogger.info("Backfilling \(sessions.count) sessions...", category: .core)
         
         for (index, session) in sessions.enumerated() {
-            BrainLogger.info("Processing session \(index + 1)/\(sessions.count): \(session.title)", category: .memory)
+            BrainLogger.info("Processing session \(index + 1)/\(sessions.count): \(session.title)", category: .core)
             await processSession(session.id)
         }
         
-        BrainLogger.info("✅ Backfill complete!", category: .memory)
+        BrainLogger.info("✅ Backfill complete!", category: .core)
     }
     
     // MARK: - Statistics
@@ -142,7 +144,7 @@ extension ChatTurn {
     @MainActor
     func autoEmbed(sessionId: UUID) {
         Task {
-            let data = await ChatTurnData(from: self)
+            let data = ChatTurnData(from: self)
             AutoEmbeddingService.shared.autoProcess(message: data, sessionId: sessionId)
         }
     }

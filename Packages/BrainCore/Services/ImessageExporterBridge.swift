@@ -34,7 +34,7 @@ class ImessageExporterBridge {
         if isAvailable {
             BrainLogger.info("Found imessage-exporter at: \(exporterPath)", category: .messages)
         } else {
-            BrainLogger.warning("imessage-exporter not found. Install with: brew install imessage-exporter", category: .messages)
+            BrainLogger.error("imessage-exporter not found. Install with: brew install imessage-exporter", category: .messages)
         }
     }
     

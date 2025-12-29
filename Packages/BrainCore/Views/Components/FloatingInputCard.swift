@@ -195,6 +195,9 @@ struct FloatingInputCard: View {
             if !availableTools.isEmpty {
                 toolSelectorChip
             }
+            
+            // Semantic memory indicator
+            semanticMemoryIndicator
 
             // Context size indicator (when there's context)
             if displayContextTokens > 0 {
@@ -231,6 +234,34 @@ struct FloatingInputCard: View {
                 ? "Estimated context: ~\(displayContextTokens) / \(maxContextTokens!) tokens"
                 : "Estimated context: ~\(displayContextTokens) tokens (messages + tools + input)"
         )
+    }
+    
+    // MARK: - Semantic Memory Indicator
+    
+    private var semanticMemoryIndicator: some View {
+        let isConfigured = AutoEmbeddingService.shared.isConfigured
+        let stats = AutoEmbeddingService.shared.getStats()
+        
+        return HStack(spacing: 4) {
+            Image(systemName: "brain.head.profile")
+                .font(.system(size: CGFloat(theme.captionSize) - 2))
+                .foregroundColor(isConfigured ? theme.accentColor : theme.tertiaryText.opacity(0.5))
+            
+            if isConfigured && stats.embeddedMessages > 0 {
+                Text("\(stats.embeddedMessages)")
+                    .font(.system(size: CGFloat(theme.captionSize) - 1, weight: .medium, design: .monospaced))
+                    .foregroundColor(theme.tertiaryText)
+            }
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
+        .background(
+            RoundedRectangle(cornerRadius: 4)
+                .fill(isConfigured ? theme.accentColor.opacity(0.1) : Color.clear)
+        )
+        .help(isConfigured 
+            ? "Semantic memory: \(stats.embeddedMessages) messages indexed for smart context retrieval" 
+            : "Semantic memory inactive - add an OpenAI provider in Settings → Providers")
     }
 
     /// Format token count for compact display (e.g., "1.2k", "15k")
@@ -422,6 +453,12 @@ struct FloatingInputCard: View {
             // Input row with text and action button
             HStack(alignment: .bottom, spacing: 12) {
                 textInputArea
+                
+                // Microphone button for STT (always visible)
+                if !isStreaming {
+                    microphoneButton
+                }
+                
                 actionButton
             }
         }
@@ -582,6 +619,52 @@ struct FloatingInputCard: View {
         .opacity(!canSend && !isStreaming ? 0.5 : 1)
         .animation(theme.springAnimation(), value: isStreaming)
         .animation(theme.animationQuick(), value: canSend)
+    }
+    
+    // MARK: - Microphone Button (STT using macOS Speech)
+    
+    @StateObject private var speechRecognizer = SpeechRecognizer.shared
+    
+    private var microphoneButton: some View {
+        Button(action: toggleSpeechRecognition) {
+            ZStack {
+                Image(systemName: speechRecognizer.isListening ? "waveform" : "mic.fill")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(speechRecognizer.isListening ? .white : theme.secondaryText)
+                    .symbolEffect(.variableColor.iterative, isActive: speechRecognizer.isListening)
+            }
+            .frame(width: 28, height: 28)
+            .background(
+                Circle()
+                    .fill(speechRecognizer.isListening ? Color.red : theme.secondaryBackground.opacity(0.8))
+            )
+        }
+        .buttonStyle(.plain)
+        .help(speechRecognizer.isListening ? "Stop listening" : "Voice input (hold or tap)")
+        .animation(theme.springAnimation(), value: speechRecognizer.isListening)
+        .disabled(!speechRecognizer.isAvailable)
+        .opacity(speechRecognizer.isAvailable ? 1 : 0.4)
+    }
+    
+    private func toggleSpeechRecognition() {
+        if speechRecognizer.isListening {
+            speechRecognizer.stopListening()
+        } else {
+            speechRecognizer.startListening { result in
+                switch result {
+                case .success(let text):
+                    if !text.isEmpty {
+                        if localText.isEmpty {
+                            localText = text
+                        } else {
+                            localText += " " + text
+                        }
+                    }
+                case .failure(let error):
+                    BrainLogger.error("Speech recognition error: \(error)", category: .core)
+                }
+            }
+        }
     }
 
     private var buttonBackground: some ShapeStyle {
