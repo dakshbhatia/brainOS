@@ -83,12 +83,18 @@ public actor MemoryGenerationPipeline {
             }
         }
         
-        // Store generated memories in knowledge base
+        // Store high-value memories in knowledge base
         for memory in generatedMemories {
-            await storeMemory(memory)
+            if memory.importance > 6 {
+                await storeMemory(memory)
+                NSLog("✨ MemoryPipeline: Stored HIGH VALUE memory: \(memory.summary)")
+            } else {
+                NSLog("📉 MemoryPipeline: Skipping low value memory (\(memory.importance)): \(memory.summary)")
+            }
         }
         
-        NSLog("✅ MemoryPipeline: Generated \(generatedMemories.count)/\(items.count) memories")
+        let highValueCount = generatedMemories.filter { $0.importance > 6 }.count
+        NSLog("✅ MemoryPipeline: Finalized \(highValueCount) high-value memories out of \(items.count) items")
     }
     
     /// Generate a single memory from a data item using AI inference

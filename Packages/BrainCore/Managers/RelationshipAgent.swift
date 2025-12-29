@@ -248,7 +248,7 @@ public actor RelationshipAgent {
     
     /// Clean dirty URLs in text using LinkMetadataManager
     public func cleanText(_ text: String) async -> String {
-        let links = LinkMetadataManager.shared.extractLinks(from: text)
+        let links = await LinkMetadataManager.shared.extractLinks(from: text)
         var cleanedText = text
         
         for link in links {

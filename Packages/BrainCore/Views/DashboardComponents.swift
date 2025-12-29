@@ -7,32 +7,55 @@ struct VitalMeter: View {
     let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Image(systemName: icon)
-                    .foregroundStyle(color)
-                Text(title)
-                    .font(.caption.weight(.medium))
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 28, height: 28)
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(color)
+                }
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(title)
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                    Text("\(Int(value * 100))%")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
-                Text("\(Int(value * 100))%")
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(.secondary)
             }
             
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(color.opacity(0.1))
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.primary.opacity(0.05))
                     
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(color.gradient)
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.7)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                         .frame(width: geo.size.width * CGFloat(min(1.0, value)))
+                        .shadow(color: color.opacity(0.3), radius: 4, x: 0, y: 2)
                 }
             }
             .frame(height: 6)
         }
-        .padding(12)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.primary.opacity(0.04)))
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.primary.opacity(0.03))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.primary.opacity(0.05), lineWidth: 1)
+                )
+        )
     }
 }
 
@@ -49,28 +72,44 @@ struct ActionCard: View {
                 #endif
             }
         }) {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(nudge.urgency > 0.8 ? Color.red : Color.blue)
-                    .frame(width: 8, height: 8)
+            HStack(spacing: 16) {
+                // Priority Indicator
+                let priorityColor = nudge.urgency > 0.8 ? Color.red : Color.blue
                 
-                VStack(alignment: .leading, spacing: 2) {
+                ZStack {
+                    Circle()
+                        .fill(priorityColor.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(priorityColor)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
                     Text(nudge.contactName)
-                        .font(.system(size: 13, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                     Text(nudge.reason)
-                        .font(.caption2)
+                        .font(.system(size: 11))
                         .lineLimit(2)
                         .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 Spacer()
                 
-                Image(systemName: "arrow.up.right.square")
-                    .font(.system(size: 14))
-                    .foregroundStyle(.secondary)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .black))
+                    .foregroundStyle(.secondary.opacity(0.5))
             }
-            .padding(12)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color.primary.opacity(0.06)))
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.primary.opacity(0.04))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.primary.opacity(0.05), lineWidth: 1)
+                    )
+            )
         }
         .buttonStyle(.plain)
     }

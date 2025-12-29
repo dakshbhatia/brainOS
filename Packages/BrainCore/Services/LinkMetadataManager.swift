@@ -1,6 +1,5 @@
 import Foundation
 import LinkPresentation
-import BrainCore
 
 /// Manages extraction of metadata from URLs to provide "clean" links.
 public actor LinkMetadataManager {

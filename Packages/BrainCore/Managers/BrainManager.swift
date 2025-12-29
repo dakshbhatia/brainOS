@@ -24,7 +24,7 @@ public class BrainManager {
         // Start background services
         Task {
             await BackgroundIngestionService.shared.start()
-            await ScreenshotWatcherService.shared.start()
+            ScreenshotWatcherService.shared.start()
             
             // Set up Python environment and start voice service
             await setupVoiceIntegration()

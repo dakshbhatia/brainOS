@@ -76,23 +76,30 @@ struct BrainDashboardView: View {
                 }
             }
             
-            VStack(spacing: 4) {
-                Text("\(greeting), \(userName)")
-                    .font(.system(size: 18, weight: .bold))
+            VStack(spacing: 6) {
+                Text("\(greeting),")
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(.secondary)
+                Text(userName)
+                    .font(.system(size: 24, weight: .black, design: .rounded))
                 
-                HStack(spacing: 6) {
+                HStack(spacing: 8) {
                     Circle()
                         .fill(memoryStreamActive ? Color.green : Color.orange)
-                        .frame(width: 6, height: 6)
-                    Text(memoryStreamActive ? "Cognition Active" : "Brain Idle")
-                        .font(.caption2)
+                        .frame(width: 8, height: 8)
+                        .shadow(color: (memoryStreamActive ? Color.green : Color.orange).opacity(0.5), radius: 4)
+                    
+                    Text(memoryStreamActive ? "Active Intuition" : "Idle Conscious")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .foregroundStyle(.secondary)
-                        .textCase(.uppercase)
+                        .kerning(1.2)
                 }
+                .padding(.top, 4)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 10)
+        .padding(.top, 20)
+        .padding(.bottom, 10)
     }
 
     // MARK: - Vitals Grid

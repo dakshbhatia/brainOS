@@ -1,5 +1,6 @@
 import Foundation
 import EventKit
+import Contacts
 
 /// Manages access to the user's calendar and reminders.
 @MainActor
@@ -75,5 +76,20 @@ public class BrainCalendarManager {
             }
         }
         return birthdays
+    }
+
+    /// Get a summary of upcoming events for the daily brief
+    public func getUpcomingBrief() async -> String {
+        let events = await fetchEvents(days: 1)
+        if events.isEmpty {
+            return "No upcoming events today."
+        }
+        
+        let summary = events.prefix(3).map { event in
+            let time = event.startDate.formatted(date: .omitted, time: .shortened)
+            return "- \(event.title ?? "Untitled Event") at \(time)"
+        }.joined(separator: "\n")
+        
+        return "Upcoming today:\n\(summary)"
     }
 }

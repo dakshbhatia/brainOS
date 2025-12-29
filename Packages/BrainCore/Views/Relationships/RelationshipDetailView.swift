@@ -1,5 +1,4 @@
 import SwiftUI
-import Models
 import EventKit
 
 public struct RelationshipDetailView: View {
@@ -76,10 +75,10 @@ public struct RelationshipDetailView: View {
             
             // Interaction Shortcuts
             HStack(spacing: 12) {
-                ActionButton(icon: "message.fill", color: .blue) {
+                DetailActionButton(icon: "message.fill", color: .blue) {
                     if let url = profile.imessageDeepLink { NSWorkspace.shared.open(url) }
                 }
-                ActionButton(icon: "phone.fill", color: .green) {
+                DetailActionButton(icon: "phone.fill", color: .green) {
                     if let url = profile.facetimeAudioDeepLink { NSWorkspace.shared.open(url) }
                 }
             }
@@ -275,7 +274,7 @@ struct MetricCard: View {
     }
 }
 
-struct ActionButton: View {
+struct DetailActionButton: View {
     let icon: String
     let color: Color
     let action: () -> Void

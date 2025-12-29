@@ -1,5 +1,4 @@
 import SwiftUI
-import Models
 
 public struct RelationshipListView: View {
     @Binding var selectedId: String?
