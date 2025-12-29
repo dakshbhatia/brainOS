@@ -140,6 +140,154 @@ public actor BrainKnowledgeManager {
         return entities
     }
     
+    // MARK: - Relationship Extraction
+    
+    /// Extract semantic relationships from text using pattern matching
+    /// Returns tuples of (subject, predicate, object)
+    public func extractRelationships(from text: String) -> [(subject: String, predicate: String, object: String)] {
+        let entities = extractEntities(from: text)
+        guard entities.count >= 2 else { return [] }
+        
+        var relationships: [(String, String, String)] = []
+        
+        // Split into sentences for better accuracy
+        let sentenceDetector = NLTokenizer(unit: .sentence)
+        sentenceDetector.string = text
+        
+        sentenceDetector.enumerateTokens(in: text.startIndex..<text.endIndex) { sentenceRange, _ in
+            let sentence = String(text[sentenceRange]).lowercased()
+            
+            // Find entities in this sentence
+            let sentenceEntities = entities.filter { sentence.contains($0.lowercased()) }
+            guard sentenceEntities.count >= 2 else { return true }
+            
+            // Extract relationships between pairs
+            for i in 0..<sentenceEntities.count {
+                for j in (i+1)..<sentenceEntities.count {
+                    let entity1 = sentenceEntities[i]
+                    let entity2 = sentenceEntities[j]
+                    
+                    // Try to find a verb/relationship between them
+                    if let predicate = findPredicate(between: entity1, and: entity2, in: sentence) {
+                        relationships.append((entity1, predicate, entity2))
+                    }
+                }
+            }
+            return true
+        }
+        
+        return relationships
+    }
+    
+    /// Find the predicate (verb/relationship) between two entities in a sentence
+    private func findPredicate(between entity1: String, and entity2: String, in sentence: String) -> String? {
+        let e1Lower = entity1.lowercased()
+        let e2Lower = entity2.lowercased()
+        
+        guard let range1 = sentence.range(of: e1Lower),
+              let range2 = sentence.range(of: e2Lower) else { return nil }
+        
+        // Determine order
+        let startRange: Range<String.Index>
+        let endRange: Range<String.Index>
+        
+        if range1.lowerBound < range2.lowerBound {
+            startRange = range1
+            endRange = range2
+        } else {
+            startRange = range2
+            endRange = range1
+        }
+        
+        // Extract text between entities
+        let betweenStart = startRange.upperBound
+        let betweenEnd = endRange.lowerBound
+        guard betweenStart < betweenEnd else { return nil }
+        
+        let between = String(sentence[betweenStart..<betweenEnd])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Common relationship patterns
+        let relationshipPatterns: [(pattern: String, predicate: String)] = [
+            ("works at", "employed_by"),
+            ("works for", "employed_by"),
+            ("employed by", "employed_by"),
+            ("founded", "founded"),
+            ("created", "created"),
+            ("built", "built"),
+            ("is the ceo of", "leads"),
+            ("leads", "leads"),
+            ("manages", "manages"),
+            ("met", "met"),
+            ("met with", "met"),
+            ("talked to", "communicated_with"),
+            ("called", "communicated_with"),
+            ("emailed", "communicated_with"),
+            ("lives in", "resides_in"),
+            ("moved to", "relocated_to"),
+            ("visited", "visited"),
+            ("went to", "visited"),
+            ("is married to", "married_to"),
+            ("married", "married_to"),
+            ("is friends with", "friends_with"),
+            ("knows", "knows"),
+            ("is from", "originates_from"),
+            ("studied at", "studied_at"),
+            ("graduated from", "studied_at"),
+            ("invested in", "invested_in"),
+            ("bought", "acquired"),
+            ("acquired", "acquired"),
+            ("sold", "sold_to"),
+            ("partnered with", "partnered_with"),
+        ]
+        
+        // Check for matching patterns
+        for (pattern, predicate) in relationshipPatterns {
+            if between.contains(pattern) {
+                return predicate
+            }
+        }
+        
+        // Fallback: Extract verb using NLTagger
+        let verbTagger = NLTagger(tagSchemes: [.lexicalClass])
+        verbTagger.string = between
+        
+        var foundVerb: String?
+        verbTagger.enumerateTags(in: between.startIndex..<between.endIndex, unit: .word, scheme: .lexicalClass, options: [.omitPunctuation, .omitWhitespace]) { tag, range in
+            if tag == .verb {
+                foundVerb = String(between[range])
+                return false // Stop after first verb
+            }
+            return true
+        }
+        
+        return foundVerb
+    }
+    
+    /// Process text and store extracted relationships in the knowledge graph
+    public func processAndStoreRelationships(from text: String) async {
+        let relationships = extractRelationships(from: text)
+        
+        for (subject, predicate, object) in relationships {
+            // First ensure entities exist
+            await BrainDatabaseManager.shared.upsertEntity(name: subject, type: "extracted")
+            await BrainDatabaseManager.shared.upsertEntity(name: object, type: "extracted")
+            
+            // Create relationship
+            let sourceId = "extracted:\(subject.lowercased())"
+            let targetId = "extracted:\(object.lowercased())"
+            
+            await BrainDatabaseManager.shared.addRelationship(
+                source: sourceId,
+                target: targetId,
+                type: predicate,
+                strength: 0.5  // Medium confidence from pattern extraction
+            )
+            
+            NSLog("🔗 KnowledgeGraph: Added relationship \(subject) --[\(predicate)]--> \(object)")
+        }
+    }
+    
     /// Get memories within a date range sorted by importance
     public func getMemories(from startDate: Date, to endDate: Date, limit: Int = 10) async -> [(summary: String, timestamp: Date, importance: Double)]? {
         // Query database for memories in date range

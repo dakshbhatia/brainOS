@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 /// Interactive knowledge graph visualization showing entities and relationships
 struct BrainKnowledgeGraphView: View {
@@ -233,21 +232,22 @@ struct BrainKnowledgeGraphView: View {
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
         let radius: CGFloat = min(size.width, size.height) * 0.35
         
+        var positions: [UUID: CGPoint] = [:]
         for (index, node) in nodes.enumerated() {
             let angle = (CGFloat(index) / CGFloat(max(1, nodes.count))) * 2 * .pi
             let x = center.x + radius * cos(angle)
             let y = center.y + radius * sin(angle)
-            nodePositions[node.id] = CGPoint(x: x, y: y)
+            positions[node.id] = CGPoint(x: x, y: y)
         }
         
         // Apply force-directed layout iterations
-        Task {
-            await applyForceDirectedLayout(iterations: 100, size: size)
-        }
+        positions = applyForceDirectedLayout(positions: positions, iterations: 50, size: size)
+        nodePositions = positions
     }
     
     /// Force-directed graph layout using Fruchterman-Reingold algorithm
-    private func applyForceDirectedLayout(iterations: Int, size: CGSize) async {
+    private func applyForceDirectedLayout(positions: [UUID: CGPoint], iterations: Int, size: CGSize) -> [UUID: CGPoint] {
+        var nodePositions = positions
         let area = size.width * size.height
         let k = sqrt(area / max(1, CGFloat(nodes.count))) // Optimal distance
         let temperature: CGFloat = min(size.width, size.height) / 10
@@ -332,23 +332,10 @@ struct BrainKnowledgeGraphView: View {
             
             // Cool down
             currentTemp *= coolingFactor
-            
-            // Update UI periodically
-            if iterations % 10 == 0 {
-                await MainActor.run {
-                    // Trigger re-render
-                    objectWillChange.send()
-                }
-            }
         }
         
-        // Final update
-        await MainActor.run {
-            objectWillChange.send()
-        }
+        return nodePositions
     }
-    
-    @Published private var objectWillChange = PassthroughSubject<Void, Never>()
     
     private func loadGraphData() {
         isLoading = true

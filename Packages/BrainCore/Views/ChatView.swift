@@ -454,6 +454,23 @@ final class ChatSession: ObservableObject {
             if let sid = sessionId {
                 userTurn.autoEmbed(sessionId: sid)
             }
+            
+            // Process user message for knowledge graph relationships
+            if !trimmed.isEmpty {
+                Task.detached(priority: .background) {
+                    await BrainKnowledgeManager.shared.processAndStoreRelationships(from: trimmed)
+                }
+                
+                // Generate memory from user message
+                Task.detached(priority: .background) {
+                    let dataItem = DataItem.message(
+                        text: trimmed,
+                        sender: "user",
+                        timestamp: Date()
+                    )
+                    await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                }
+            }
 
             // Immediately save new session so it appears in sidebar
             if sessionId == nil {
@@ -490,6 +507,21 @@ final class ChatSession: ObservableObject {
                     let sid = sessionId {
                     // Auto-embed assistant response for semantic memory
                     lastTurn.autoEmbed(sessionId: sid)
+                    
+                    // Process for knowledge graph relationships
+                    Task.detached(priority: .background) {
+                        await BrainKnowledgeManager.shared.processAndStoreRelationships(from: lastTurn.content)
+                    }
+                    
+                    // Generate memory from conversation turn
+                    Task.detached(priority: .background) {
+                        let dataItem = DataItem.message(
+                            text: lastTurn.content,
+                            sender: "assistant",
+                            timestamp: Date()
+                        )
+                        await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                    }
                 }
                 // Auto-save after streaming completes
                 save()

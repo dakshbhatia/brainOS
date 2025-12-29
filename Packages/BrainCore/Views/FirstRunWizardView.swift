@@ -517,8 +517,8 @@ struct FirstRunWizardView: View {
                 ForEach(localModels, id: \.id) { model in
                     modelOption(
                         id: model.id,
-                        name: model.displayName,
-                        description: model.parameterSize ?? "Local model"
+                        name: model.name,
+                        description: model.description
                     )
                 }
                 

@@ -160,6 +160,63 @@ public actor PythonEnvironmentManager {
         }
     }
     
+    /// Pre-download Whisper model to avoid first-use delay
+    public func preloadWhisperModel() async -> Bool {
+        NSLog("🎤 PythonEnv: Pre-downloading Whisper base model...")
+        
+        // Run a simple Python script to load the model (which triggers download)
+        let loadScript = """
+        import whisper
+        import sys
+        try:
+            model = whisper.load_model('base')
+            print('Whisper base model loaded successfully')
+            sys.exit(0)
+        except Exception as e:
+            print(f'Error loading Whisper model: {e}')
+            sys.exit(1)
+        """
+        
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: pythonPath)
+        process.arguments = ["-c", loadScript]
+        
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        
+        do {
+            try process.run()
+            
+            // Wait with timeout (model download can take time)
+            let startTime = Date()
+            while process.isRunning {
+                try await Task.sleep(for: .seconds(1))
+                if Date().timeIntervalSince(startTime) > 120 { // 2 minute timeout
+                    NSLog("⚠️ PythonEnv: Whisper model download taking too long, continuing in background...")
+                    // Don't terminate, let it finish in background
+                    return true
+                }
+            }
+            
+            process.waitUntilExit()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            let output = String(data: data, encoding: .utf8) ?? ""
+            
+            if process.terminationStatus == 0 {
+                NSLog("✅ PythonEnv: Whisper model pre-downloaded successfully")
+                return true
+            } else {
+                NSLog("⚠️ PythonEnv: Whisper model pre-download failed (will download on first use): \(output)")
+                return false
+            }
+        } catch {
+            NSLog("⚠️ PythonEnv: Failed to pre-download Whisper model: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
     /// Check if dependencies are already installed
     private func checkDependenciesInstalled(_ packages: [String]) async -> Bool {
         let process = Process()
@@ -299,6 +356,11 @@ public actor PythonEnvironmentManager {
         guard await installVoiceDependencies() else {
             NSLog("❌ PythonEnv: Failed at dependency installation")
             return false
+        }
+        
+        // Step 2.5: Pre-download Whisper model (optional, don't fail if it errors)
+        Task.detached(priority: .utility) {
+            _ = await PythonEnvironmentManager.shared.preloadWhisperModel()
         }
         
         // Step 3: Create voice script

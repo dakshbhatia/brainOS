@@ -20,6 +20,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
     let updater = UpdaterViewModel()
 
     private var activityDot: NSView?
+    private var voiceRecordingDot: NSView?
     private var managementWindow: NSWindow?
     private var chatWindow: NSWindow?
     private var wizardWindow: NSWindow?
@@ -122,9 +123,32 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
                 layer.borderColor = NSColor.white.withAlphaComponent(0.9).cgColor
             }
             activityDot = dot
+            
+            // Add a red blinking dot for voice recording (below green dot)
+            let voiceDot = NSView()
+            voiceDot.wantsLayer = true
+            voiceDot.translatesAutoresizingMaskIntoConstraints = false
+            voiceDot.isHidden = true
+            button.addSubview(voiceDot)
+            NSLayoutConstraint.activate([
+                voiceDot.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -3),
+                voiceDot.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: -12),
+                voiceDot.widthAnchor.constraint(equalToConstant: 7),
+                voiceDot.heightAnchor.constraint(equalToConstant: 7),
+            ])
+            if let layer = voiceDot.layer {
+                layer.backgroundColor = NSColor.systemRed.cgColor
+                layer.cornerRadius = 3.5
+                layer.borderWidth = 1
+                layer.borderColor = NSColor.white.withAlphaComponent(0.9).cgColor
+            }
+            voiceRecordingDot = voiceDot
         }
         statusItem = item
         updateStatusItemAndMenu()
+        
+        // Monitor voice recording state
+        setupVoiceRecordingMonitor()
 
         // Initialize directory access early so security-scoped bookmark is active
         let _ = DirectoryPickerService.shared
@@ -271,6 +295,29 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
                     dot.isHidden = true
                 }
             }
+            
+            // Update voice recording indicator
+            if let voiceDot = voiceRecordingDot {
+                let isRecording = SpeechRecognizer.shared.isListening
+                if isRecording {
+                    voiceDot.isHidden = false
+                    if let layer = voiceDot.layer, layer.animation(forKey: "voiceBlink") == nil {
+                        let anim = CABasicAnimation(keyPath: "opacity")
+                        anim.fromValue = 1.0
+                        anim.toValue = 0.3
+                        anim.duration = 0.6
+                        anim.autoreverses = true
+                        anim.repeatCount = .infinity
+                        layer.add(anim, forKey: "voiceBlink")
+                    }
+                } else {
+                    if let layer = voiceDot.layer {
+                        layer.removeAnimation(forKey: "voiceBlink")
+                    }
+                    voiceDot.isHidden = true
+                }
+            }
+            
             var tooltip: String
             switch serverController.serverHealth {
             case .stopped:
@@ -289,6 +336,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
             }
             if serverController.activeRequestCount > 0 {
                 tooltip += " — Generating…"
+            }
+            if SpeechRecognizer.shared.isListening {
+                tooltip += " — 🎤 Recording"
             }
             // Advertise MCP HTTP endpoints on the same port
             tooltip += " — MCP: /mcp/*"
@@ -441,8 +491,9 @@ extension AppDelegate {
     }
     
     private func applyVoiceHotkey() {
-        // Default: Cmd+Shift+V for voice input
-        let voiceHotkey = HotkeyConfig(keyCode: 9, modifiers: ["command", "shift"])  // 9 = V key
+        // Default: Cmd+Shift+V for voice input (V = keyCode 9)
+        // Carbon modifiers: cmdKey=256, shiftKey=512, combined = 768
+        let voiceHotkey = Hotkey(keyCode: 9, carbonModifiers: 768, displayString: "⇧⌘V")
         HotKeyManager.shared.register(hotkey: voiceHotkey) { [weak self] in
             Task { @MainActor in
                 self?.triggerVoiceInput()
@@ -476,6 +527,17 @@ extension AppDelegate {
             }
         }
     }
+    
+    private func setupVoiceRecordingMonitor() {
+        // Monitor SpeechRecognizer.isListening changes
+        SpeechRecognizer.shared.$isListening
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateStatusItemAndMenu()
+            }
+            .store(in: &cancellables)
+    }
+    
     fileprivate func handleDeepLink(_ url: URL) {
         guard let scheme = url.scheme?.lowercased(), scheme == "huggingface" else { return }
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
@@ -720,8 +782,8 @@ extension AppDelegate {
         
         // First pass: Look for OpenAI provider specifically
         for state in connectedStates {
-            guard let provider = RemoteProviderManager.shared.getProvider(state.providerId),
-                  let apiKey = provider.getAPIKey(), !apiKey.isEmpty else { continue }
+            guard let provider = RemoteProviderManager.shared.configuration.provider(id: state.providerId),
+                  let apiKey = RemoteProviderKeychain.getAPIKey(for: provider.id), !apiKey.isEmpty else { continue }
             
             let urlString = provider.baseURL?.absoluteString ?? ""
             NSLog("🧠 [Core] Checking connected provider: \(provider.name), URL: \(urlString)")
@@ -737,8 +799,8 @@ extension AppDelegate {
         if !AutoEmbeddingService.shared.isConfigured {
             NSLog("🧠 [Core] No OpenAI provider found, trying fallback...")
             for state in connectedStates {
-                guard let provider = RemoteProviderManager.shared.getProvider(state.providerId),
-                      let apiKey = provider.getAPIKey(), !apiKey.isEmpty else { continue }
+                guard let provider = RemoteProviderManager.shared.configuration.provider(id: state.providerId),
+                      let apiKey = RemoteProviderKeychain.getAPIKey(for: provider.id), !apiKey.isEmpty else { continue }
                 
                 AutoEmbeddingService.shared.configure(openAIKey: apiKey)
                 NSLog("🧠 [Core] ✅ Semantic memory configured with fallback provider: \(provider.name)")
