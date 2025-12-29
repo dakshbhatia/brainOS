@@ -115,6 +115,8 @@ public actor BackgroundIngestionService {
     }
     
     private func ingestHealth() async {
+        // Skip HealthKit on macOS (not available)
+        #if os(iOS)
         do {
             try await BrainHealthManager.shared.requestPermissions()
             let steps = try await BrainHealthManager.shared.fetchStepCount(days: 1)
@@ -131,5 +133,9 @@ public actor BackgroundIngestionService {
         } catch {
             BrainLogger.error("Failed to ingest health data: \(error)", category: .knowledge)
         }
+        #else
+        // HealthKit is only available on iOS/watchOS, skip on macOS
+        BrainLogger.info("HealthKit not available on macOS, skipping health ingestion", category: .knowledge)
+        #endif
     }
 }

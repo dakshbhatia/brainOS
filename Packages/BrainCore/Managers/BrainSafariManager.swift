@@ -21,7 +21,7 @@ public actor BrainSafariManager {
         
         let query = """
         SELECT 
-            i.title, 
+            i.url, 
             i.url, 
             v.visit_time + 978307200 AS timestamp
         FROM 

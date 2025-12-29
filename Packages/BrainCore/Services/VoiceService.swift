@@ -49,7 +49,11 @@ public class VoiceService: ObservableObject {
     
     private func waitForReady() async {
         let url = URL(string: "http://127.0.0.1:8001/health")!
-        for _ in 0..<30 { // Try for 30 seconds
+        var attemptCount = 0
+        let maxAttempts = 10 // Reduced from 30 to avoid spam
+        
+        for attempt in 0..<maxAttempts {
+            attemptCount = attempt + 1
             do {
                 let (data, _) = try await URLSession.shared.data(from: url)
                 if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -59,11 +63,14 @@ public class VoiceService: ObservableObject {
                     return
                 }
             } catch {
-                // Wait and retry
+                // Only log every 5th attempt to reduce spam
+                if attemptCount % 5 == 0 {
+                    BrainLogger.info("Voice Sidecar not ready yet (attempt \(attemptCount)/\(maxAttempts))...", category: .core)
+                }
             }
             try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
-        BrainLogger.error("Voice Sidecar failed to become ready", category: .core)
+        BrainLogger.info("Voice Sidecar failed to become ready after \(maxAttempts) attempts. Voice features disabled.", category: .core)
     }
     
     public func speak(_ text: String, voiceId: String = "default") async {

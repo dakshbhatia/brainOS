@@ -122,7 +122,7 @@ public class BrainMessagesManager {
             m.associated_message_guid,
             m.associated_message_type,
             m.associated_message_emoji,
-            (SELECT GROUP_CONCAT(a.filename || '|' || a.mime_type || '|' || a.relative_path, ';') 
+            (SELECT GROUP_CONCAT(a.filename || '|' || a.mime_type, ';') 
              FROM message_attachment_join maj 
              JOIN attachment a ON maj.attachment_id = a.ROWID 
              WHERE maj.message_id = m.ROWID) as attachments
