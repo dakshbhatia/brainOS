@@ -261,7 +261,7 @@ public actor PythonEnvironmentManager {
         
         NSLog("📝 PythonEnv: Creating voice server script...")
         
-        // Create basic FastAPI server
+        // Create basic FastAPI server matching VoiceService expectations
         let scriptContent = """
         #!/usr/bin/env python3
         \"\"\"
@@ -269,37 +269,38 @@ public actor PythonEnvironmentManager {
         Provides TTS and STT services via FastAPI
         \"\"\"
         
-        from fastapi import FastAPI, HTTPException
-        from fastapi.responses import Response
+        from fastapi import FastAPI, HTTPException, UploadFile, File
+        from fastapi.responses import Response, StreamingResponse
         from pydantic import BaseModel
+        from typing import Optional
         import uvicorn
+        import os
+        import io
         
         app = FastAPI(title="BrainOS Voice Server")
         
-        class TextToSpeechRequest(BaseModel):
+        class TTSRequest(BaseModel):
             text: str
-            voice: str = "default"
-            speed: float = 1.0
-        
-        class SpeechToTextRequest(BaseModel):
-            audio_data: str  # Base64 encoded
+            voice_id: Optional[str] = "default"
+            speed: Optional[float] = 1.0
         
         @app.get("/health")
         async def health():
-            return {"status": "healthy", "version": "1.0.0"}
+            return {"status": "ok", "tts_loaded": False, "stt_loaded": False}
         
-        @app.post("/tts")
-        async def text_to_speech(request: TextToSpeechRequest):
-            # TODO: Implement actual TTS (piper-tts, coqui, or system voice)
-            return {"audio_data": "", "format": "wav", "sample_rate": 22050}
+        @app.post("/v1/audio/speech")
+        async def text_to_speech(request: TTSRequest):
+            # Fallback stub
+            return Response(content=b"", media_type="audio/wav")
         
-        @app.post("/stt")
-        async def speech_to_text(request: SpeechToTextRequest):
-            # TODO: Implement actual STT (whisper.cpp or similar)
-            return {"text": "", "confidence": 0.0}
+        @app.post("/v1/audio/transcriptions")
+        async def speech_to_text(file: UploadFile = File(...), language: Optional[str] = None):
+            # Fallback stub
+            return {"text": ""}
         
         if __name__ == "__main__":
-            uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info")
+            port = int(os.getenv("VOICE_PORT", 8001))
+            uvicorn.run(app, host="127.0.0.1", port=port, log_level="info")
         
         """
         

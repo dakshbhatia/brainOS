@@ -157,11 +157,15 @@ actor MLXService: ToolCapableService {
 
     private func selectModel(requestedName: String?) throws -> LocalModelRef {
         let trimmed = (requestedName ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
+        if trimmed.isEmpty {
+            // Fallback: pick the first available installed model
+            if let first = Self.getAvailableModels().first, let m = Self.findModel(named: first) {
+                return m
+            }
             throw NSError(
                 domain: "MLXService",
                 code: 3,
-                userInfo: [NSLocalizedDescriptionKey: "Requested model is required"]
+                userInfo: [NSLocalizedDescriptionKey: "No models installed. Requested model is required."]
             )
         }
         if let m = Self.findModel(named: trimmed) { return m }

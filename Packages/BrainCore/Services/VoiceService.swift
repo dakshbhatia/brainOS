@@ -20,17 +20,20 @@ public class VoiceService: ObservableObject {
     
     private init() {}
     
-    public func start() {
+    public func start() async {
         guard process == nil else { return }
         
-        BrainLogger.info("Starting Voice Sidecar...", category: .core)
+        let status = await PythonEnvironmentManager.shared.getSetupStatus()
+        guard status.isReady else {
+            BrainLogger.error("Voice environment not ready: \(status)", category: .core)
+            return
+        }
+        
+        BrainLogger.info("Starting Voice Sidecar at \(status.scriptPath)...", category: .core)
         
         let process = Process()
-        let pythonPath = "/Users/dakshbhatia/BrainOS/.venv/bin/python" // Use the workspace venv
-        let scriptPath = "/Users/dakshbhatia/BrainOS/scripts/voice_server.py"
-        
-        process.executableURL = URL(fileURLWithPath: pythonPath)
-        process.arguments = [scriptPath]
+        process.executableURL = URL(fileURLWithPath: status.pythonPath)
+        process.arguments = [status.scriptPath]
         process.environment = ["VOICE_PORT": "8001"]
         
         let pipe = Pipe()
@@ -42,9 +45,7 @@ public class VoiceService: ObservableObject {
             self.process = process
             
             // Wait for health check
-            Task {
-                await waitForReady()
-            }
+            await waitForReady()
         } catch {
             BrainLogger.error("Failed to start Voice Sidecar: \(error)", category: .core)
         }
@@ -68,7 +69,7 @@ public class VoiceService: ObservableObject {
             do {
                 let (data, _) = try await URLSession.shared.data(from: url)
                 if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let status = json["status"] as? String, status == "ok" {
+                   let status = json["status"] as? String, (status == "ok" || status == "healthy") {
                     self.isReady = true
                     self.ttsAvailable = (json["tts_loaded"] as? Bool) ?? false
                     self.sttAvailable = (json["stt_loaded"] as? Bool) ?? false

@@ -54,6 +54,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
 
         // Start BrainOS proactive intelligence
         Task {
+            await BrainDatabaseManager.shared.initialize()
             await BrainManager.shared.start()
             BrainLocationManager.shared.start()
             _ = try? await BrainCalendarManager.shared.requestAccess()

@@ -61,9 +61,7 @@ public class BrainManager {
         }
         
         // Start voice service
-        await MainActor.run {
-            VoiceService.shared.start()
-        }
+        await VoiceService.shared.start()
         
         BrainLogger.info("Voice integration setup complete", category: .core)
     }
