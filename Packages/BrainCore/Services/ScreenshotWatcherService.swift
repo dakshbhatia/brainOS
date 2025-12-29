@@ -3,7 +3,8 @@ import AppKit
 import Vision
 
 /// Monitors the Desktop for new screenshots and ingests them into semantic memory.
-public actor ScreenshotWatcherService {
+@MainActor
+public class ScreenshotWatcherService {
     public static let shared = ScreenshotWatcherService()
     
     private var query: NSMetadataQuery?
@@ -20,9 +21,10 @@ public actor ScreenshotWatcherService {
             forName: .NSMetadataQueryDidUpdate,
             object: query,
             queue: .main
-        ) { [weak self] notification in
-            Task {
-                await self?.processQueryUpdates(query)
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            Task { @MainActor in
+                await self.processQueryUpdates()
             }
         }
         
@@ -31,7 +33,8 @@ public actor ScreenshotWatcherService {
         BrainLogger.info("Screenshot watcher started on Desktop", category: .knowledge)
     }
     
-    private func processQueryUpdates(_ query: NSMetadataQuery) async {
+    private func processQueryUpdates() async {
+        guard let query = self.query else { return }
         for i in 0..<query.resultCount {
             guard let item = query.result(at: i) as? NSMetadataItem,
                   let path = item.value(forAttribute: kMDItemPath as String) as? String,
@@ -51,12 +54,12 @@ public actor ScreenshotWatcherService {
         
         // 1. Perform OCR using Vision framework
         let requestHandler = VNImageRequestHandler(url: url)
-        let request = VNRecognizeTextRequest { request, error in
+        let request = VNRecognizeTextRequest { [weak self] request, error in
             guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
             
             let recognizedText = observations.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
             
-            Task {
+            Task { @MainActor in
                 // 2. Get Visual Description from VLM
                 let visualDescription = await BrainVisionManager.shared.describeImage(at: url)
                 

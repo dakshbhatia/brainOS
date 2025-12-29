@@ -15,6 +15,7 @@ public enum BrainLogger {
         case health = "Health"
         case messages = "Messages"
         case knowledge = "Knowledge"
+        case finance = "Finance"
     }
     
     /// Log a message with a specific category and level

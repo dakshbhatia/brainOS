@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct GlassMessageBubble: View {
-    let role: MessageRole
+    let message: OSMobileMessage
     let isStreaming: Bool
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.theme) private var theme
@@ -59,7 +59,7 @@ struct GlassMessageBubble: View {
     }
 
     private var glassBackground: some ShapeStyle {
-        if role == .user {
+        if message.role == .user {
             // Use theme accent color for user messages - opacity scales with theme glass settings
             let baseOpacity = colorScheme == .dark ? 0.18 : 0.15
             let boost = theme.glassOpacityPrimary * 0.5
@@ -99,7 +99,7 @@ struct GlassMessageBubble: View {
     }
 
     private var shadowColor: Color {
-        if role == .user {
+        if message.role == .user {
             return theme.accentColor.opacity(0.3)
         } else {
             return theme.shadowColor.opacity(theme.shadowOpacity)
@@ -111,11 +111,17 @@ struct GlassMessageBubble: View {
 struct GlassMessageBubble_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            GlassMessageBubble(role: .user, isStreaming: false)
-                .frame(width: 300, height: 80)
+            GlassMessageBubble(
+                message: OSMobileMessage(role: .user, content: "User message preview"),
+                isStreaming: false
+            )
+            .frame(width: 300, height: 80)
 
-            GlassMessageBubble(role: .assistant, isStreaming: false)
-                .frame(width: 300, height: 80)
+            GlassMessageBubble(
+                message: OSMobileMessage(role: .assistant, content: "Assistant response preview"),
+                isStreaming: false
+            )
+            .frame(width: 300, height: 80)
         }
         .padding()
         .background(Color.gray.opacity(0.1))

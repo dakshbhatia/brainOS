@@ -10,7 +10,7 @@ import AppKit
 
 struct MessageGroup: Identifiable, Equatable {
     let id: UUID
-    let role: MessageRole
+    let role: OSMessageRole
     var turns: [ChatTurn]
 
     static func == (lhs: MessageGroup, rhs: MessageGroup) -> Bool {

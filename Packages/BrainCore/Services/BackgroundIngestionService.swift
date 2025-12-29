@@ -53,6 +53,8 @@ public actor BackgroundIngestionService {
             )
         }
     }
+    
+    private func ingestSafari() async {
         let history = await BrainSafariManager.shared.fetchRecentHistory(limit: 20)
         for item in history {
             let content = "Visited website: \(item.title) (\(item.url))"
@@ -69,7 +71,7 @@ public actor BackgroundIngestionService {
     
     private func ingestMessages() async {
         do {
-            let messages = try await BrainMessagesManager.shared.fetchRecentMessages(limit: 50)
+            let messages: [MessageEntry] = try await BrainMessagesManager.shared.fetchRecentMessages(limit: 50)
             for message in messages {
                 // 1. Add to semantic memory
                 if let text = message.text, !text.isEmpty {
@@ -85,7 +87,7 @@ public actor BackgroundIngestionService {
                     // Extract EXIF if there are image attachments
                     for attachment in message.attachments {
                         if let path = attachment.path, path.contains("Attachments") {
-                            let exif = BrainMessagesManager.shared.extractEXIF(from: path)
+                            let exif = message.extractEXIF(from: path)
                             for (key, value) in exif {
                                 metadata["exif_\(key)"] = value
                             }
@@ -109,21 +111,6 @@ public actor BackgroundIngestionService {
             }
         } catch {
             BrainLogger.error("Failed to ingest messages: \(error)", category: .knowledge)
-        }
-    }
-    
-    private func ingestUsage() async {
-        let usage = await BrainUsageManager.shared.fetchRecentUsage(limit: 5)
-        for item in usage {
-            let hours = String(format: "%.1f", item.duration / 3600.0)
-            await BrainKnowledgeManager.shared.addMemory(
-                text: "I used \(item.bundleId) for \(hours) hours today.",
-                metadata: [
-                    "source": "usage",
-                    "bundleId": item.bundleId,
-                    "duration": "\(item.duration)"
-                ]
-            )
         }
     }
     

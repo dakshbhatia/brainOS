@@ -8,7 +8,7 @@
 import Foundation
 
 /// Message role for chat interactions
-enum MessageRole: String, Codable, Sendable {
+enum OSMessageRole: String, Codable, Sendable {
     case system
     case user
     case assistant
@@ -16,11 +16,11 @@ enum MessageRole: String, Codable, Sendable {
 }
 
 /// Chat message structure
-struct Message: Codable, Sendable {
-    let role: MessageRole
+struct OSMobileMessage: Codable, Sendable {
+    let role: OSMessageRole
     let content: String
 
-    init(role: MessageRole, content: String) {
+    init(role: OSMessageRole, content: String) {
         self.role = role
         self.content = content
     }

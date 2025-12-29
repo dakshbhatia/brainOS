@@ -39,13 +39,26 @@ public actor RelationshipAgent {
         
         do {
             let engine = ChatEngine()
-            let response = try await engine.generateOneShot(
+            let request = ChatCompletionRequest(
+                model: "default",
                 messages: [ChatMessage(role: "user", content: prompt)],
-                parameters: GenerationParameters(temperature: 0.3, maxTokens: 500, topPOverride: nil, repetitionPenalty: nil),
-                requestedModel: "default"
+                temperature: 0.3,
+                max_tokens: 500,
+                stream: nil,
+                top_p: nil,
+                frequency_penalty: nil,
+                presence_penalty: nil,
+                stop: nil,
+                n: nil,
+                tools: nil,
+                tool_choice: nil,
+                session_id: nil
             )
             
-            if let data = response.data(using: .utf8),
+            let response = try await engine.completeChat(request: request)
+            
+            if let content = response.choices.first?.message.content,
+               let data = content.data(using: String.Encoding.utf8),
                let nudges = try? JSONDecoder().decode([RelationshipNudge].self, from: data) {
                 return nudges
             }

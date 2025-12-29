@@ -68,7 +68,7 @@ public class VoiceService: ObservableObject {
     
     public func speak(_ text: String, voiceId: String = "default") async {
         guard isReady else {
-            BrainLogger.warn("Voice Service not ready, skipping speech", category: .core)
+            BrainLogger.info("Voice Service not ready, skipping speech", category: .core)
             return
         }
         

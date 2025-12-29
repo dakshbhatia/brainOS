@@ -1,6 +1,13 @@
 import Foundation
 import BrainRepository
 
+public struct Transaction: Codable, Sendable {
+    public let date: String
+    public let amount: Double
+    public let merchant: String
+    public let category: String
+}
+
 /// Manages financial data integration (Plaid-powered).
 public actor BrainFinanceManager {
     public static let shared = BrainFinanceManager()
@@ -9,7 +16,7 @@ public actor BrainFinanceManager {
     
     /// Fetches recent transactions. 
     /// In a real implementation, this would use a stored Plaid access_token.
-    public func fetchRecentTransactions(days: Int = 7) async throws -> [[String: Any]] {
+    public func fetchRecentTransactions(days: Int = 7) async throws -> [Transaction] {
         BrainLogger.info("Fetching transactions for last \(days) days...", category: .finance)
         
         // 1. Check for Plaid access_token in Keychain
@@ -23,9 +30,9 @@ public actor BrainFinanceManager {
         
         // Mock data for now, but structured for real use
         return [
-            ["date": "2024-12-26", "amount": -42.50, "merchant": "Starbucks", "category": "Food & Drink"],
-            ["date": "2024-12-25", "amount": -120.00, "merchant": "Apple", "category": "Entertainment"],
-            ["date": "2024-12-24", "amount": 2500.00, "merchant": "Employer", "category": "Income"]
+            Transaction(date: "2024-12-26", amount: -42.50, merchant: "Starbucks", category: "Food & Drink"),
+            Transaction(date: "2024-12-25", amount: -120.00, merchant: "Apple", category: "Entertainment"),
+            Transaction(date: "2024-12-24", amount: 2500.00, merchant: "Employer", category: "Income")
         ]
     }
     

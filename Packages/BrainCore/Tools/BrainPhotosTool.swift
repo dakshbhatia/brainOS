@@ -21,7 +21,7 @@ struct BrainPhotosTool: BrainOSTool {
     func execute(argumentsJSON: String) async throws -> String {
         guard let data = argumentsJSON.data(using: .utf8),
               let args = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let query = args["query"] as? String else {
+              let _ = args["query"] as? String else {
             throw NSError(domain: "BrainPhotosTool", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid arguments"])
         }
         

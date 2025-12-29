@@ -436,16 +436,16 @@ struct OpenAIError: Codable, Error, Sendable {
 
 extension ChatCompletionRequest {
     /// Convert OpenAI format messages to internal Message format
-    func toInternalMessages() -> [Message] {
+    func toInternalMessages() -> [OSMobileMessage] {
         return messages.map { chatMessage in
-            let role: MessageRole =
+            let role: OSMessageRole =
                 switch chatMessage.role {
                 case "system": .system
                 case "user": .user
                 case "assistant": .assistant
                 default: .user
                 }
-            return Message(role: role, content: chatMessage.content ?? "")
+            return OSMobileMessage(role: role, content: chatMessage.content ?? "")
         }
     }
 }
@@ -639,3 +639,5 @@ extension Tool {
         ]
     }
 }
+
+

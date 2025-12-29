@@ -541,6 +541,12 @@ private struct SuggestedModelCard: View {
         isVLM ? "Vision" : "Text"
     }
 
+    private var canDownload: Bool {
+        if case .notStarted = downloadState { return true }
+        if case .failed = downloadState { return true }
+        return false
+    }
+
     var body: some View {
         Button(action: {
             if case .notStarted = downloadState {
@@ -661,7 +667,7 @@ private struct SuggestedModelCard: View {
             )
         }
         .buttonStyle(.plain)
-        .disabled(downloadState != .notStarted && downloadState != .failed)
+        .disabled(!canDownload)
         .onHover { hovering in
             withAnimation(theme.animationQuick()) {
                 isHovered = hovering

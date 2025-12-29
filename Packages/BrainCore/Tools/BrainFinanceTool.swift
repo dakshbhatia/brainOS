@@ -24,13 +24,20 @@ struct BrainFinanceTool: BrainOSTool {
             let transactions = try await BrainFinanceManager.shared.fetchRecentTransactions(days: days)
             let balance = try await BrainFinanceManager.shared.getBalance()
             
-            let result: [String: Any] = [
-                "balance": balance,
-                "recent_transactions": transactions,
-                "spending_alert": "You spent 15% more on dining out this week compared to last week."
-            ]
+            struct FinanceResult: Codable {
+                let balance: Double
+                let recent_transactions: [Transaction]
+                let spending_alert: String
+            }
             
-            let jsonData = try JSONSerialization.data(withJSONObject: result)
+            let result = FinanceResult(
+                balance: balance,
+                recent_transactions: transactions,
+                spending_alert: "You spent 15% more on dining out this week compared to last week."
+            )
+            
+            let encoder = JSONEncoder()
+            let jsonData = try encoder.encode(result)
             return String(data: jsonData, encoding: .utf8) ?? "{}"
         } catch {
             return "Error accessing financial data: \(error.localizedDescription). Please connect your bank in Settings."

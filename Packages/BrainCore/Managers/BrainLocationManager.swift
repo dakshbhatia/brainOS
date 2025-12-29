@@ -21,10 +21,11 @@ public class BrainLocationManager: NSObject, CLLocationManagerDelegate {
         locationManager.startUpdatingLocation()
     }
     
-    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    public nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
         
-        Task {
+        Task { @MainActor in
+            let geocoder = CLGeocoder()
             let placemarks = try? await geocoder.reverseGeocodeLocation(location)
             let address = placemarks?.first?.name ?? placemarks?.first?.locality
             

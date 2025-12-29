@@ -59,12 +59,23 @@ public class BrainManager {
         
         do {
             let engine = ChatEngine()
-            let response = try await engine.generateOneShot(
+            let request = ChatCompletionRequest(
+                model: "default",
                 messages: [ChatMessage(role: "user", content: context)],
-                parameters: GenerationParameters(temperature: 0.7, maxTokens: 100, topPOverride: nil, repetitionPenalty: nil),
-                requestedModel: "default"
+                temperature: 0.7,
+                max_tokens: 100,
+                stream: nil,
+                top_p: nil,
+                frequency_penalty: nil,
+                presence_penalty: nil,
+                stop: nil,
+                n: nil,
+                tools: nil,
+                tool_choice: nil,
+                session_id: nil
             )
-            return response
+            let response = try await engine.completeChat(request: request)
+            return response.choices.first?.message.content ?? "Unable to generate brief."
         } catch {
             BrainLogger.error("Failed to generate brief with LLM: \(error)", category: .core)
             return "You've taken \(Int(steps)) steps today. Your relationships are looking good!"
@@ -118,13 +129,25 @@ public class BrainManager {
         
         do {
             let engine = ChatEngine()
-            let response = try await engine.generateOneShot(
+            let request = ChatCompletionRequest(
+                model: "default",
                 messages: [ChatMessage(role: "user", content: context)],
-                parameters: GenerationParameters(temperature: 0.7, maxTokens: 300, topPOverride: nil, repetitionPenalty: nil),
-                requestedModel: "default"
+                temperature: 0.7,
+                max_tokens: 300,
+                stream: nil,
+                top_p: nil,
+                frequency_penalty: nil,
+                presence_penalty: nil,
+                stop: nil,
+                n: nil,
+                tools: nil,
+                tool_choice: nil,
+                session_id: nil
             )
+            let result = try await engine.completeChat(request: request)
+            let response = result.choices.first?.message.content ?? ""
             
-            if let data = response.data(using: .utf8),
+            if let data = response.data(using: String.Encoding.utf8),
                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let summary = json["summary"] as? String,
                let mood = json["mood"] as? String,
@@ -177,26 +200,38 @@ public class BrainManager {
         
         do {
             let engine = ChatEngine()
-            let response = try await engine.generateOneShot(
+            let request = ChatCompletionRequest(
+                model: "default",
                 messages: [
                     ChatMessage(role: "system", content: systemPrompt),
                     ChatMessage(role: "user", content: context)
                 ],
-                parameters: GenerationParameters(temperature: 0.3, maxTokens: 200, topPOverride: nil, repetitionPenalty: nil),
-                requestedModel: "default"
+                temperature: 0.3,
+                max_tokens: 200,
+                stream: nil,
+                top_p: nil,
+                frequency_penalty: nil,
+                presence_penalty: nil,
+                stop: nil,
+                n: nil,
+                tools: nil,
+                tool_choice: nil,
+                session_id: nil
             )
+            let result = try await engine.completeChat(request: request)
+            let response = result.choices.first?.message.content ?? ""
             
-            let trimmedResponse = response.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmedResponse = response.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             if trimmedResponse != "NONE" && !trimmedResponse.isEmpty {
                 // Try to extract JSON if the model added extra text
                 let jsonString: String
-                if let range = trimmedResponse.range(of: "{.*}", options: .regularExpression) {
+                if let range = trimmedResponse.range(of: "{.*}", options: String.CompareOptions.regularExpression) {
                     jsonString = String(trimmedResponse[range])
                 } else {
                     jsonString = trimmedResponse
                 }
                 
-                if let data = jsonString.data(using: .utf8),
+                if let data = jsonString.data(using: String.Encoding.utf8),
                    let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
                    let title = json["title"],
                    let body = json["body"] {

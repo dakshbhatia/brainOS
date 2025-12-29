@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 
 /// Native audio player for streaming PCM/WAV data.
+@MainActor
 public class AudioStreamPlayer: NSObject {
     public static let shared = AudioStreamPlayer()
     

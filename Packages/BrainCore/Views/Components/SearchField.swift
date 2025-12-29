@@ -14,7 +14,6 @@ struct SearchField: View {
     var width: CGFloat = 240
 
     var body: some View {
-        HStack(spacing: 8) {
             HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 14, weight: .medium))

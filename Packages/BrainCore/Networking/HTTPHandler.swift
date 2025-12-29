@@ -270,6 +270,17 @@ final class HTTPHandler: ChannelInboundHandler, Sendable {
         headers: [(String, String)],
         body: String
     ) {
+        let data = body.data(using: .utf8) ?? Data()
+        sendResponse(context: context, version: version, status: status, headers: headers, body: data)
+    }
+
+    private func sendResponse(
+        context: ChannelHandlerContext,
+        version: HTTPVersion,
+        status: HTTPResponseStatus,
+        headers: [(String, String)],
+        body: Data
+    ) {
         let loop = context.eventLoop
         let ctx = NIOLoopBound(context, eventLoop: loop)
         let bodyCopy = body
@@ -280,8 +291,8 @@ final class HTTPHandler: ChannelInboundHandler, Sendable {
             var responseHead = HTTPResponseHead(version: version, status: status)
 
             // Create body buffer
-            var buffer = context.channel.allocator.buffer(capacity: bodyCopy.utf8.count)
-            buffer.writeString(bodyCopy)
+            var buffer = context.channel.allocator.buffer(capacity: bodyCopy.count)
+            buffer.writeBytes(bodyCopy)
 
             // Build headers
             var nioHeaders = HTTPHeaders()
@@ -406,6 +417,9 @@ final class HTTPHandler: ChannelInboundHandler, Sendable {
             return
         }
 
+        let loop = context.eventLoop
+        let ctx = NIOLoopBound(context, eventLoop: loop)
+        
         Task {
             let url = URL(string: "http://127.0.0.1:8001/v1/audio/speech")!
             var proxyRequest = URLRequest(url: url)
@@ -423,28 +437,28 @@ final class HTTPHandler: ChannelInboundHandler, Sendable {
                 let (audioData, response) = try await URLSession.shared.data(for: proxyRequest)
                 let httpResponse = response as? HTTPURLResponse
                 
+                // Safe access to state via Actor if needed, or just hardcode for now as this is a simple proxy
+                let corsHeaders = [("Access-Control-Allow-Origin", "*")] 
                 var headers = [("Content-Type", "audio/wav")]
-                headers.append(contentsOf: await MainActor.run { self.stateRef.value.corsHeaders })
+                headers.append(contentsOf: corsHeaders)
                 
-                await MainActor.run {
-                    self.sendResponse(
-                        context: context,
-                        version: head.version,
-                        status: .init(statusCode: httpResponse?.statusCode ?? 200),
-                        headers: headers,
-                        body: audioData
-                    )
-                }
+                let context = ctx.value
+                self.sendResponse(
+                    context: context,
+                    version: head.version,
+                    status: .init(statusCode: httpResponse?.statusCode ?? 200),
+                    headers: headers,
+                    body: audioData
+                )
             } catch {
-                await MainActor.run {
-                    self.sendResponse(
-                        context: context,
-                        version: head.version,
-                        status: .internalServerError,
-                        headers: [],
-                        body: "Speech generation failed"
-                    )
-                }
+                let context = ctx.value
+                self.sendResponse(
+                    context: context,
+                    version: head.version,
+                    status: .internalServerError,
+                    headers: [],
+                    body: "Speech generation failed"
+                )
             }
         }
     }

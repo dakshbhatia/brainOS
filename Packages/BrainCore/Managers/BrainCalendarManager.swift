@@ -10,11 +10,12 @@ public class BrainCalendarManager {
     private init() {}
     
     public func requestAccess() async throws -> Bool {
+        let store = EKEventStore()
         if #available(macOS 14.0, *) {
-            return try await eventStore.requestFullAccessToEvents()
+            return try await store.requestFullAccessToEvents()
         } else {
             return try await withCheckedThrowingContinuation { continuation in
-                eventStore.requestAccess(to: .event) { granted, error in
+                store.requestAccess(to: .event) { granted, error in
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {

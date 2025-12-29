@@ -1,0 +1,320 @@
+warning: 'braincore': found 3 file(s) which are unhandled; explicitly declare them as resources or exclude from the target
+    /Users/dakshbhatia/BrainOS/Packages/BrainCore/build_output_final_final.txt
+    /Users/dakshbhatia/BrainOS/Packages/BrainCore/build_output_final.txt
+    /Users/dakshbhatia/BrainOS/Packages/BrainCore/build_output.txt
+[0/1] Planning build
+Building for debugging...
+[0/1] Write swift-version--58304C5D6DBC2206.txt
+[2/44] Compiling MLXVLM SmolVLM2.swift
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen2VL.swift:916:52: error: 'Message' is ambiguous for type lookup in this context
+914 |     public init() {}
+915 | 
+916 |     public func generate(message: Chat.Message) -> Message {
+    |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+917 |         [
+918 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/SmolVLM2.swift:290:64: error: 'Message' is ambiguous for type lookup in this context
+288 | 
+289 |             // Insert a default system message if the input doesn't have one
+290 |             func messagesWithSystem(_ messages: [Message]) -> [Message] {
+    |                                                                `- error: 'Message' is ambiguous for type lookup in this context
+291 |                 guard messages.filter { $0["role"] as? String == "system" }.isEmpty else {
+292 |                     return messages
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/SmolVLM2.swift:290:50: error: 'Message' is ambiguous for type lookup in this context
+288 | 
+289 |             // Insert a default system message if the input doesn't have one
+290 |             func messagesWithSystem(_ messages: [Message]) -> [Message] {
+    |                                                  `- error: 'Message' is ambiguous for type lookup in this context
+291 |                 guard messages.filter { $0["role"] as? String == "system" }.isEmpty else {
+292 |                     return messages
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+error: emit-module command failed with exit code 1 (use -v to see invocation)
+[3/44] Emitting module MLXVLM
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/FastVLM.swift:1172:52: error: 'Message' is ambiguous for type lookup in this context
+1170 | /// - Empty system messages are removed - the chat template applies a default one in this case
+1171 | public struct FastVLMMessageGenerator: MessageGenerator {
+1172 |     public func generate(message: Chat.Message) -> Message {
+     |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+1173 |         [
+1174 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/FastVLM.swift:1183:56: error: 'Message' is ambiguous for type lookup in this context
+1181 |     }
+1182 | 
+1183 |     public func generate(messages: [Chat.Message]) -> [Message] {
+     |                                                        `- error: 'Message' is ambiguous for type lookup in this context
+1184 |         // Remove system role if empty, because the template adds a default one
+1185 |         messages
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen2VL.swift:916:52: error: 'Message' is ambiguous for type lookup in this context
+914 |     public init() {}
+915 | 
+916 |     public func generate(message: Chat.Message) -> Message {
+    |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+917 |         [
+918 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen3VL.swift:1757:52: error: 'Message' is ambiguous for type lookup in this context
+1755 |     public init() {}
+1756 | 
+1757 |     public func generate(message: Chat.Message) -> Message {
+     |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+1758 |         let imageContent = message.images.map { _ in
+1759 |             ["type": "image"]
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+[4/44] Compiling MLXVLM Gemma3.swift
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen2VL.swift:916:52: error: 'Message' is ambiguous for type lookup in this context
+914 |     public init() {}
+915 | 
+916 |     public func generate(message: Chat.Message) -> Message {
+    |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+917 |         [
+918 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+[5/44] Compiling MLXVLM FastVLM.swift
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/FastVLM.swift:1172:52: error: 'Message' is ambiguous for type lookup in this context
+1170 | /// - Empty system messages are removed - the chat template applies a default one in this case
+1171 | public struct FastVLMMessageGenerator: MessageGenerator {
+1172 |     public func generate(message: Chat.Message) -> Message {
+     |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+1173 |         [
+1174 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/FastVLM.swift:1183:56: error: 'Message' is ambiguous for type lookup in this context
+1181 |     }
+1182 | 
+1183 |     public func generate(messages: [Chat.Message]) -> [Message] {
+     |                                                        `- error: 'Message' is ambiguous for type lookup in this context
+1184 |         // Remove system role if empty, because the template adds a default one
+1185 |         messages
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+[6/44] Compiling MLXVLM Qwen3VL.swift
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen3VL.swift:1757:52: error: 'Message' is ambiguous for type lookup in this context
+1755 |     public init() {}
+1756 | 
+1757 |     public func generate(message: Chat.Message) -> Message {
+     |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+1758 |         let imageContent = message.images.map { _ in
+1759 |             ["type": "image"]
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+[7/44] Compiling MLXVLM Qwen2VL.swift
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen2VL.swift:916:52: error: 'Message' is ambiguous for type lookup in this context
+914 |     public init() {}
+915 | 
+916 |     public func generate(message: Chat.Message) -> Message {
+    |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+917 |         [
+918 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.
+[8/44] Compiling MLXVLM Qwen25VL.swift
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXVLM/Models/Qwen2VL.swift:916:52: error: 'Message' is ambiguous for type lookup in this context
+914 |     public init() {}
+915 | 
+916 |     public func generate(message: Chat.Message) -> Message {
+    |                                                    `- error: 'Message' is ambiguous for type lookup in this context
+917 |         [
+918 |             "role": message.role.rawValue,
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/mlx-swift-lm/Libraries/MLXLMCommon/UserInput.swift:9:18: note: found this candidate
+  7 | import Tokenizers
+  8 | 
+  9 | public typealias Message = [String: Any]
+    |                  `- note: found this candidate
+ 10 | 
+ 11 | /// Container for raw user input.
+
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/.build/checkouts/swift-transformers/Sources/Tokenizers/Tokenizer.swift:13:18: note: found this candidate
+  11 | 
+  12 | /// A type alias for chat messages, represented as key-value pairs.
+  13 | public typealias Message = [String: any Sendable]
+     |                  `- note: found this candidate
+  14 | 
+  15 | /// A type alias for tool specifications used in chat templating.

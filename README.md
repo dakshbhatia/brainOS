@@ -35,8 +35,11 @@ BrainOS isn't just an LLM runner; it's your digital brain.
 git clone https://github.com/dakshbhatia/BrainOS.git
 cd BrainOS
 
-# Build and run
-make build
+# Build app (requires Xcode)
+make app
+
+# Or run via CLI
+make serve
 ```
 
 Launch from Spotlight (`⌘ Space` → "BrainOS").

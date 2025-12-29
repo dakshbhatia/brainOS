@@ -640,11 +640,12 @@ final class ChatSession: ObservableObject {
 
                 outer: while attempts < maxAttempts {
                     attempts += 1
+                    let finalMaxTokens = effectiveMaxTokensForPersona ?? 16384
                     let req = ChatCompletionRequest(
                         model: selectedModel ?? "default",
                         messages: buildMessages(),
                         temperature: effectiveTemp,
-                        max_tokens: effectiveMaxTokensForPersona ?? 16384,
+                        max_tokens: finalMaxTokens,
                         stream: true,
                         top_p: chatCfg.topPOverride,
                         frequency_penalty: nil,

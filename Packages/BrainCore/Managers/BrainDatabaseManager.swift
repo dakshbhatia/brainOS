@@ -13,11 +13,9 @@ public actor BrainDatabaseManager {
         let appSupport = paths[0].appendingPathComponent("BrainOS", isDirectory: true)
         try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
         self.dbPath = appSupport.appendingPathComponent("brain.db").path
-        
-        setupDatabase()
     }
     
-    private func setupDatabase() {
+    public func initialize() {
         if sqlite3_open(dbPath, &db) != SQLITE_OK {
             BrainLogger.error("Failed to open brain database", category: .core)
             return

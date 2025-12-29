@@ -10,7 +10,7 @@ import Foundation
 /// Codable version of ChatTurn for session persistence
 struct ChatTurnData: Codable, Identifiable, Sendable {
     let id: UUID
-    let role: MessageRole
+    let role: OSMessageRole
     var content: String
     var attachedImages: [Data]
     var toolCalls: [ToolCall]?
@@ -20,7 +20,7 @@ struct ChatTurnData: Codable, Identifiable, Sendable {
 
     init(
         id: UUID = UUID(),
-        role: MessageRole,
+        role: OSMessageRole,
         content: String,
         attachedImages: [Data] = [],
         toolCalls: [ToolCall]? = nil,
@@ -42,7 +42,7 @@ struct ChatTurnData: Codable, Identifiable, Sendable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
-        role = try container.decode(MessageRole.self, forKey: .role)
+        role = try container.decode(OSMessageRole.self, forKey: .role)
         content = try container.decode(String.self, forKey: .content)
         attachedImages = try container.decodeIfPresent([Data].self, forKey: .attachedImages) ?? []
         toolCalls = try container.decodeIfPresent([ToolCall].self, forKey: .toolCalls)

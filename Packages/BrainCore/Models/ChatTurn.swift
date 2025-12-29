@@ -10,7 +10,7 @@ import Foundation
 
 final class ChatTurn: ObservableObject, Identifiable {
     let id = UUID()
-    let role: MessageRole
+    @Published var role: OSMessageRole
     @Published var content: String
     /// Attached images for multimodal messages (stored as PNG data)
     @Published var attachedImages: [Data] = []
@@ -23,12 +23,12 @@ final class ChatTurn: ObservableObject, Identifiable {
     /// Thinking/reasoning content from models that support extended thinking (e.g., DeepSeek, QwQ)
     @Published var thinking: String = ""
 
-    init(role: MessageRole, content: String) {
+    init(role: OSMessageRole, content: String) {
         self.role = role
         self.content = content
     }
 
-    init(role: MessageRole, content: String, images: [Data]) {
+    init(role: OSMessageRole, content: String, images: [Data]) {
         self.role = role
         self.content = content
         self.attachedImages = images

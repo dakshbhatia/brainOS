@@ -83,7 +83,7 @@ actor ModelRuntime {
             prefillChars > 0
             ? String(repeating: "A", count: max(1, prefillChars))
             : String(repeating: "A", count: 1024)
-        let messages = [Message(role: .user, content: warmupContent)]
+        let messages = [OSMobileMessage(role: .user, content: warmupContent)]
         do {
             let stream = try await deltasStream(
                 messages: messages,
@@ -102,7 +102,7 @@ actor ModelRuntime {
     }
 
     func deltasStream(
-        messages: [Message],
+        messages: [OSMobileMessage],
         modelId: String,
         modelName: String,
         temperature: Float,
@@ -118,10 +118,14 @@ actor ModelRuntime {
             repetitionPenalty: nil
         )
         let (stream, continuation) = AsyncStream<String>.makeStream()
+        
+        // Capture for Task
+        let mappedMessages = messages
+        
         let producerTask = Task {
             do {
                 let events = try await generateEventStream(
-                    chatBuilder: { ModelRuntime.mapMessagesToMLX(messages) },
+                    chatBuilder: { ModelRuntime.mapMessagesToMLX(mappedMessages) },
                     parameters: params,
                     stopSequences: stopSequences,
                     tools: tools,
@@ -371,7 +375,7 @@ actor ModelRuntime {
         return p
     }
 
-    nonisolated static func mapMessagesToMLX(_ messages: [Message]) -> [MLXLMCommon.Chat.Message] {
+    nonisolated static func mapMessagesToMLX(_ messages: [OSMobileMessage]) -> [MLXLMCommon.Chat.Message] {
         return messages.map { m in
             let role: MLXLMCommon.Chat.Message.Role = {
                 switch m.role {
