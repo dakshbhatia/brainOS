@@ -18,6 +18,9 @@ public class BrainManager {
         guard !isRunning else { return }
         isRunning = true
         
+        // Initialize correlation engine
+        _ = CorrelationEngine.shared
+        
         // Start background services
         Task {
             await BackgroundIngestionService.shared.start()
@@ -176,14 +179,11 @@ public class BrainManager {
         let staleContacts = await BrainDatabaseManager.shared.getStaleContacts(days: 14)
         let calendarBrief = await BrainCalendarManager.shared.getUpcomingBrief()
         
-        // 2. Send relationship nudge notifications (high priority only)
-        for nudge in nudges.filter({ $0.urgency > 0.8 }) {
-            await notificationService.postRelationshipNudge(
-                contactName: nudge.contactName,
-                reason: nudge.reason,
-                suggestion: nudge.suggestion,
-                priority: "high"
-            )
+        // 2. Publish high priority nudges to EventBus
+        for nudge in nudges {
+            if nudge.urgency > 0.8 {
+                LifeEventBus.shared.publish(.pendingReply(contactName: nudge.contactName, waitTimeHours: 4))
+            }
         }
         
         // 3. Check health metrics and send alerts
@@ -211,25 +211,10 @@ public class BrainManager {
         }
     }
     
-    /// Check health metrics and send proactive notifications
+    /// Check health metrics - Logic now moved to CorrelationEngine
     private func checkHealthAndNotify(steps: Double) async {
-        let hour = Calendar.current.component(.hour, from: Date())
-        
-        // Afternoon activity check (2 PM)
-        if hour == 14 && steps < 2000 {
-            await notificationService.postHealthAlert(
-                title: "Low Activity Today",
-                body: "You've only taken \(Int(steps)) steps. How about a 10-minute walk?"
-            )
-        }
-        
-        // Evening check (6 PM)
-        if hour == 18 && steps < 5000 {
-            await notificationService.postHealthAlert(
-                title: "Movement Reminder",
-                body: "Only \(Int(steps)) steps today. A short evening walk could help!"
-            )
-        }
+        // Publish daily activity event - CorrelationEngine now handles the notification logic
+        LifeEventBus.shared.publish(.lowActivity(steps: Int(steps)))
     }
     
     /// Generate daily brief and cache for morning notification

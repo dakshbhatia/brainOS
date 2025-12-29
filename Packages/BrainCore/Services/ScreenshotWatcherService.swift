@@ -84,6 +84,9 @@ public class ScreenshotWatcherService {
                 Visual Description: \(visualDescription)
                 """
                 
+                // Publish to Event Bus for cross-vital correlation
+                LifeEventBus.shared.publish(.screenshotCaptured(url: url, ocrText: recognizedText))
+                
                 await BrainKnowledgeManager.shared.addMemory(
                     text: fullContent,
                     metadata: [
