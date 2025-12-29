@@ -24,6 +24,7 @@ public class SpeechRecognizer: ObservableObject {
     private var audioEngine: AVAudioEngine?
     
     private var completionHandler: ((Result<String, Error>) -> Void)?
+    private var hasWarnedWhisper = false
     
     private init() {
         setupSpeechRecognizer()
@@ -62,6 +63,14 @@ public class SpeechRecognizer: ObservableObject {
                 completion(.failure(SpeechError.notAuthorized))
             }
             return
+        }
+        
+        // Trigger Whisper model warming on first use (non-blocking)
+        if !hasWarnedWhisper {
+            hasWarnedWhisper = true
+            Task.detached(priority: .utility) {
+                _ = await PythonEnvironmentManager.shared.preloadWhisperModel()
+            }
         }
         
         self.completionHandler = completion

@@ -128,16 +128,32 @@ public actor BrainKnowledgeManager {
         return Array(combined.prefix(limit))
     }
     
-    private func extractEntities(from text: String) -> [String] {
+    /// Extract entities with their types from text
+    private func extractEntitiesWithTypes(from text: String) -> [(name: String, type: String)] {
         tagger.string = text
-        var entities: [String] = []
-        tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .nameType, options: [.omitPunctuation, .omitWhitespace, .joinNames]) { tag, range in
-            if tag != nil {
-                entities.append(String(text[range]))
+        var entities: [(String, String)] = []
+        let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .joinNames]
+        
+        tagger.enumerateTags(in: text.startIndex..<text.endIndex, unit: .word, scheme: .nameType, options: options) { tag, range in
+            if let tag = tag {
+                let name = String(text[range])
+                let type: String
+                switch tag {
+                case .personalName: type = "person"
+                case .placeName: type = "place"
+                case .organizationName: type = "organization"
+                default: type = "entity"
+                }
+                entities.append((name, type))
             }
             return true
         }
         return entities
+    }
+    
+    /// Extract entity names only (for backward compatibility)
+    private func extractEntities(from text: String) -> [String] {
+        return extractEntitiesWithTypes(from: text).map { $0.name }
     }
     
     // MARK: - Relationship Extraction
@@ -145,7 +161,7 @@ public actor BrainKnowledgeManager {
     /// Extract semantic relationships from text using pattern matching
     /// Returns tuples of (subject, predicate, object)
     public func extractRelationships(from text: String) -> [(subject: String, predicate: String, object: String)] {
-        let entities = extractEntities(from: text)
+        let entities = extractEntitiesWithTypes(from: text)
         guard entities.count >= 2 else { return [] }
         
         var relationships: [(String, String, String)] = []
@@ -158,7 +174,7 @@ public actor BrainKnowledgeManager {
             let sentence = String(text[sentenceRange]).lowercased()
             
             // Find entities in this sentence
-            let sentenceEntities = entities.filter { sentence.contains($0.lowercased()) }
+            let sentenceEntities = entities.filter { sentence.contains($0.name.lowercased()) }
             guard sentenceEntities.count >= 2 else { return true }
             
             // Extract relationships between pairs
@@ -168,8 +184,8 @@ public actor BrainKnowledgeManager {
                     let entity2 = sentenceEntities[j]
                     
                     // Try to find a verb/relationship between them
-                    if let predicate = findPredicate(between: entity1, and: entity2, in: sentence) {
-                        relationships.append((entity1, predicate, entity2))
+                    if let predicate = self.findPredicate(between: entity1.name, and: entity2.name, in: sentence, entityTypes: (entity1.type, entity2.type)) {
+                        relationships.append((entity1.name, predicate, entity2.name))
                     }
                 }
             }
@@ -180,7 +196,8 @@ public actor BrainKnowledgeManager {
     }
     
     /// Find the predicate (verb/relationship) between two entities in a sentence
-    private func findPredicate(between entity1: String, and entity2: String, in sentence: String) -> String? {
+    /// Uses priority-ordered patterns with entity type awareness
+    private func findPredicate(between entity1: String, and entity2: String, in sentence: String, entityTypes: (String, String)) -> String? {
         let e1Lower = entity1.lowercased()
         let e2Lower = entity2.lowercased()
         
@@ -207,44 +224,67 @@ public actor BrainKnowledgeManager {
         let between = String(sentence[betweenStart..<betweenEnd])
             .trimmingCharacters(in: .whitespacesAndNewlines)
         
-        // Common relationship patterns
-        let relationshipPatterns: [(pattern: String, predicate: String)] = [
-            ("works at", "employed_by"),
-            ("works for", "employed_by"),
-            ("employed by", "employed_by"),
-            ("founded", "founded"),
-            ("created", "created"),
-            ("built", "built"),
-            ("is the ceo of", "leads"),
-            ("leads", "leads"),
-            ("manages", "manages"),
-            ("met", "met"),
-            ("met with", "met"),
-            ("talked to", "communicated_with"),
-            ("called", "communicated_with"),
-            ("emailed", "communicated_with"),
-            ("lives in", "resides_in"),
-            ("moved to", "relocated_to"),
-            ("visited", "visited"),
-            ("went to", "visited"),
-            ("is married to", "married_to"),
-            ("married", "married_to"),
-            ("is friends with", "friends_with"),
-            ("knows", "knows"),
-            ("is from", "originates_from"),
-            ("studied at", "studied_at"),
-            ("graduated from", "studied_at"),
-            ("invested in", "invested_in"),
-            ("bought", "acquired"),
-            ("acquired", "acquired"),
-            ("sold", "sold_to"),
-            ("partnered with", "partnered_with"),
+        // Priority-ordered relationship patterns (longest/most specific first)
+        let relationshipPatterns: [(pattern: String, predicate: String, priority: Int)] = [
+            // High priority - specific multi-word patterns
+            ("is the ceo of", "leads", 10),
+            ("is the founder of", "founded", 10),
+            ("is married to", "married_to", 10),
+            ("is friends with", "friends_with", 10),
+            ("graduated from", "studied_at", 10),
+            ("partnered with", "partnered_with", 10),
+            
+            // Medium priority - employment/professional
+            ("works at", "employed_by", 8),
+            ("works for", "employed_by", 8),
+            ("employed by", "employed_by", 8),
+            ("manages", "manages", 7),
+            ("leads", "leads", 7),
+            
+            // Medium priority - creation/ownership
+            ("founded", "founded", 8),
+            ("created", "created", 7),
+            ("built", "built", 7),
+            ("acquired", "acquired", 7),
+            ("bought", "acquired", 7),
+            ("invested in", "invested_in", 8),
+            ("sold", "sold_to", 7),
+            
+            // Medium priority - location/movement
+            ("lives in", "resides_in", 8),
+            ("moved to", "relocated_to", 8),
+            ("visited", "visited", 7),
+            ("went to", "visited", 7),
+            ("studied at", "studied_at", 8),
+            ("is from", "originates_from", 8),
+            
+            // Medium priority - communication
+            ("talked to", "communicated_with", 7),
+            ("met with", "met", 7),
+            ("called", "communicated_with", 6),
+            ("emailed", "communicated_with", 6),
+            
+            // Lower priority - simple/ambiguous
+            ("met", "met", 5),
+            ("married", "married_to", 5),
+            ("knows", "knows", 5),
         ]
         
-        // Check for matching patterns
-        for (pattern, predicate) in relationshipPatterns {
+        // Sort by priority (highest first), then by pattern length (longest first for tie-breaking)
+        let sortedPatterns = relationshipPatterns.sorted { lhs, rhs in
+            if lhs.priority != rhs.priority {
+                return lhs.priority > rhs.priority
+            }
+            return lhs.pattern.count > rhs.pattern.count
+        }
+        
+        // Find best matching pattern
+        for (pattern, predicate, _) in sortedPatterns {
             if between.contains(pattern) {
-                return predicate
+                // Validate pattern makes sense for entity types
+                if isValidRelationship(predicate: predicate, entityTypes: entityTypes) {
+                    return predicate
+                }
             }
         }
         
@@ -264,28 +304,74 @@ public actor BrainKnowledgeManager {
         return foundVerb
     }
     
+    /// Validate that a predicate makes sense for given entity types
+    private func isValidRelationship(predicate: String, entityTypes: (String, String)) -> Bool {
+        let types = Set([entityTypes.0, entityTypes.1])
+        
+        // Relationship type constraints
+        switch predicate {
+        case "employed_by", "manages", "leads":
+            // Person-Organization relationships
+            return types.contains("person") && (types.contains("organization") || types.contains("entity"))
+            
+        case "married_to", "friends_with", "knows":
+            // Person-Person relationships
+            return types.contains("person")
+            
+        case "resides_in", "visited", "relocated_to", "located_at":
+            // Person/Org-Place relationships
+            return types.contains("place") || types.contains("entity")
+            
+        case "founded", "created", "built", "acquired", "invested_in":
+            // Creation/ownership - flexible
+            return true
+            
+        default:
+            // Allow generic relationships
+            return true
+        }
+    }
+    
     /// Process text and store extracted relationships in the knowledge graph
-    public func processAndStoreRelationships(from text: String) async {
+    /// Returns the number of relationships successfully stored
+    public func processAndStoreRelationships(from text: String) async throws -> Int {
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return 0
+        }
+        
         let relationships = extractRelationships(from: text)
+        guard !relationships.isEmpty else {
+            return 0
+        }
+        
+        var successCount = 0
         
         for (subject, predicate, object) in relationships {
-            // First ensure entities exist
-            await BrainDatabaseManager.shared.upsertEntity(name: subject, type: "extracted")
-            await BrainDatabaseManager.shared.upsertEntity(name: object, type: "extracted")
-            
-            // Create relationship
-            let sourceId = "extracted:\(subject.lowercased())"
-            let targetId = "extracted:\(object.lowercased())"
-            
-            await BrainDatabaseManager.shared.addRelationship(
-                source: sourceId,
-                target: targetId,
-                type: predicate,
-                strength: 0.5  // Medium confidence from pattern extraction
-            )
-            
-            NSLog("🔗 KnowledgeGraph: Added relationship \(subject) --[\(predicate)]--> \(object)")
+            do {
+                // First ensure entities exist
+                try await BrainDatabaseManager.shared.upsertEntity(name: subject, type: "extracted")
+                try await BrainDatabaseManager.shared.upsertEntity(name: object, type: "extracted")
+                
+                // Create relationship
+                let sourceId = "extracted:\(subject.lowercased())"
+                let targetId = "extracted:\(object.lowercased())"
+                
+                try await BrainDatabaseManager.shared.addRelationship(
+                    source: sourceId,
+                    target: targetId,
+                    type: predicate,
+                    strength: 0.7  // Higher confidence with type-aware matching
+                )
+                
+                successCount += 1
+                NSLog("🔗 KnowledgeGraph: \(subject) --[\(predicate)]--> \(object)")
+            } catch {
+                NSLog("⚠️ KnowledgeGraph: Failed to store relationship \(subject)-\(predicate)-\(object): \(error.localizedDescription)")
+                // Continue processing remaining relationships
+            }
         }
+        
+        return successCount
     }
     
     /// Get memories within a date range sorted by importance

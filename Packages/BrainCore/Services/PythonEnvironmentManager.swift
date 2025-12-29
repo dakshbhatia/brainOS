@@ -160,20 +160,20 @@ public actor PythonEnvironmentManager {
         }
     }
     
-    /// Pre-download Whisper model to avoid first-use delay
+    /// Pre-download Whisper model in background (non-blocking)
+    /// Call this when user first triggers voice recognition to warm the cache
     public func preloadWhisperModel() async -> Bool {
-        NSLog("🎤 PythonEnv: Pre-downloading Whisper base model...")
+        NSLog("🎤 PythonEnv: Warming Whisper model cache (will download ~140MB if needed)...")
         
-        // Run a simple Python script to load the model (which triggers download)
         let loadScript = """
         import whisper
         import sys
         try:
             model = whisper.load_model('base')
-            print('Whisper base model loaded successfully')
+            print('Whisper model ready')
             sys.exit(0)
         except Exception as e:
-            print(f'Error loading Whisper model: {e}')
+            print(f'Whisper load error: {e}')
             sys.exit(1)
         """
         
@@ -188,13 +188,13 @@ public actor PythonEnvironmentManager {
         do {
             try process.run()
             
-            // Wait with timeout (model download can take time)
+            // Wait with shorter timeout (30s - if not cached yet, let it continue in background)
             let startTime = Date()
             while process.isRunning {
                 try await Task.sleep(for: .seconds(1))
-                if Date().timeIntervalSince(startTime) > 120 { // 2 minute timeout
-                    NSLog("⚠️ PythonEnv: Whisper model download taking too long, continuing in background...")
-                    // Don't terminate, let it finish in background
+                if Date().timeIntervalSince(startTime) > 30 {
+                    NSLog("ℹ️  PythonEnv: Whisper warming continues in background (first download takes 1-2 min)")
+                    // Process continues, but we return to avoid blocking
                     return true
                 }
             }
@@ -205,14 +205,14 @@ public actor PythonEnvironmentManager {
             let output = String(data: data, encoding: .utf8) ?? ""
             
             if process.terminationStatus == 0 {
-                NSLog("✅ PythonEnv: Whisper model pre-downloaded successfully")
+                NSLog("✅ PythonEnv: Whisper model cached and ready")
                 return true
             } else {
-                NSLog("⚠️ PythonEnv: Whisper model pre-download failed (will download on first use): \(output)")
+                NSLog("⚠️ PythonEnv: Whisper warming issue (will retry on use): \(output)")
                 return false
             }
         } catch {
-            NSLog("⚠️ PythonEnv: Failed to pre-download Whisper model: \(error.localizedDescription)")
+            NSLog("⚠️ PythonEnv: Whisper warming error: \(error.localizedDescription)")
             return false
         }
     }
@@ -358,11 +358,6 @@ public actor PythonEnvironmentManager {
             return false
         }
         
-        // Step 2.5: Pre-download Whisper model (optional, don't fail if it errors)
-        Task.detached(priority: .utility) {
-            _ = await PythonEnvironmentManager.shared.preloadWhisperModel()
-        }
-        
         // Step 3: Create voice script
         guard await ensureVoiceScript() else {
             NSLog("❌ PythonEnv: Failed at script creation")
@@ -370,6 +365,7 @@ public actor PythonEnvironmentManager {
         }
         
         NSLog("✅ PythonEnv: Complete voice environment setup successful")
+        NSLog("ℹ️  PythonEnv: Whisper model will download on first use (prevents startup delay)")
         return true
     }
 }

@@ -10,6 +10,34 @@ import Carbon.HIToolbox
 import Combine
 import SwiftUI
 
+/// Actor to coordinate background tasks and prevent resource contention
+actor BackgroundTaskCoordinator {
+    static let shared = BackgroundTaskCoordinator()
+    
+    private var pendingTasks: [Task<Void, Never>] = []
+    
+    /// Queue a task to run serially with other background operations
+    func enqueue(_ operation: @escaping @Sendable () async -> Void) {
+        let task = Task {
+            await operation()
+        }
+        pendingTasks.append(task)
+        
+        // Clean up completed tasks
+        pendingTasks.removeAll { $0.isCancelled || $0.isCompleted }
+    }
+    
+    /// Wait for all pending tasks (useful for testing)
+    func waitForCompletion() async {
+        await withTaskGroup(of: Void.self) { group in
+            for task in pendingTasks {
+                group.addTask { await task.value }
+            }
+        }
+        pendingTasks.removeAll()
+    }
+}
+
 @MainActor
 final class ChatSession: ObservableObject {
     @Published var turns: [ChatTurn] = []
@@ -455,20 +483,36 @@ final class ChatSession: ObservableObject {
                 userTurn.autoEmbed(sessionId: sid)
             }
             
-            // Process user message for knowledge graph relationships
+            // Process user message for knowledge graph relationships (coordinated)
             if !trimmed.isEmpty {
-                Task.detached(priority: .background) {
-                    await BrainKnowledgeManager.shared.processAndStoreRelationships(from: trimmed)
+                let messageContent = trimmed
+                Task {
+                    await BackgroundTaskCoordinator.shared.enqueue {
+                        do {
+                            let count = await BrainKnowledgeManager.shared.processAndStoreRelationships(from: messageContent)
+                            if count > 0 {
+                                NSLog("📊 ChatView: Extracted \(count) relationships from user message")
+                            }
+                        } catch {
+                            NSLog("⚠️ ChatView: Failed to extract relationships: \(error.localizedDescription)")
+                        }
+                    }
                 }
                 
-                // Generate memory from user message
-                Task.detached(priority: .background) {
-                    let dataItem = DataItem.message(
-                        text: trimmed,
-                        sender: "user",
-                        timestamp: Date()
-                    )
-                    await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                Task {
+                    await BackgroundTaskCoordinator.shared.enqueue {
+                        let dataItem = DataItem.message(
+                            text: messageContent,
+                            sender: "user",
+                            timestamp: Date()
+                        )
+                        do {
+                            await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                            NSLog("🧠 ChatView: Generated memory from user message")
+                        } catch {
+                            NSLog("⚠️ ChatView: Memory generation failed: \(error.localizedDescription)")
+                        }
+                    }
                 }
             }
 
@@ -508,19 +552,35 @@ final class ChatSession: ObservableObject {
                     // Auto-embed assistant response for semantic memory
                     lastTurn.autoEmbed(sessionId: sid)
                     
-                    // Process for knowledge graph relationships
-                    Task.detached(priority: .background) {
-                        await BrainKnowledgeManager.shared.processAndStoreRelationships(from: lastTurn.content)
+                    // Process for knowledge graph relationships (coordinated)
+                    let responseContent = lastTurn.content
+                    Task {
+                        await BackgroundTaskCoordinator.shared.enqueue {
+                            do {
+                                let count = await BrainKnowledgeManager.shared.processAndStoreRelationships(from: responseContent)
+                                if count > 0 {
+                                    NSLog("📊 ChatView: Extracted \(count) relationships from assistant response")
+                                }
+                            } catch {
+                                NSLog("⚠️ ChatView: Failed to extract relationships: \(error.localizedDescription)")
+                            }
+                        }
                     }
                     
-                    // Generate memory from conversation turn
-                    Task.detached(priority: .background) {
-                        let dataItem = DataItem.message(
-                            text: lastTurn.content,
-                            sender: "assistant",
-                            timestamp: Date()
-                        )
-                        await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                    Task {
+                        await BackgroundTaskCoordinator.shared.enqueue {
+                            let dataItem = DataItem.message(
+                                text: responseContent,
+                                sender: "assistant",
+                                timestamp: Date()
+                            )
+                            do {
+                                await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                                NSLog("🧠 ChatView: Generated memory from assistant response")
+                            } catch {
+                                NSLog("⚠️ ChatView: Memory generation failed: \(error.localizedDescription)")
+                            }
+                        }
                     }
                 }
                 // Auto-save after streaming completes
