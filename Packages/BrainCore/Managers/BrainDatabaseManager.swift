@@ -324,4 +324,46 @@ public actor BrainDatabaseManager {
         let denom = sqrt(normA) * sqrt(normB)
         return denom == 0 ? 0 : dotProduct / denom
     }
+    
+    /// Get memories within a date range with importance scores
+    public func getMemoriesInDateRange(start: Date, end: Date, limit: Int) -> [(content: String, timestamp: Date, importance: Double)] {
+        let query = """
+        SELECT content, timestamp, metadata FROM memories 
+        WHERE datetime(timestamp) BETWEEN datetime(?) AND datetime(?)
+        ORDER BY timestamp DESC
+        LIMIT ?;
+        """
+        var statement: OpaquePointer?
+        var results: [(String, Date, Double)] = []
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_double(statement, 1, start.timeIntervalSince1970)
+            sqlite3_bind_double(statement, 2, end.timeIntervalSince1970)
+            sqlite3_bind_int(statement, 3, Int32(limit))
+            
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let content = String(cString: sqlite3_column_text(statement, 0))
+                let timestampStr = String(cString: sqlite3_column_text(statement, 1))
+                
+                // Parse timestamp (SQLite CURRENT_TIMESTAMP format)
+                let formatter = ISO8601DateFormatter()
+                let timestamp = formatter.date(from: timestampStr) ?? Date()
+                
+                // Extract importance from metadata JSON
+                let metadataStr = String(cString: sqlite3_column_text(statement, 2))
+                var importance = 0.5 // default
+                if let metadataData = metadataStr.data(using: .utf8),
+                   let metadata = try? JSONSerialization.jsonObject(with: metadataData) as? [String: Any],
+                   let importanceValue = metadata["importance"] as? Double {
+                    importance = importanceValue
+                }
+                
+                results.append((content, timestamp, importance))
+            }
+        }
+        sqlite3_finalize(statement)
+        
+        // Sort by importance descending
+        return results.sorted { $0.2 > $1.2 }
+    }
 }

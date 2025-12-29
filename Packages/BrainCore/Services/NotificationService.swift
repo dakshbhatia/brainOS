@@ -17,6 +17,14 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     private let categoryId = "OSU_MODEL_READY"
     private let actionOpenId = "OSU_OPEN_MODELS"
+    
+    // BrainOS proactive notification categories
+    private let categoryRelationship = "BRAINOS_RELATIONSHIP"
+    private let categoryHealth = "BRAINOS_HEALTH"
+    private let categoryInsight = "BRAINOS_INSIGHT"
+    private let actionReply = "BRAINOS_REPLY"
+    private let actionCall = "BRAINOS_CALL"
+    private let actionDismiss = "BRAINOS_DISMISS"
 
     private override init() {
         super.init()
@@ -24,19 +32,60 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     func configureOnLaunch() {
         center.delegate = self
-        // Register category with an action to open the Model Manager window
+        
+        // Register model download category
         let openAction = UNNotificationAction(
             identifier: actionOpenId,
             title: "Open Models",
             options: [.foreground]
         )
-        let category = UNNotificationCategory(
+        let modelCategory = UNNotificationCategory(
             identifier: categoryId,
             actions: [openAction],
             intentIdentifiers: [],
             options: []
         )
-        center.setNotificationCategories([category])
+        
+        // Register relationship nudge category with actions
+        let replyAction = UNNotificationAction(
+            identifier: actionReply,
+            title: "Reply",
+            options: [.foreground]
+        )
+        let callAction = UNNotificationAction(
+            identifier: actionCall,
+            title: "Call",
+            options: [.foreground]
+        )
+        let relationshipCategory = UNNotificationCategory(
+            identifier: categoryRelationship,
+            actions: [replyAction, callAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        
+        // Register health category
+        let dismissAction = UNNotificationAction(
+            identifier: actionDismiss,
+            title: "Got it",
+            options: []
+        )
+        let healthCategory = UNNotificationCategory(
+            identifier: categoryHealth,
+            actions: [dismissAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        
+        // Register insight category
+        let insightCategory = UNNotificationCategory(
+            identifier: categoryInsight,
+            actions: [dismissAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        
+        center.setNotificationCategories([modelCategory, relationshipCategory, healthCategory, insightCategory])
 
         // Request authorization (best-effort; user may have already granted/denied)
         Task.detached {
@@ -107,6 +156,89 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
             identifier: "generic-\(UUID().uuidString)",
             content: content,
             trigger: nil
+        )
+        center.add(request, withCompletionHandler: nil)
+    }
+    
+    // MARK: - Proactive Notifications
+    
+    /// Send a relationship nudge notification
+    func postRelationshipNudge(contactName: String, reason: String, suggestion: String, priority: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "💬 Relationship Nudge"
+        content.subtitle = contactName
+        content.body = reason
+        content.userInfo = [
+            "type": "relationship",
+            "contactName": contactName,
+            "suggestion": suggestion,
+            "priority": priority
+        ]
+        content.categoryIdentifier = categoryRelationship
+        content.sound = priority == "high" ? .defaultCritical : .default
+        
+        let request = UNNotificationRequest(
+            identifier: "relationship-\(contactName)-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        center.add(request, withCompletionHandler: nil)
+    }
+    
+    /// Send a health alert notification
+    func postHealthAlert(title: String, body: String, isUrgent: Bool = false) {
+        let content = UNMutableNotificationContent()
+        content.title = "🏃 Health Alert"
+        content.subtitle = title
+        content.body = body
+        content.userInfo = ["type": "health"]
+        content.categoryIdentifier = categoryHealth
+        content.sound = isUrgent ? .defaultCritical : .default
+        
+        let request = UNNotificationRequest(
+            identifier: "health-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        center.add(request, withCompletionHandler: nil)
+    }
+    
+    /// Send a daily insight notification
+    func postDailyInsight(title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "✨ Daily Insight"
+        content.subtitle = title
+        content.body = body
+        content.userInfo = ["type": "insight"]
+        content.categoryIdentifier = categoryInsight
+        content.sound = .default
+        
+        let request = UNNotificationRequest(
+            identifier: "insight-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        center.add(request, withCompletionHandler: nil)
+    }
+    
+    /// Send a daily brief notification (scheduled for morning)
+    func scheduleDailyBrief(hour: Int, minute: Int, brief: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "Good Morning! ☀️"
+        content.body = brief
+        content.userInfo = ["type": "dailyBrief"]
+        content.sound = .default
+        
+        // Schedule for specific time
+        var dateComponents = DateComponents()
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(
+            identifier: "daily-brief",  // Same ID so it replaces previous
+            content: content,
+            trigger: trigger
         )
         center.add(request, withCompletionHandler: nil)
     }

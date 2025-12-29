@@ -29,21 +29,70 @@ actor ChatEngine: Sendable, ChatEngineProtocol {
 
     private func enrichMessagesWithSystemPrompt(_ messages: [ChatMessage]) async -> [ChatMessage] {
         // Check if a system prompt is already present
-        if messages.contains(where: { $0.role == "system" }) {
-            return messages
-        }
-
-        // If not, fetch the global system prompt
-        let systemPrompt = await MainActor.run {
+        let hasSystemPrompt = messages.contains(where: { $0.role == "system" })
+        
+        // Get the base system prompt
+        let baseSystemPrompt = await MainActor.run {
             ChatConfigurationStore.load().systemPrompt
         }
-
-        let trimmed = systemPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return messages }
-
-        // Prepend the system prompt
-        let systemMessage = ChatMessage(role: "system", content: trimmed)
+        
+        // Extract user's query from recent messages for RAG
+        let userQuery = extractUserQuery(from: messages)
+        
+        // Perform semantic memory search for relevant context
+        var relevantMemories: [String] = []
+        if !userQuery.isEmpty {
+            relevantMemories = await BrainKnowledgeManager.shared.search(
+                query: userQuery,
+                limit: 5
+            )
+        }
+        
+        // Build enhanced system prompt with RAG context
+        var enhancedPrompt = baseSystemPrompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Add memory context if we found relevant memories
+        if !relevantMemories.isEmpty {
+            let memoryContext = """
+            
+            
+            # RELEVANT CONTEXT FROM YOUR MEMORY
+            Based on your past activities and conversations, here's what might be relevant:
+            
+            \(relevantMemories.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n"))
+            
+            Use this context naturally in your responses when relevant, but don't force it.
+            """
+            enhancedPrompt += memoryContext
+        }
+        
+        guard !enhancedPrompt.isEmpty else { return messages }
+        
+        // If there's already a system prompt, replace it with enhanced version
+        if hasSystemPrompt {
+            return messages.map { msg -> ChatMessage in
+                if msg.role == "system" {
+                    return ChatMessage(role: "system", content: enhancedPrompt)
+                }
+                return msg
+            }
+        }
+        
+        // Otherwise, prepend the enhanced system prompt
+        let systemMessage = ChatMessage(role: "system", content: enhancedPrompt)
         return [systemMessage] + messages
+    }
+    
+    /// Extract user's query/intent from conversation for memory retrieval
+    private func extractUserQuery(from messages: [ChatMessage]) -> String {
+        // Get last 3 user messages to understand context
+        let userMessages = messages
+            .filter { $0.role == "user" }
+            .suffix(3)
+            .compactMap { $0.content }
+        
+        // Combine recent user messages for semantic search
+        return userMessages.joined(separator: " ")
     }
 
     /// Estimate input tokens from messages (rough heuristic: ~4 chars per token)

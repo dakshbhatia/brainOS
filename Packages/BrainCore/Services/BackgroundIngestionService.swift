@@ -29,78 +29,68 @@ public actor BackgroundIngestionService {
     }
     
     private func ingestAll() async {
-        BrainLogger.info("Starting background ingestion...", category: .knowledge)
+        BrainLogger.info("Starting background ingestion with AI pipeline...", category: .knowledge)
         
-        await ingestMessages()
-        await ingestHealth()
-        await ingestSafari()
-        await ingestUsage()
-        // await ingestPhotos() // Future: Vision embeddings
+        // Collect data items for parallel AI processing
+        var dataItems: [DataItem] = []
+        
+        // Gather from all sources
+        dataItems += await gatherMessages()
+        dataItems += await gatherSafari()
+        dataItems += await gatherUsage()
+        // dataItems += await gatherPhotos() // Future: Vision embeddings
+        
+        // Process through AI pipeline for intelligent memory generation
+        if !dataItems.isEmpty {
+            await MemoryGenerationPipeline.shared.processDataBatch(dataItems)
+            BrainLogger.info("Processed \(dataItems.count) items through AI pipeline", category: .knowledge)
+        }
     }
     
-    private func ingestUsage() async {
+    /// Gather app usage data as DataItems for AI processing
+    private func gatherUsage() async -> [DataItem] {
         let usage = await BrainUsageManager.shared.fetchRecentUsage(limit: 10)
-        for item in usage {
-            let content = "Used application: \(item.bundleId) for \(Int(item.duration)) seconds today."
-            await BrainKnowledgeManager.shared.addMemory(
-                text: content,
-                metadata: [
-                    "source": "usage",
-                    "bundleId": item.bundleId,
-                    "duration": String(item.duration),
-                    "timestamp": Date().description
-                ]
+        return usage.map { item in
+            DataItem.usageEvent(
+                appName: item.bundleId,
+                duration: item.duration,
+                timestamp: Date()
             )
         }
     }
     
-    private func ingestSafari() async {
+    /// Gather Safari browsing history as DataItems for AI processing
+    private func gatherSafari() async -> [DataItem] {
         let history = await BrainSafariManager.shared.fetchRecentHistory(limit: 20)
-        for item in history {
-            let content = "Visited website: \(item.title) (\(item.url))"
-            await BrainKnowledgeManager.shared.addMemory(
-                text: content,
-                metadata: [
-                    "source": "safari",
-                    "url": item.url,
-                    "timestamp": item.timestamp.description
-                ]
+        return history.map { item in
+            DataItem.safariPage(
+                url: item.url,
+                title: item.title,
+                visitTime: item.timestamp
             )
         }
     }
     
-    private func ingestMessages() async {
+    /// Gather messages as DataItems for AI processing
+    private func gatherMessages() async -> [DataItem] {
         do {
             let messages: [MessageEntry] = try await BrainMessagesManager.shared.fetchRecentMessages(limit: 50)
+            var dataItems: [DataItem] = []
+            
             for message in messages {
-                // 1. Add to semantic memory
+                // Convert message to DataItem for AI analysis
                 if let text = message.text, !text.isEmpty {
                     let sender = message.senderName ?? message.sender
-                    let content = "Message from \(sender): \(text)"
-                    
-                    var metadata = [
-                        "source": "messages",
-                        "sender": sender,
-                        "timestamp": message.timestamp.description
-                    ]
-                    
-                    // Extract EXIF if there are image attachments
-                    for attachment in message.attachments {
-                        if let path = attachment.path, path.contains("Attachments") {
-                            let exif = message.extractEXIF(from: path)
-                            for (key, value) in exif {
-                                metadata["exif_\(key)"] = value
-                            }
-                        }
-                    }
-                    
-                    await BrainKnowledgeManager.shared.addMemory(
-                        text: content,
-                        metadata: metadata
+                    dataItems.append(
+                        DataItem.message(
+                            text: text,
+                            sender: sender,
+                            timestamp: message.timestamp
+                        )
                     )
                 }
                 
-                // 2. Update interaction stats in unified database
+                // Still update interaction stats (this is database tracking, not AI memory)
                 let senderId = message.sender
                 let senderName = message.senderName ?? message.sender
                 await BrainDatabaseManager.shared.updateInteraction(
@@ -109,33 +99,34 @@ public actor BackgroundIngestionService {
                     timestamp: message.timestamp
                 )
             }
+            
+            return dataItems
         } catch {
-            BrainLogger.error("Failed to ingest messages: \(error)", category: .knowledge)
+            BrainLogger.error("Failed to gather messages: \(error)", category: .knowledge)
+            return []
         }
     }
     
-    private func ingestHealth() async {
-        // Skip HealthKit on macOS (not available)
+    /// Gather health data as DataItems for AI processing (iOS only)
+    private func gatherHealth() async -> [DataItem] {
         #if os(iOS)
         do {
             try await BrainHealthManager.shared.requestPermissions()
             let steps = try await BrainHealthManager.shared.fetchStepCount(days: 1)
             if let todaySteps = steps.first {
-                await BrainKnowledgeManager.shared.addMemory(
-                    text: "I have taken \(Int(todaySteps)) steps today.",
-                    metadata: [
-                        "source": "health",
-                        "type": "steps",
-                        "timestamp": Date().description
-                    ]
-                )
+                return [
+                    DataItem.healthData(
+                        type: "steps",
+                        value: todaySteps,
+                        unit: "count",
+                        timestamp: Date()
+                    )
+                ]
             }
         } catch {
-            BrainLogger.error("Failed to ingest health data: \(error)", category: .knowledge)
+            BrainLogger.error("Failed to gather health data: \(error)", category: .knowledge)
         }
-        #else
-        // HealthKit is only available on iOS/watchOS, skip on macOS
-        BrainLogger.info("HealthKit not available on macOS, skipping health ingestion", category: .knowledge)
         #endif
+        return []
     }
 }

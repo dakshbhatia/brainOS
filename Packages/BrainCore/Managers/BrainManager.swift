@@ -25,7 +25,10 @@ public class BrainManager {
             VoiceService.shared.start()
         }
         
-        // Start the proactive loop
+        // Schedule daily brief notification for 8 AM
+        scheduleDailyBriefNotification()
+        
+        // Start the proactive loop (runs every hour)
         timer = Task {
             while !Task.isCancelled {
                 await performProactiveCheck()
@@ -41,29 +44,68 @@ public class BrainManager {
     }
     
     public func generateBrief() async -> String {
-        BrainLogger.info("Generating daily brief...", category: .core)
+        BrainLogger.info("Generating AI-powered daily brief...", category: .core)
         
-        // Gather context for the brief
+        // 1. Gather comprehensive context
+        let userName = UserDefaults.standard.string(forKey: "userName") ?? "there"
+        let now = Date()
+        let hour = Calendar.current.component(.hour, from: now)
+        let greeting = hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening"
+        
+        // 2. Get data from various sources
         let steps = (try? await BrainHealthManager.shared.fetchStepCount(days: 1).first) ?? 0
         let nudges = await RelationshipAgent.shared.analyzeRecentInteractions()
-        let memories = await BrainKnowledgeManager.shared.search(query: "important events today", limit: 3)
+        let calendar = await BrainCalendarManager.shared.getUpcomingBrief()
         
-        let context = """
-        Today's Stats:
-        - Steps: \(Int(steps))
-        - Recent Memories: \(memories.joined(separator: ", "))
-        - Relationship Nudges: \(nudges.map { $0.reason }.joined(separator: "; "))
+        // 3. Semantic memory search for recent important events
+        let recentMemories = await BrainKnowledgeManager.shared.search(
+            query: "important events meetings deadlines work",
+            limit: 5
+        )
         
-        Task: Summarize this into a concise, friendly 2-sentence morning brief.
+        // 4. Build rich context for AI
+        let nudgesText = nudges.isEmpty 
+            ? "No relationship alerts" 
+            : nudges.map { "- \($0.contactName): \($0.reason)" }.joined(separator: "\n")
+        
+        let memoriesText = recentMemories.isEmpty
+            ? "No recent memories found"
+            : recentMemories.joined(separator: "\\n")
+        
+        let systemPrompt = """
+        You are BrainOS's briefing assistant. Generate a warm, personal, actionable daily brief.
+        Style: Friendly but professional. 2-3 sentences max.
+        Focus on: What's important today, relationships, and wellbeing.
+        """
+        
+        let userPrompt = """
+        Generate a \\(greeting) brief for \\(userName):
+        
+        Current Time: \\(now.formatted(date: .abbreviated, time: .shortened))
+        
+        Health:
+        - Steps today: \\(Int(steps))
+        
+        Relationships:
+        \\(nudgesText)
+        
+        Calendar:
+        \\(calendar)
+        
+        Recent Context:
+        \\(memoriesText)
         """
         
         do {
             let engine = ChatEngine()
             let request = ChatCompletionRequest(
                 model: "default",
-                messages: [ChatMessage(role: "user", content: context)],
+                messages: [
+                    ChatMessage(role: "system", content: systemPrompt),
+                    ChatMessage(role: "user", content: userPrompt)
+                ],
                 temperature: 0.7,
-                max_tokens: 100,
+                max_tokens: 150,
                 stream: nil,
                 top_p: nil,
                 frequency_penalty: nil,
@@ -75,11 +117,35 @@ public class BrainManager {
                 session_id: nil
             )
             let response = try await engine.completeChat(request: request)
-            return response.choices.first?.message.content ?? "Unable to generate brief."
+            return response.choices.first?.message.content ?? generateFallbackBrief(steps: steps, nudges: nudges, calendar: calendar)
         } catch {
-            BrainLogger.error("Failed to generate brief with LLM: \(error)", category: .core)
-            return "You've taken \(Int(steps)) steps today. Your relationships are looking good!"
+            BrainLogger.error("Failed to generate brief with LLM: \\(error)", category: .core)
+            return generateFallbackBrief(steps: steps, nudges: nudges, calendar: calendar)
         }
+    }
+    
+    /// Fallback brief when AI generation fails
+    private func generateFallbackBrief(steps: Double, nudges: [RelationshipNudge], calendar: String) -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
+        
+        var brief = "\(greeting)! "
+        
+        if steps > 0 {
+            brief += "You've taken \(Int(steps)) steps today. "
+        }
+        
+        if !nudges.isEmpty {
+            brief += nudges.first.map { "Don't forget to reach out to \($0.contactName). " } ?? ""
+        }
+        
+        if !calendar.isEmpty && calendar != "No upcoming events." {
+            brief += calendar
+        } else {
+            brief += "Your schedule looks clear."
+        }
+        
+        return brief
     }
     
     private func performProactiveCheck() async {
@@ -91,24 +157,82 @@ public class BrainManager {
         let staleContacts = await BrainDatabaseManager.shared.getStaleContacts(days: 14)
         let calendarBrief = await BrainCalendarManager.shared.getUpcomingBrief()
         
-        // 2. Run Reflection Task (The "Reasoning Loop")
+        // 2. Send relationship nudge notifications (high priority only)
+        for nudge in nudges.filter({ $0.priority == .high }) {
+            await notificationService.postRelationshipNudge(
+                contactName: nudge.contactName,
+                reason: nudge.reason,
+                suggestion: nudge.suggestion,
+                priority: "high"
+            )
+        }
+        
+        // 3. Check health metrics and send alerts
+        await checkHealthAndNotify(steps: steps)
+        
+        // 4. Run AI reflection for general insights
         await runReflectionTask(
-            steps: steps, 
-            nudges: nudges, 
+            steps: steps,
+            nudges: nudges,
             staleContacts: staleContacts,
             calendar: calendarBrief
         )
         
-        // 3. Check for immediate alerts (Heuristics)
+        // 5. Time-based triggers
         let hour = Calendar.current.component(.hour, from: Date())
-        if hour == 8 {
-            await sendDailyBrief()
+        
+        // Generate and cache daily brief at 7 AM (ready for 8 AM notification)
+        if hour == 7 {
+            await generateAndCacheDailyBrief()
         }
         
-        // 4. Midnight Journaling
+        // Midnight journaling
         if hour == 23 {
             await generateDailyJournal()
         }
+    }
+    
+    /// Check health metrics and send proactive notifications
+    private func checkHealthAndNotify(steps: Double) async {
+        let hour = Calendar.current.component(.hour, from: Date())
+        
+        // Afternoon activity check (2 PM)
+        if hour == 14 && steps < 2000 {
+            await notificationService.postHealthAlert(
+                title: "Low Activity Today",
+                body: "You've only taken \(Int(steps)) steps. How about a 10-minute walk?"
+            )
+        }
+        
+        // Evening check (6 PM)
+        if hour == 18 && steps < 5000 {
+            await notificationService.postHealthAlert(
+                title: "Movement Reminder",
+                body: "Only \(Int(steps)) steps today. A short evening walk could help!"
+            )
+        }
+    }
+    
+    /// Generate daily brief and cache for morning notification
+    private func generateAndCacheDailyBrief() async {
+        let brief = await generateBrief()
+        
+        // Cache for morning notification
+        UserDefaults.standard.set(brief, forKey: "cachedDailyBrief")
+        UserDefaults.standard.set(Date(), forKey: "cachedBriefDate")
+        
+        BrainLogger.info("Daily brief generated and cached", category: .core)
+    }
+    
+    /// Schedule recurring daily brief notification
+    private func scheduleDailyBriefNotification() {
+        // Get cached brief or generate fallback
+        let brief = UserDefaults.standard.string(forKey: "cachedDailyBrief") 
+            ?? "Good morning! Your BrainOS daily brief is ready."
+        
+        // Schedule for 8 AM daily
+        notificationService.scheduleDailyBrief(hour: 8, minute: 0, brief: brief)
+        BrainLogger.info("Scheduled daily brief notification for 8:00 AM", category: .core)
     }
 
     public func generateDailyJournal() async {
@@ -168,34 +292,57 @@ public class BrainManager {
     }
     
     private func runReflectionTask(
-        steps: Double, 
-        nudges: [RelationshipNudge], 
+        steps: Double,
+        nudges: [RelationshipNudge],
         staleContacts: [(name: String, lastSpoken: Date)],
         calendar: String
     ) async {
-        BrainLogger.info("Running Reflection Task...", category: .agent)
+        BrainLogger.info("Running AI Reflection Task for proactive insights...", category: .agent)
         
         let systemPrompt = """
-        You are the BrainOS Internal Architect. Your job is to analyze the user's daily stream of data 
-        and identify critical insights or urgent actions.
+        You are BrainOS's Internal Architect analyzing the user's life data for critical insights.
+        
+        Your job:
+        1. Identify non-obvious patterns or concerns
+        2. Generate actionable insights (not just observations)
+        3. Prioritize truly important items only
         
         Rules:
-        1. Be extremely concise.
-        2. Only notify for high-priority items (e.g., missed important messages, health alerts, long-lost friends).
-        3. Output ONLY a JSON object with "title", "body", and "priority" (high/medium).
-        4. If nothing is urgent, output "NONE".
+        - Only create insights for HIGH-IMPACT situations
+        - Be specific about WHY it matters and WHAT to do
+        - Output JSON: {"title": "...", "body": "...", "priority": "high/medium"}
+        - If nothing actionable, output: null
         """
         
-        let staleContactsStr = staleContacts.map { "\($0.name) (last spoken \($0.lastSpoken.formatted()))" }.joined(separator: ", ")
+        let staleContactsStr = staleContacts
+            .map { "\($0.name) (\(Int(-$0.lastSpoken.timeIntervalSinceNow / 86400))d)" }
+            .joined(separator: ", ")
+        
+        let nudgesStr = nudges
+            .map { "\($0.contactName): \($0.reason)" }
+            .joined(separator: "\n")
+        
+        // Get recent memories for additional context
+        let recentMemories = await BrainKnowledgeManager.shared.search(
+            query: "work deadlines projects important upcoming",
+            limit: 3
+        )
         
         let context = """
         Current State:
-        - Steps: \(Int(steps))
-        - Relationship Nudges: \(nudges.map { "\($0.contactName): \($0.reason)" }.joined(separator: "\n"))
-        - Stale Contacts (Long time no see): \(staleContactsStr)
-        - Calendar: \(calendar)
+        - Physical Activity: \\(Int(steps)) steps today
+        - Time: \\(Date().formatted(date: .abbreviated, time: .shortened))
         
-        Analyze and decide if a notification is needed.
+        Relationships:
+        \\(nudgesStr.isEmpty ? "No urgent relationship items" : nudgesStr)
+        Stale Contacts: \\(staleContactsStr.isEmpty ? "None" : staleContactsStr)
+        
+        Calendar: \\(calendar)
+        
+        Recent Context:
+        \\(recentMemories.isEmpty ? "No recent memories" : recentMemories.joined(separator: "\\n"))
+        
+        Analyze for actionable insights.
         """
         
         do {
@@ -207,7 +354,7 @@ public class BrainManager {
                     ChatMessage(role: "user", content: context)
                 ],
                 temperature: 0.3,
-                max_tokens: 200,
+                max_tokens: 250,
                 stream: nil,
                 top_p: nil,
                 frequency_penalty: nil,
@@ -219,86 +366,30 @@ public class BrainManager {
                 session_id: nil
             )
             let result = try await engine.completeChat(request: request)
-            let response = result.choices.first?.message.content ?? ""
+            let response = result.choices.first?.message.content?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             
-            let trimmedResponse = response.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            if trimmedResponse != "NONE" && !trimmedResponse.isEmpty {
-                // Try to extract JSON if the model added extra text
-                let jsonString: String
-                if let range = trimmedResponse.range(of: "{.*}", options: String.CompareOptions.regularExpression) {
-                    jsonString = String(trimmedResponse[range])
-                } else {
-                    jsonString = trimmedResponse
-                }
+            if response == "null" || response.isEmpty {
+                BrainLogger.debug("No actionable insights from reflection", category: .agent)
+                return
+            }
+            
+            // Parse JSON response
+            let jsonString = response
+                .replacingOccurrences(of: "```json", with: "")
+                .replacingOccurrences(of: "```", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if let data = jsonString.data(using: .utf8),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+               let title = json["title"],
+               let body = json["body"] {
                 
-                if let data = jsonString.data(using: String.Encoding.utf8),
-                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
-                   let title = json["title"],
-                   let body = json["body"] {
-                    notificationService.show(title: title, subtitle: nil, body: body)
-                    
-                    // If high priority, speak it
-                    if json["priority"] == "high" {
-                        Task {
-                            await VoiceService.shared.speak(body)
-                        }
-                    }
-                }
+                // Send as insight notification
+                await notificationService.postDailyInsight(title: title, body: body)
+                BrainLogger.info("Generated proactive insight: \\(title)", category: .agent)
             }
         } catch {
-            BrainLogger.error("Reflection task failed: \(error)", category: .agent)
+            BrainLogger.error("Reflection task failed: \\(error)", category: .agent)
         }
-    }
-    
-    private func checkRelationships() async {
-        BrainLogger.info("Checking relationship health...", category: .agent)
-        let nudges = await RelationshipAgent.shared.analyzeRecentInteractions()
-        
-        // If there's a high priority nudge, show a notification
-        if let highPriority = nudges.first(where: { $0.priority == .high }) {
-            notificationService.show(
-                title: "Relationship Nudge",
-                subtitle: highPriority.contactName,
-                body: highPriority.reason
-            )
-        }
-        
-        for nudge in nudges {
-            BrainLogger.debug("Nudge: \(nudge.contactName) - \(nudge.suggestion)", category: .agent)
-        }
-    }
-    
-    private func checkHealth() async {
-        BrainLogger.info("Checking physical health...", category: .health)
-        do {
-            try await BrainHealthManager.shared.requestPermissions()
-            let steps = try await BrainHealthManager.shared.fetchStepCount(days: 1)
-            if let todaySteps = steps.first, todaySteps < 2000 {
-                let hour = Calendar.current.component(.hour, from: Date())
-                if hour > 14 { // Afternoon nudge
-                    notificationService.show(
-                        title: "Movement Nudge",
-                        subtitle: "You've only taken \(Int(todaySteps)) steps",
-                        body: "How about a quick 10-minute walk to clear your head?"
-                    )
-                }
-            }
-        } catch {
-            BrainLogger.error("Health check failed: \(error)", category: .health)
-        }
-    }
-    
-    private func checkSpending() async {
-        BrainLogger.info("Checking financial health...", category: .core)
-        // Placeholder for Plaid/Finance integration
-        // In a real implementation, this would query the BrainFinanceTool
-    }
-    
-    private func sendDailyBrief() async {
-        notificationService.show(
-            title: "Good Morning!",
-            subtitle: "Your BrainOS Daily Brief is ready.",
-            body: "You have 3 meetings today. Don't forget to text Mom!"
-        )
     }
 }

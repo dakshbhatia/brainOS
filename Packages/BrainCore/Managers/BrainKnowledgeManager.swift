@@ -91,4 +91,22 @@ public actor BrainKnowledgeManager {
         }
         return entities
     }
+    
+    /// Get memories within a date range sorted by importance
+    public func getMemories(from startDate: Date, to endDate: Date, limit: Int = 10) async -> [(summary: String, timestamp: Date, importance: Double)]? {
+        // Query database for memories in date range
+        let memories = await BrainDatabaseManager.shared.getMemoriesInDateRange(
+            start: startDate,
+            end: endDate,
+            limit: limit
+        )
+        
+        return memories.map { memory in
+            (
+                summary: memory.content,
+                timestamp: memory.timestamp,
+                importance: memory.importance
+            )
+        }
+    }
 }
