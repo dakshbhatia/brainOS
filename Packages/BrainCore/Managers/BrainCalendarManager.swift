@@ -33,15 +33,47 @@ public class BrainCalendarManager {
         return eventStore.events(matching: predicate)
     }
     
-    public func getUpcomingBrief() async -> String {
-        let events = await fetchEvents(days: 1)
-        if events.isEmpty { return "No events scheduled for today." }
+    /// Fetch events involving a specific contact name
+    public func getEventsWithContact(name: String, days: Int = 30) async -> [EKEvent] {
+        let start = Calendar.current.date(byAdding: .day, value: -days, to: Date())!
+        let end = Calendar.current.date(byAdding: .day, value: days, to: Date())!
+        let predicate = eventStore.predicateForEvents(withStart: start, end: end, calendars: nil)
+        let events = eventStore.events(matching: predicate)
         
-        let eventStrings = events.map { event in
-            let time = event.startDate.formatted(date: .omitted, time: .shortened)
-            return "\(time): \(event.title ?? "Untitled Event")"
+        return events.filter { event in
+            let titleMatch = event.title?.localizedCaseInsensitiveContains(name) ?? false
+            let participantMatch = event.attendees?.contains(where: { $0.name?.localizedCaseInsensitiveContains(name) ?? false }) ?? false
+            return titleMatch || participantMatch
         }
+    }
+    
+    /// Get count of shared events with a contact
+    public func getSharedEventCount(name: String) async -> Int {
+        let events = await getEventsWithContact(name: name, days: 365)
+        return events.count
+    }
+    
+    /// Find upcoming birthdays from contacts
+    public func getUpcomingBirthdays(days: Int = 30) async -> [CNContact] {
+        let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactBirthdayKey] as [CNKeyDescriptor]
+        let request = CNContactFetchRequest(keysToFetch: keys)
+        var birthdays: [CNContact] = []
         
-        return "Today's Schedule:\n" + eventStrings.joined(separator: "\n")
+        let store = CNContactStore()
+        try? store.enumerateContacts(with: request) { contact, _ in
+            if let birthday = contact.birthday {
+                let calendar = Calendar.current
+                var components = birthday
+                components.year = calendar.component(.year, from: Date())
+                
+                if let nextBirthday = calendar.date(from: components) {
+                    let diff = calendar.dateComponents([.day], from: Date(), to: nextBirthday).day ?? -1
+                    if diff >= 0 && diff <= days {
+                        birthdays.append(contact)
+                    }
+                }
+            }
+        }
+        return birthdays
     }
 }

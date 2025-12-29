@@ -127,6 +127,29 @@ public struct InteractionEvent: Identifiable, Codable, Sendable {
     }
 }
 
+// MARK: - Smart Grouping Models
+
+/// Groups related interactions (e.g. a single conversation session)
+public struct InteractionGroup: Identifiable, Sendable {
+    public let id: UUID = UUID()
+    public let messages: [MessageEntry]
+    public let timestamp: Date
+    public var summary: String
+    
+    public init(messages: [MessageEntry]) {
+        self.messages = messages
+        self.timestamp = messages.first?.timestamp ?? Date()
+        
+        // AI-ready summary of the group
+        let first = messages.first?.text ?? ""
+        if messages.count > 1 {
+            self.summary = "\(first.prefix(30))... (+ \(messages.count - 1) more)"
+        } else {
+            self.summary = first
+        }
+    }
+}
+
 // MARK: - Relationship Profile
 
 /// Complete profile for a single relationship

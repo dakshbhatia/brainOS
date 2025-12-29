@@ -217,6 +217,90 @@ public actor RelationshipAgent {
         return profiles.sorted { $0.relationshipScore > $1.relationshipScore }
     }
     
+    /// Group interactions by time-gap sessions (e.g. 4 hours)
+    public func getSmartGroupedInteractions(for contactId: String, limit: Int = 100) async -> [InteractionGroup] {
+        let messages = (try? await BrainMessagesManager.shared.fetchRecentMessages(limit: limit, contactName: contactId)) ?? []
+        if messages.isEmpty { return [] }
+        
+        var groups: [InteractionGroup] = []
+        var currentMessages: [MessageEntry] = []
+        var lastTimestamp = messages.first?.timestamp ?? Date()
+        
+        for msg in messages {
+            // If gap > 4 hours, start a new group
+            if abs(msg.timestamp.timeIntervalSince(lastTimestamp)) > 14400 && !currentMessages.isEmpty {
+                groups.append(InteractionGroup(messages: currentMessages))
+                currentMessages = []
+            }
+            currentMessages.append(msg)
+            lastTimestamp = msg.timestamp
+        }
+        
+        var finalizedGroups: [InteractionGroup] = []
+        for var group in groups {
+            let summary = await summarizeGroup(messages: group.messages)
+            group.summary = summary
+            finalizedGroups.append(group)
+        }
+        
+        return finalizedGroups
+    }
+    
+    /// Clean dirty URLs in text using LinkMetadataManager
+    public func cleanText(_ text: String) async -> String {
+        let links = LinkMetadataManager.shared.extractLinks(from: text)
+        var cleanedText = text
+        
+        for link in links {
+            let title = await LinkMetadataManager.shared.getTitle(for: link)
+            cleanedText = cleanedText.replacingOccurrences(of: link, with: "[\(title)](\(link))")
+        }
+        
+        return cleanedText
+    }
+    
+    /// Summarize a group of interactions using AI
+    public func summarizeGroup(messages: [MessageEntry]) async -> String {
+        guard !messages.isEmpty else { return "" }
+        
+        let conversation = messages.prefix(15).compactMap { msg -> String? in
+            guard let text = msg.text else { return nil }
+            let direction = msg.isFromMe ? "User" : (msg.senderName ?? "Contact")
+            return "\(direction): \(text.prefix(100))"
+        }.joined(separator: "\n")
+        
+        let systemPrompt = """
+        Summarize the following interaction session in 5-8 words. 
+        Focus on the MAIN TOPIC or VIBE.
+        Example: "Discussing dinner plans for tonight" or "Catching up after a long week"
+        Output ONLY the summary text.
+        """
+        
+        do {
+            let engine = ChatEngine()
+            let request = ChatCompletionRequest(
+                model: "default",
+                messages: [
+                    ChatMessage(role: "system", content: systemPrompt),
+                    ChatMessage(role: "user", content: "Conversation:\n\(conversation)")
+                ],
+                temperature: 0.3,
+                max_tokens: 50
+            )
+            
+            let response = try await engine.completeChat(request: request)
+            if let content = response.choices.first?.message.content {
+                return content.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\"", with: "")
+            }
+        } catch {
+            BrainLogger.error("Failed to summarize group: \(error)", category: .agent)
+        }
+        
+        // Fallback
+        let first = messages.first?.text ?? "Interaction session"
+        return first.count > 30 ? "\(first.prefix(30))..." : first
+    }
+    
     /// Build a profile for a single contact
     private func buildProfileForContact(
         contactId: String,
@@ -259,6 +343,10 @@ public actor RelationshipAgent {
         // Determine trajectory
         let trajectory = await determineTrajectory(contactId: contactId, messages: messages)
         
+        // Calendar integration
+        let sharedEvents = await BrainCalendarManager.shared.getSharedEventCount(name: contactId)
+        let upcomingEvents = await BrainCalendarManager.shared.getEventsWithContact(name: contactId, days: 7).count
+        
         // Extract the best name
         let name = messages.first?.senderName ?? contactId
         
@@ -277,13 +365,13 @@ public actor RelationshipAgent {
             messagesReceived: messagesReceived,
             peakInteractionDays: peakDays,
             peakInteractionHours: peakHours,
-            sentimentScore: nil,  // Would require sentiment analysis
+            sentimentScore: nil,
             tags: [],
             notes: nil,
             tier: tier,
             trajectory: trajectory,
-            upcomingEventCount: 0,
-            sharedEventCount: 0,
+            upcomingEventCount: upcomingEvents,
+            sharedEventCount: sharedEvents,
             updatedAt: Date()
         )
     }

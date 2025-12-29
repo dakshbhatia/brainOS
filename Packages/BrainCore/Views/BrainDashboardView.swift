@@ -11,6 +11,7 @@ struct BrainDashboardView: View {
     @State private var memoryStreamActive = false
     @State private var lastIngestionTime: String = "Never"
     @State private var showingFullBrief = false
+    @State private var showingRelationshipCRM = false
     @State private var semanticMemoryStats: AutoEmbeddingService.Stats?
     @Environment(\.theme) private var theme
     
@@ -102,7 +103,15 @@ struct BrainDashboardView: View {
                 .foregroundStyle(.secondary)
             
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                VitalMeter(title: "Social", icon: "person.2.fill", value: vitals["social"] ?? 0.5, color: .blue)
+                Button(action: { showingRelationshipCRM = true }) {
+                    VitalMeter(title: "Social", icon: "person.2.fill", value: vitals["social"] ?? 0.5, color: .blue)
+                }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showingRelationshipCRM) {
+                    RelationshipDashboardView()
+                        .frame(minWidth: 800, minHeight: 600)
+                }
+                
                 VitalMeter(title: "Focus", icon: "bolt.fill", value: vitals["focus"] ?? 0.5, color: .purple)
                 VitalMeter(title: "Physical", icon: "figure.walk", value: Double(stepCount) / 10000.0, color: .green)
                 VitalMeter(title: "Finance", icon: "creditcard.fill", value: vitals["finance"] ?? 0.5, color: .orange)
