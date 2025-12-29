@@ -368,6 +368,26 @@ public actor PythonEnvironmentManager {
         NSLog("ℹ️  PythonEnv: Whisper model will download on first use (prevents startup delay)")
         return true
     }
+    
+    /// Check if the voice sidecar is currently healthy
+    public func checkSidecarHealth() async -> Bool {
+        let url = URL(string: "http://127.0.0.1:8001/health")!
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 2.0
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                return false
+            }
+            
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            return json?["status"] as? String == "ok"
+        } catch {
+            return false
+        }
+    }
 }
 
 /// Voice environment setup status

@@ -20,7 +20,12 @@ public actor BrainKnowledgeManager {
         // 1. Extract entities for Knowledge Graph
         extractAndStoreEntities(from: text)
         
-        // 2. Store in SQLite via DatabaseManager
+        // 2. Extract relationships via LLM if available, otherwise fallback to pattern matching
+        Task {
+            await processAndStoreRelationships(from: text)
+        }
+        
+        // 3. Store in SQLite via DatabaseManager
         Task {
             await BrainDatabaseManager.shared.saveMemory(
                 id: UUID().uuidString,
@@ -122,7 +127,7 @@ public actor BrainKnowledgeManager {
         }
         
         // 3. Combine and Rerank (Simple deduplication and priority for graph results)
-        var combined = Array(Set(vectorResults + graphResults))
+        let combined = Array(Set(vectorResults + graphResults))
         
         // Future: Use a small local Cross-Encoder for better reranking
         return Array(combined.prefix(limit))
@@ -156,11 +161,73 @@ public actor BrainKnowledgeManager {
         return extractEntitiesWithTypes(from: text).map { $0.name }
     }
     
-    // MARK: - Relationship Extraction
-    
-    /// Extract semantic relationships from text using pattern matching
+    /// Extract semantic relationships from text using pattern matching (fallback) or LLM
     /// Returns tuples of (subject, predicate, object)
-    public func extractRelationships(from text: String) -> [(subject: String, predicate: String, object: String)] {
+    public func extractRelationships(from text: String) async -> [(subject: String, predicate: String, object: String)] {
+        // Try LLM first
+        if let llmResults = await llmExtractRelationships(from: text) {
+            return llmResults
+        }
+        
+        // Fallback to pattern matching
+        return patternExtractRelationships(from: text)
+    }
+    
+    /// Extract relationships using LLM
+    private func llmExtractRelationships(from text: String) async -> [(subject: String, predicate: String, object: String)]? {
+        let systemPrompt = """
+        Extract structured knowledge from the provided text.
+        Identify entities and the semantic relationships between them.
+        
+        Output format: JSON array of objects with "subject", "predicate", and "object" fields.
+        Examples:
+        - "Alice works at Google" -> [{"subject": "Alice", "predicate": "employed_by", "object": "Google"}]
+        - "I met Bob in Paris" -> [{"subject": "User", "predicate": "met", "object": "Bob"}, {"subject": "Bob", "predicate": "located_at", "object": "Paris"}]
+        
+        Predicates should be concise snake_case: employed_by, lives_in, knows, met, founded, etc.
+        If no clear relationships found, return [].
+        """
+        
+        let userPrompt = "Text to analyze: \"\(text)\""
+        
+        do {
+            let engine = ChatEngine()
+            let request = ChatCompletionRequest(
+                model: "default",
+                messages: [
+                    ChatMessage(role: "system", content: systemPrompt),
+                    ChatMessage(role: "user", content: userPrompt)
+                ],
+                temperature: 0.1,
+                max_tokens: 500
+            )
+            
+            let response = try await engine.completeChat(request: request)
+            guard let content = response.choices.first?.message.content else { return nil }
+            
+            let jsonString = content
+                .replacingOccurrences(of: "```json", with: "")
+                .replacingOccurrences(of: "```", with: "")
+                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            
+            struct Rel: Codable {
+                let subject: String
+                let predicate: String
+                let object: String
+            }
+            
+            guard let data = jsonString.data(using: String.Encoding.utf8) else { return nil }
+            let extracted = try JSONDecoder().decode([Rel].self, from: data)
+            
+            return extracted.map { ($0.subject, $0.predicate, $0.object) }
+        } catch {
+            BrainLogger.error("LLM relationship extraction failed: \(error)", category: .knowledge)
+            return nil
+        }
+    }
+    
+    /// Extract semantic relationships from text using pattern matching (Heuristic fallback)
+    private func patternExtractRelationships(from text: String) -> [(subject: String, predicate: String, object: String)] {
         let entities = extractEntitiesWithTypes(from: text)
         guard entities.count >= 2 else { return [] }
         
@@ -334,12 +401,12 @@ public actor BrainKnowledgeManager {
     
     /// Process text and store extracted relationships in the knowledge graph
     /// Returns the number of relationships successfully stored
-    public func processAndStoreRelationships(from text: String) async throws -> Int {
+    public func processAndStoreRelationships(from text: String) async -> Int {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return 0
         }
         
-        let relationships = extractRelationships(from: text)
+        let relationships = await extractRelationships(from: text)
         guard !relationships.isEmpty else {
             return 0
         }
@@ -349,14 +416,14 @@ public actor BrainKnowledgeManager {
         for (subject, predicate, object) in relationships {
             do {
                 // First ensure entities exist
-                try await BrainDatabaseManager.shared.upsertEntity(name: subject, type: "extracted")
-                try await BrainDatabaseManager.shared.upsertEntity(name: object, type: "extracted")
+                await BrainDatabaseManager.shared.upsertEntity(name: subject, type: "extracted")
+                await BrainDatabaseManager.shared.upsertEntity(name: object, type: "extracted")
                 
                 // Create relationship
                 let sourceId = "extracted:\(subject.lowercased())"
                 let targetId = "extracted:\(object.lowercased())"
                 
-                try await BrainDatabaseManager.shared.addRelationship(
+                await BrainDatabaseManager.shared.addRelationship(
                     source: sourceId,
                     target: targetId,
                     type: predicate,

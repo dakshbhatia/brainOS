@@ -12,10 +12,10 @@ import tempfile
 
 # Assuming chatterbox-tts is installed
 try:
-    from chatterbox import Chatterbox
 except ImportError:
-    print("Error: chatterbox-tts not found. Please install it.")
+    print("Warning: chatterbox-tts not found. Will use native 'say' fallback.")
     Chatterbox = None
+import subprocess
 
 # Whisper for STT
 try:
@@ -64,9 +64,10 @@ async def startup_event():
 @app.post("/v1/audio/speech")
 async def text_to_speech(request: TTSRequest):
     if tts_model is None:
-        raise HTTPException(status_code=503, detail="TTS model not loaded")
+        print(f"TTS Model not loaded, using native 'say' for: {request.text[:50]}...")
+        return await native_say_tts(request.text)
     
-    print(f"Generating speech for: {request.text[:50]}...")
+    print(f"Generating speech with Chatterbox for: {request.text[:50]}...")
     
     try:
         audio_data = tts_model.generate(
@@ -86,7 +87,39 @@ async def text_to_speech(request: TTSRequest):
         return StreamingResponse(byte_io, media_type="audio/wav")
         
     except Exception as e:
-        print(f"Error generating speech: {e}")
+        print(f"Error generating speech with model: {e}. Falling back to 'say'.")
+        return await native_say_tts(request.text)
+
+async def native_say_tts(text: str):
+    """Fallback to macOS native 'say' command, piping to a WAV file."""
+    try:
+        # Create temp file for the AIFF output from 'say'
+        with tempfile.NamedTemporaryFile(suffix=".aiff", delete=False) as tmp_aiff:
+            tmp_aiff_path = tmp_aiff.name
+        
+        # Run 'say' to generate AIFF
+        subprocess.run(["say", "-o", tmp_aiff_path, text], check=True)
+        
+        # Convert AIFF to WAV using soundfile or subprocess/ffmpeg if needed
+        # For simplicity in this environment, we'll try to use a conversion or just return AIFF
+        # But standard response should be WAV. Let's use soundfile if available.
+        try:
+            import soundfile as sf
+            data, samplerate = sf.read(tmp_aiff_path)
+            byte_io = io.BytesIO()
+            sf.write(byte_io, data, samplerate, format='WAV')
+            byte_io.seek(0)
+            os.unlink(tmp_aiff_path)
+            return StreamingResponse(byte_io, media_type="audio/wav")
+        except ImportError:
+            # If soundfile not available, just stream AIFF (most players handle it)
+            with open(tmp_aiff_path, "rb") as f:
+                content = f.read()
+            os.unlink(tmp_aiff_path)
+            return Response(content=content, media_type="audio/x-aiff")
+            
+    except Exception as e:
+        print(f"Native 'say' failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/v1/audio/transcriptions", response_model=STTResponse)

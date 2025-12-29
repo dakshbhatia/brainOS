@@ -255,7 +255,7 @@ final class BrainSidebarViewModel: ObservableObject {
             await MainActor.run {
                 self.nudges = loadedNudges
                 self.pendingNudges = loadedNudges.count
-                self.hasUrgentNudge = loadedNudges.contains { $0.priority == .high }
+                self.hasUrgentNudge = loadedNudges.contains { $0.urgency > 0.8 }
             }
             
             // Load daily brief
@@ -754,7 +754,7 @@ struct RelationshipNudgesCard: View {
             ForEach(nudges.prefix(3), id: \.contactName) { nudge in
                 HStack(spacing: 10) {
                     Circle()
-                        .fill(nudge.priority == .high ? Color.red : Color.orange)
+                        .fill(nudge.urgency > 0.8 ? Color.red : Color.orange)
                         .frame(width: 8, height: 8)
                     
                     VStack(alignment: .leading, spacing: 2) {

@@ -133,16 +133,7 @@ public class BrainManager {
                     ChatMessage(role: "user", content: userPrompt)
                 ],
                 temperature: 0.7,
-                max_tokens: 150,
-                stream: nil,
-                top_p: nil,
-                frequency_penalty: nil,
-                presence_penalty: nil,
-                stop: nil,
-                n: nil,
-                tools: nil,
-                tool_choice: nil,
-                session_id: nil
+                max_tokens: 150
             )
             let response = try await engine.completeChat(request: request)
             return response.choices.first?.message.content ?? generateFallbackBrief(steps: steps, nudges: nudges, calendar: calendar)
@@ -186,7 +177,7 @@ public class BrainManager {
         let calendarBrief = await BrainCalendarManager.shared.getUpcomingBrief()
         
         // 2. Send relationship nudge notifications (high priority only)
-        for nudge in nudges.filter({ $0.priority == .high }) {
+        for nudge in nudges.filter({ $0.urgency > 0.8 }) {
             await notificationService.postRelationshipNudge(
                 contactName: nudge.contactName,
                 reason: nudge.reason,
@@ -285,16 +276,7 @@ public class BrainManager {
                 model: "default",
                 messages: [ChatMessage(role: "user", content: context)],
                 temperature: 0.7,
-                max_tokens: 300,
-                stream: nil,
-                top_p: nil,
-                frequency_penalty: nil,
-                presence_penalty: nil,
-                stop: nil,
-                n: nil,
-                tools: nil,
-                tool_choice: nil,
-                session_id: nil
+                max_tokens: 300
             )
             let result = try await engine.completeChat(request: request)
             let response = result.choices.first?.message.content ?? ""
@@ -382,16 +364,7 @@ public class BrainManager {
                     ChatMessage(role: "user", content: context)
                 ],
                 temperature: 0.3,
-                max_tokens: 250,
-                stream: nil,
-                top_p: nil,
-                frequency_penalty: nil,
-                presence_penalty: nil,
-                stop: nil,
-                n: nil,
-                tools: nil,
-                tool_choice: nil,
-                session_id: nil
+                max_tokens: 250
             )
             let result = try await engine.completeChat(request: request)
             let response = result.choices.first?.message.content?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -405,7 +378,7 @@ public class BrainManager {
             let jsonString = response
                 .replacingOccurrences(of: "```json", with: "")
                 .replacingOccurrences(of: "```", with: "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             
             if let data = jsonString.data(using: .utf8),
                let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],

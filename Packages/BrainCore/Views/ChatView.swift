@@ -14,27 +14,30 @@ import SwiftUI
 actor BackgroundTaskCoordinator {
     static let shared = BackgroundTaskCoordinator()
     
-    private var pendingTasks: [Task<Void, Never>] = []
+    private var pendingTasks: [UUID: Task<Void, Never>] = [:]
     
     /// Queue a task to run serially with other background operations
     func enqueue(_ operation: @escaping @Sendable () async -> Void) {
+        let id = UUID()
         let task = Task {
             await operation()
+            await self.removeTask(id)
         }
-        pendingTasks.append(task)
-        
-        // Clean up completed tasks
-        pendingTasks.removeAll { $0.isCancelled || $0.isCompleted }
+        pendingTasks[id] = task
+    }
+    
+    private func removeTask(_ id: UUID) {
+        pendingTasks.removeValue(forKey: id)
     }
     
     /// Wait for all pending tasks (useful for testing)
     func waitForCompletion() async {
+        let tasks = Array(pendingTasks.values)
         await withTaskGroup(of: Void.self) { group in
-            for task in pendingTasks {
+            for task in tasks {
                 group.addTask { await task.value }
             }
         }
-        pendingTasks.removeAll()
     }
 }
 
@@ -488,13 +491,9 @@ final class ChatSession: ObservableObject {
                 let messageContent = trimmed
                 Task {
                     await BackgroundTaskCoordinator.shared.enqueue {
-                        do {
-                            let count = await BrainKnowledgeManager.shared.processAndStoreRelationships(from: messageContent)
-                            if count > 0 {
-                                NSLog("📊 ChatView: Extracted \(count) relationships from user message")
-                            }
-                        } catch {
-                            NSLog("⚠️ ChatView: Failed to extract relationships: \(error.localizedDescription)")
+                        let count = await BrainKnowledgeManager.shared.processAndStoreRelationships(from: messageContent)
+                        if count > 0 {
+                            NSLog("📊 ChatView: Extracted \(count) relationships from user message")
                         }
                     }
                 }
@@ -506,12 +505,8 @@ final class ChatSession: ObservableObject {
                             sender: "user",
                             timestamp: Date()
                         )
-                        do {
-                            await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
-                            NSLog("🧠 ChatView: Generated memory from user message")
-                        } catch {
-                            NSLog("⚠️ ChatView: Memory generation failed: \(error.localizedDescription)")
-                        }
+                        await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                        NSLog("🧠 ChatView: Generated memory from user message")
                     }
                 }
             }
@@ -556,13 +551,9 @@ final class ChatSession: ObservableObject {
                     let responseContent = lastTurn.content
                     Task {
                         await BackgroundTaskCoordinator.shared.enqueue {
-                            do {
-                                let count = await BrainKnowledgeManager.shared.processAndStoreRelationships(from: responseContent)
-                                if count > 0 {
-                                    NSLog("📊 ChatView: Extracted \(count) relationships from assistant response")
-                                }
-                            } catch {
-                                NSLog("⚠️ ChatView: Failed to extract relationships: \(error.localizedDescription)")
+                            let count = await BrainKnowledgeManager.shared.processAndStoreRelationships(from: responseContent)
+                            if count > 0 {
+                                NSLog("📊 ChatView: Extracted \(count) relationships from assistant response")
                             }
                         }
                     }
@@ -574,12 +565,8 @@ final class ChatSession: ObservableObject {
                                 sender: "assistant",
                                 timestamp: Date()
                             )
-                            do {
-                                await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
-                                NSLog("🧠 ChatView: Generated memory from assistant response")
-                            } catch {
-                                NSLog("⚠️ ChatView: Memory generation failed: \(error.localizedDescription)")
-                            }
+                            await MemoryGenerationPipeline.shared.processDataBatch([dataItem])
+                            NSLog("🧠 ChatView: Generated memory from assistant response")
                         }
                     }
                 }
@@ -604,10 +591,13 @@ final class ChatSession: ObservableObject {
                     withOverrides: effectiveOverrides
                 )
 
-                // Estimate tokens for a message (heuristic: ~4 chars per token)
+                // Estimate tokens for a message (heuristic: ~4 chars per token + overhead)
                 func estimateTokens(for msg: ChatMessage) -> Int {
-                    let charCount = (msg.content ?? "").count
-                    return max(1, charCount / 4)
+                    let contentChars = (msg.content ?? "").count
+                    let roleChars = msg.role.count
+                    let toolChars = (msg.tool_calls?.description ?? "").count
+                    // 4 characters per token is a safe conservative estimate for English
+                    return max(4, (contentChars + roleChars + toolChars) / 4 + 10)
                 }
 
                 // Get model context length (with fallback)

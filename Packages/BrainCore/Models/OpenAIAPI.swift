@@ -351,6 +351,36 @@ struct ChatCompletionRequest: Codable, Sendable {
     let tool_choice: ToolChoiceOption?
     /// Optional session identifier for KV cache reuse across turns
     let session_id: String?
+    
+    init(
+        model: String,
+        messages: [ChatMessage],
+        temperature: Float? = nil,
+        max_tokens: Int? = nil,
+        stream: Bool? = nil,
+        top_p: Float? = nil,
+        frequency_penalty: Float? = nil,
+        presence_penalty: Float? = nil,
+        stop: [String]? = nil,
+        n: Int? = nil,
+        tools: [Tool]? = nil,
+        tool_choice: ToolChoiceOption? = nil,
+        session_id: String? = nil
+    ) {
+        self.model = model
+        self.messages = messages
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.stream = stream
+        self.top_p = top_p
+        self.frequency_penalty = frequency_penalty
+        self.presence_penalty = presence_penalty
+        self.stop = stop
+        self.n = n
+        self.tools = tools
+        self.tool_choice = tool_choice
+        self.session_id = session_id
+    }
 }
 
 /// Chat completion choice

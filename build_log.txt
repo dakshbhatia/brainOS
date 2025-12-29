@@ -1,0 +1,629 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace BrainOS.xcworkspace -scheme BrainOS -configuration Debug -sdk macosx build
+
+Build settings from command line:
+    SDKROOT = macosx15.5
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  mcp-swift-sdk: https://github.com/modelcontextprotocol/swift-sdk @ 0.10.2
+  Jinja: https://github.com/huggingface/swift-jinja.git @ 2.2.0
+  Sparkle: https://github.com/sparkle-project/Sparkle @ 2.8.1
+  swift-nio: https://github.com/apple/swift-nio.git @ 2.92.0
+  mlx-swift-lm: https://github.com/ml-explore/mlx-swift-lm @ 74f85d9
+  swift-numerics: https://github.com/apple/swift-numerics @ 1.1.1
+  swift-log: https://github.com/apple/swift-log.git @ 1.8.0
+  BrainCLI: /Users/dakshbhatia/BrainOS/Packages/BrainCLI
+  MacosUseSDK: https://github.com/mediar-ai/MacosUseSDK.git @ main (5d810b5)
+  swift-transformers: https://github.com/huggingface/swift-transformers @ 1.1.5
+  mlx-swift: https://github.com/ml-explore/mlx-swift @ 0.29.1
+  EventSource: https://github.com/mattt/eventsource.git @ 1.3.0
+  BrainRepository: /Users/dakshbhatia/BrainOS/Packages/BrainRepository
+  IkigaJSON: https://github.com/orlandos-nl/IkigaJSON @ 2.3.2
+  swift-system: https://github.com/apple/swift-system.git @ 1.6.3
+  swift-collections: https://github.com/apple/swift-collections.git @ 1.3.0
+  swift-atomics: https://github.com/apple/swift-atomics.git @ 1.3.0
+  BrainCore: /Users/dakshbhatia/BrainOS/Packages/BrainCore
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00008112-000949C0142BC01E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00008112-000949C0142BC01E, name:My Mac }
+{ platform:macOS, name:Any Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (85 targets)
+    Target 'BrainOS' in project 'BrainOS'
+        ➜ Explicit dependency on target 'BrainCore' in project 'BrainCore'
+    Target 'BrainCore' in project 'BrainCore'
+        ➜ Explicit dependency on target 'BrainCore' in project 'BrainCore'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOHTTP1' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'MCP' in project 'mcp-swift-sdk'
+        ➜ Explicit dependency on target 'IkigaJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target 'Sparkle' in project 'Sparkle'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXVLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'MacosUseSDK' in project 'MacosUseSDK'
+        ➜ Explicit dependency on target 'BrainRepository' in project 'BrainRepository'
+    Target 'BrainCore' in project 'BrainCore'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOHTTP1' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'MCP' in project 'mcp-swift-sdk'
+        ➜ Explicit dependency on target 'IkigaJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target 'Sparkle' in project 'Sparkle'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXVLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'MacosUseSDK' in project 'MacosUseSDK'
+        ➜ Explicit dependency on target 'BrainRepository' in project 'BrainRepository'
+    Target 'BrainRepository' in project 'BrainRepository'
+        ➜ Explicit dependency on target 'BrainRepository' in project 'BrainRepository'
+    Target 'BrainRepository' in project 'BrainRepository' (no dependencies)
+    Target 'MacosUseSDK' in project 'MacosUseSDK'
+        ➜ Explicit dependency on target 'MacosUseSDK' in project 'MacosUseSDK'
+    Target 'MacosUseSDK' in project 'MacosUseSDK' (no dependencies)
+    Target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'swift-transformers_Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Transformers' in project 'swift-transformers'
+    Target 'MLXVLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXVLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Transformers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+    Target 'MLXVLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Transformers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+    Target 'MLXLLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Transformers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+    Target 'MLXLLM' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Transformers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+    Target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXLMCommon' in project 'mlx-swift-lm'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Transformers' in project 'swift-transformers'
+    Target 'Transformers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Tokenizers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Generation' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Models' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'Models' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Tokenizers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Generation' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'Generation' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Tokenizers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'Tokenizers' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'swift-transformers_Hub' in project 'swift-transformers'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'Jinja' in project 'Jinja'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+    Target 'OrderedCollections' in project 'swift-collections'
+        ➜ Explicit dependency on target 'OrderedCollections' in project 'swift-collections'
+        ➜ Explicit dependency on target 'InternalCollectionsUtilities' in project 'swift-collections'
+    Target 'OrderedCollections' in project 'swift-collections'
+        ➜ Explicit dependency on target 'InternalCollectionsUtilities' in project 'swift-collections'
+    Target 'swift-transformers_Hub' in project 'swift-transformers' (no dependencies)
+    Target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXLinalg' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXOptimizers' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXNN' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXFast' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLXRandom' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'MLX' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+    Target 'Numerics' in project 'swift-numerics'
+        ➜ Explicit dependency on target 'Numerics' in project 'swift-numerics'
+        ➜ Explicit dependency on target '_NumericsShims' in project 'swift-numerics'
+        ➜ Explicit dependency on target 'RealModule' in project 'swift-numerics'
+        ➜ Explicit dependency on target 'ComplexModule' in project 'swift-numerics'
+    Target 'Numerics' in project 'swift-numerics'
+        ➜ Explicit dependency on target '_NumericsShims' in project 'swift-numerics'
+        ➜ Explicit dependency on target 'RealModule' in project 'swift-numerics'
+        ➜ Explicit dependency on target 'ComplexModule' in project 'swift-numerics'
+    Target 'ComplexModule' in project 'swift-numerics'
+        ➜ Explicit dependency on target '_NumericsShims' in project 'swift-numerics'
+        ➜ Explicit dependency on target 'RealModule' in project 'swift-numerics'
+    Target 'RealModule' in project 'swift-numerics'
+        ➜ Explicit dependency on target '_NumericsShims' in project 'swift-numerics'
+    Target '_NumericsShims' in project 'swift-numerics' (no dependencies)
+    Target 'Cmlx' in project 'mlx-swift'
+        ➜ Explicit dependency on target 'mlx-swift_Cmlx' in project 'mlx-swift'
+    Target 'mlx-swift_Cmlx' in project 'mlx-swift' (no dependencies)
+    Target 'Sparkle' in project 'Sparkle' (no dependencies)
+    Target 'IkigaJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target 'IkigaJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target '_JSONCore' in project 'IkigaJSON'
+        ➜ Explicit dependency on target '_NIOJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOFoundationCompat' in project 'swift-nio'
+    Target 'IkigaJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target '_JSONCore' in project 'IkigaJSON'
+        ➜ Explicit dependency on target '_NIOJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOFoundationCompat' in project 'swift-nio'
+    Target '_NIOJSON' in project 'IkigaJSON'
+        ➜ Explicit dependency on target '_JSONCore' in project 'IkigaJSON'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOFoundationCompat' in project 'swift-nio'
+    Target 'NIOFoundationCompat' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOFoundationCompat' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOEmbedded' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIO' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'NIOFoundationCompat' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOEmbedded' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIO' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target '_JSONCore' in project 'IkigaJSON' (no dependencies)
+    Target 'MCP' in project 'mcp-swift-sdk'
+        ➜ Explicit dependency on target 'MCP' in project 'mcp-swift-sdk'
+        ➜ Explicit dependency on target 'SystemPackage' in project 'swift-system'
+        ➜ Explicit dependency on target 'Logging' in project 'swift-log'
+        ➜ Explicit dependency on target 'EventSource' in project 'EventSource'
+    Target 'MCP' in project 'mcp-swift-sdk'
+        ➜ Explicit dependency on target 'SystemPackage' in project 'swift-system'
+        ➜ Explicit dependency on target 'Logging' in project 'swift-log'
+        ➜ Explicit dependency on target 'EventSource' in project 'EventSource'
+    Target 'EventSource' in project 'EventSource'
+        ➜ Explicit dependency on target 'EventSource' in project 'EventSource'
+    Target 'EventSource' in project 'EventSource' (no dependencies)
+    Target 'Logging' in project 'swift-log'
+        ➜ Explicit dependency on target 'Logging' in project 'swift-log'
+    Target 'Logging' in project 'swift-log' (no dependencies)
+    Target 'SystemPackage' in project 'swift-system'
+        ➜ Explicit dependency on target 'SystemPackage' in project 'swift-system'
+        ➜ Explicit dependency on target 'CSystem' in project 'swift-system'
+    Target 'SystemPackage' in project 'swift-system'
+        ➜ Explicit dependency on target 'CSystem' in project 'swift-system'
+    Target 'CSystem' in project 'swift-system' (no dependencies)
+    Target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'swift-nio_NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'NIOHTTP1' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOHTTP1' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOEmbedded' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIO' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLLHTTP' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'NIOHTTP1' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOEmbedded' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIO' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLLHTTP' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'CNIOLLHTTP' in project 'swift-nio' (no dependencies)
+    Target 'NIO' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOEmbedded' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'swift-nio_NIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOPosix' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'swift-nio_NIOPosix' in project 'swift-nio' (no dependencies)
+    Target 'CNIOPosix' in project 'swift-nio' (no dependencies)
+    Target 'NIOEmbedded' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'NIOCore' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+        ➜ Explicit dependency on target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIOBase64' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOOpenBSD' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIODarwin' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOLinux' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWindows' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOWASI' in project 'swift-nio'
+        ➜ Explicit dependency on target '_NIODataStructures' in project 'swift-nio'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+    Target 'Atomics' in project 'swift-atomics'
+        ➜ Explicit dependency on target 'Atomics' in project 'swift-atomics'
+        ➜ Explicit dependency on target '_AtomicsShims' in project 'swift-atomics'
+    Target 'Atomics' in project 'swift-atomics'
+        ➜ Explicit dependency on target '_AtomicsShims' in project 'swift-atomics'
+    Target '_AtomicsShims' in project 'swift-atomics' (no dependencies)
+    Target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'InternalCollectionsUtilities' in project 'swift-collections'
+    Target 'DequeModule' in project 'swift-collections'
+        ➜ Explicit dependency on target 'InternalCollectionsUtilities' in project 'swift-collections'
+    Target 'InternalCollectionsUtilities' in project 'swift-collections' (no dependencies)
+    Target '_NIODataStructures' in project 'swift-nio' (no dependencies)
+    Target 'CNIOWASI' in project 'swift-nio' (no dependencies)
+    Target 'CNIOWindows' in project 'swift-nio' (no dependencies)
+    Target 'CNIOLinux' in project 'swift-nio' (no dependencies)
+    Target 'CNIODarwin' in project 'swift-nio' (no dependencies)
+    Target 'CNIOOpenBSD' in project 'swift-nio' (no dependencies)
+    Target '_NIOBase64' in project 'swift-nio' (no dependencies)
+    Target 'NIOConcurrencyHelpers' in project 'swift-nio'
+        ➜ Explicit dependency on target 'CNIOAtomics' in project 'swift-nio'
+    Target 'CNIOAtomics' in project 'swift-nio' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -x objective-c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -x c++ -c /dev/null
+
+ReadFileContents /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/docc/features.json
+
+Build description signature: 8a02d2bf5f600efeb7abfc28858c886d
+Build description path: /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/XCBuildData/8a02d2bf5f600efeb7abfc28858c886d.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx15.5-24F74-8254517eb8b97d462ccbc072ba9094c9.sdkstatcache
+    cd /Users/dakshbhatia/BrainOS
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -o /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx15.5-24F74-8254517eb8b97d462ccbc072ba9094c9.sdkstatcache
+
+ProcessInfoPlistFile /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/swift-nio_NIOPosix.bundle/Contents/Info.plist /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/swift-nio.build/Debug/swift-nio_NIOPosix.build/empty-swift-nio_NIOPosix.plist (in target 'swift-nio_NIOPosix' from project 'swift-nio')
+    cd /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio
+    builtin-infoPlistUtility /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/swift-nio.build/Debug/swift-nio_NIOPosix.build/empty-swift-nio_NIOPosix.plist -producttype com.apple.product-type.bundle -expandbuildsettings -platform macosx -o /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/swift-nio_NIOPosix.bundle/Contents/Info.plist
+
+ProcessInfoPlistFile /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/mlx-swift_Cmlx.bundle/Contents/Info.plist /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/mlx-swift.build/Debug/mlx-swift_Cmlx.build/empty-mlx-swift_Cmlx.plist (in target 'mlx-swift_Cmlx' from project 'mlx-swift')
+    cd /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/mlx-swift
+    builtin-infoPlistUtility /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/mlx-swift.build/Debug/mlx-swift_Cmlx.build/empty-mlx-swift_Cmlx.plist -producttype com.apple.product-type.bundle -expandbuildsettings -platform macosx -o /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/mlx-swift_Cmlx.bundle/Contents/Info.plist
+
+ProcessInfoPlistFile /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/swift-transformers_Hub.bundle/Contents/Info.plist /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/swift-transformers.build/Debug/swift-transformers_Hub.build/empty-swift-transformers_Hub.plist (in target 'swift-transformers_Hub' from project 'swift-transformers')
+    cd /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-transformers
+    builtin-infoPlistUtility /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/swift-transformers.build/Debug/swift-transformers_Hub.build/empty-swift-transformers_Hub.plist -producttype com.apple.product-type.bundle -expandbuildsettings -platform macosx -o /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/swift-transformers_Hub.bundle/Contents/Info.plist
+
+SwiftDriver BrainCore normal arm64 com.apple.xcode.tools.swift.compiler (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BrainCore -Onone -enforce-exclusivity\=checked @/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainCore.SwiftFileList -DSWIFT_PACKAGE -DDEBUG -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOLLHTTP.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOPosix.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOWASI.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOLinux.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIODarwin.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOOpenBSD.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOAtomics.modulemap -DXcode -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos15.0 -g -module-cache-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Index.noindex/DataStore -swift-version 5 -I /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug -I /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug -F /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx15.5-24F74-8254517eb8b97d462ccbc072ba9094c9.sdkstatcache -output-file-map /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainCore-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainCore.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -package-name braincore -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainCore_const_extract_protocols.json -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOLLHTTP/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-system/Sources/CSystem/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-atomics/Sources/_AtomicsShims/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOPosix/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOWASI/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOWindows/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOLinux/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIODarwin/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOOpenBSD/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOAtomics/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-numerics/Sources/_NumericsShims/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/mlx-swift/Source/Cmlx/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/DerivedSources-normal/arm64 -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/DerivedSources/arm64 -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainCore-Swift.h -working-directory /Users/dakshbhatia/BrainOS -experimental-emit-module-separately -disable-cmo
+
+SwiftCompile normal arm64 Compiling\ RelationshipAgent.swift,\ PythonEnvironmentManager.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/RelationshipAgent.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Services/PythonEnvironmentManager.swift (in target 'BrainCore' from project 'BrainCore')
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/RelationshipAgent.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Services/PythonEnvironmentManager.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ AppDelegate.swift,\ BrainDatabaseManager.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/AppDelegate.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainDatabaseManager.swift (in target 'BrainCore' from project 'BrainCore')
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/AppDelegate.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainDatabaseManager.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ BrainKnowledgeManager.swift,\ BrainUsageManager.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainUsageManager.swift (in target 'BrainCore' from project 'BrainCore')
+Failed frontend command:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c -filelist /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/sources-1 -primary-file /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift -primary-file /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainUsageManager.swift -emit-dependencies-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainKnowledgeManager.d -emit-const-values-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainKnowledgeManager.swiftconstvalues -emit-reference-dependencies-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainKnowledgeManager.swiftdeps -serialize-diagnostics-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainKnowledgeManager.dia -emit-dependencies-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainUsageManager.d -emit-const-values-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainUsageManager.swiftconstvalues -emit-reference-dependencies-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainUsageManager.swiftdeps -serialize-diagnostics-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainUsageManager.dia -target arm64-apple-macos15.0 -Xllvm -aarch64-use-tbi -enable-objc-interop -stack-check -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -I /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug -I /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/PackageFrameworks -F /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug -F /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -no-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=5 -module-cache-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -profile-generate -profile-coverage-mapping -swift-version 5 -enforce-exclusivity\=checked -Onone -D SWIFT_PACKAGE -D DEBUG -D Xcode -serialize-debugging-options -const-gather-protocols-file /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainCore_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -validate-clang-modules-once -clang-build-session-file /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/dakshbhatia/BrainOS -resource-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift -enable-anonymous-context-mangled-names -file-compilation-dir /Users/dakshbhatia/BrainOS -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOLLHTTP.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOPosix.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOWASI.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOLinux.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIODarwin.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOOpenBSD.modulemap -Xcc -fmodule-map-file\=/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/GeneratedModuleMaps/CNIOAtomics.modulemap -Xcc -ivfsstatcache -Xcc /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx15.5-24F74-8254517eb8b97d462ccbc072ba9094c9.sdkstatcache -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/swift-overrides.hmap -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOLLHTTP/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-system/Sources/CSystem/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-atomics/Sources/_AtomicsShims/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOPosix/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOWASI/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOWindows/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOLinux/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIODarwin/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOOpenBSD/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-nio/Sources/CNIOAtomics/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/swift-numerics/Sources/_NumericsShims/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/SourcePackages/checkouts/mlx-swift/Source/Cmlx/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Products/Debug/include -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/DerivedSources-normal/arm64 -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/DerivedSources/arm64 -Xcc -I/Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\=1 -module-name BrainCore -package-name braincore -frontend-parseable-output -disable-clang-spi -target-sdk-version 15.5 -target-sdk-name macosx15.5 -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server -external-plugin-path /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/local/lib/swift/host/plugins\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/local/lib/swift/host/plugins -o /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainKnowledgeManager.o -o /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Build/Intermediates.noindex/BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainUsageManager.o -index-unit-output-path /BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainKnowledgeManager.o -index-unit-output-path /BrainCore.build/Debug/BrainCore.build/Objects-normal/arm64/BrainUsageManager.o -index-store-path /Users/dakshbhatia/Library/Developer/Xcode/DerivedData/BrainOS-afdfcazotgdfjhdncexbhylsfsee/Index.noindex/DataStore -index-system-modules
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift:130:13: warning: variable 'combined' was never mutated; consider changing to 'let' constant
+        var combined = Array(Set(vectorResults + graphResults))
+        ~~~ ^
+        let
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift:195:48: error: missing arguments for parameters 'stream', 'top_p', 'frequency_penalty', 'presence_penalty', 'stop', 'n', 'tools', 'tool_choice', 'session_id' in call
+            let request = ChatCompletionRequest(
+                                               ^
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/Models/OpenAIAPI.swift:337:8: note: 'init(model:messages:temperature:max_tokens:stream:top_p:frequency_penalty:presence_penalty:stop:n:tools:tool_choice:session_id:)' declared here
+struct ChatCompletionRequest: Codable, Sendable {
+       ^
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift:211:42: error: cannot infer contextual base in reference to member 'whitespacesAndNewlines'
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                                        ~^~~~~~~~~~~~~~~~~~~~~~
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift:219:54: error: cannot infer contextual base in reference to member 'utf8'
+            guard let data = jsonString.data(using: .utf8) else { return nil }
+                                                    ~^~~~
+/Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift:435:15: warning: 'catch' block is unreachable because no errors are thrown in 'do' block
+            } catch {
+              ^
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainUsageManager.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ FirstRunWizardView.swift,\ ManagementView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/FirstRunWizardView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/ManagementView.swift (in target 'BrainCore' from project 'BrainCore')
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/FirstRunWizardView.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/ManagementView.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ SpeechRecognizer.swift,\ BrainDashboardView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Services/SpeechRecognizer.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/BrainDashboardView.swift (in target 'BrainCore' from project 'BrainCore')
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Services/SpeechRecognizer.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/BrainDashboardView.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ FloatingInputCard.swift,\ DashboardComponents.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/Components/FloatingInputCard.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/DashboardComponents.swift (in target 'BrainCore' from project 'BrainCore')
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/Components/FloatingInputCard.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/DashboardComponents.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ BrainCore (in target 'BrainCore' from project 'BrainCore')
+
+EmitSwiftModule normal arm64 (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ ChatView.swift,\ ChatEmptyState.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/ChatView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/Components/ChatEmptyState.swift (in target 'BrainCore' from project 'BrainCore')
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/ChatView.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/Components/ChatEmptyState.swift (in target 'BrainCore' from project 'BrainCore')
+    cd /Users/dakshbhatia/BrainOS
+    
+
+SwiftCompile normal arm64 Compiling\ BrainKnowledgeGraphView.swift,\ BrainTimelineView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/BrainKnowledgeGraphView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/BrainTimelineView.swift (in target 'BrainCore' from project 'BrainCore')
+Command SwiftCompile failed with a nonzero exit code
+
+note: Run script build phase 'Patch MLX Dependencies' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'BrainOS' from project 'BrainOS')
+** BUILD FAILED **
+
+
+The following build commands failed:
+	SwiftCompile normal arm64 Compiling\ BrainKnowledgeManager.swift,\ BrainUsageManager.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainUsageManager.swift (in target 'BrainCore' from project 'BrainCore')
+	SwiftCompile normal arm64 /Users/dakshbhatia/BrainOS/Packages/BrainCore/Managers/BrainKnowledgeManager.swift (in target 'BrainCore' from project 'BrainCore')
+	SwiftCompile normal arm64 Compiling\ BrainKnowledgeGraphView.swift,\ BrainTimelineView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/BrainKnowledgeGraphView.swift /Users/dakshbhatia/BrainOS/Packages/BrainCore/Views/BrainTimelineView.swift (in target 'BrainCore' from project 'BrainCore')
+	Building workspace BrainOS with scheme BrainOS and configuration Debug
+(4 failures)

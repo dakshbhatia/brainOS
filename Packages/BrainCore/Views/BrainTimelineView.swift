@@ -263,10 +263,31 @@ struct BrainTimelineView: View {
             }
             
             // 4. Location changes
-            // Future: Add location history from database
+            let locations = await BrainDatabaseManager.shared.fetchLocations(start: startOfDay, end: endOfDay)
+            loadedEvents += locations.map { loc in
+                TimelineEvent(
+                    timestamp: loc.timestamp,
+                    type: .location,
+                    title: "Location Update",
+                    description: loc.address ?? "Near \(String(format: "%.4f", loc.lat)), \(String(format: "%.4f", loc.lon))",
+                    entities: [],
+                    importance: nil
+                )
+            }
             
-            // 5. App usage - simplified (usage doesn't have timestamps in current API)
-            // Skip for now as BrainUsageManager returns aggregated duration, not timestamped events
+            // 5. App usage
+            let usage = await BrainUsageManager.shared.fetchTimelineUsage(start: startOfDay, end: endOfDay)
+            loadedEvents += usage.map { item in
+                let durationStr = item.duration > 60 ? "\(Int(item.duration/60))m" : "\(Int(item.duration))s"
+                return TimelineEvent(
+                    timestamp: item.timestamp,
+                    type: .activity,
+                    title: item.bundleId.split(separator: ".").last.map(String.init) ?? item.bundleId,
+                    description: "Used for \(durationStr)",
+                    entities: [],
+                    importance: item.duration > 300 ? 0.4 : 0.2
+                )
+            }
             
             // 6. Memories (AI-generated insights)
             if let memories = await BrainKnowledgeManager.shared.getMemories(

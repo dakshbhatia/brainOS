@@ -87,6 +87,24 @@ public actor BrainDatabaseManager {
                 duration INTEGER,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             );
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS entity_aliases (
+                alias TEXT PRIMARY KEY,
+                canonical_id TEXT,
+                FOREIGN KEY(canonical_id) REFERENCES entities(id)
+            );
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS social_vitals_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contact_id TEXT,
+                date TEXT, -- YYYY-MM-DD
+                interaction_count INTEGER DEFAULT 0,
+                score REAL DEFAULT 0,
+                UNIQUE(contact_id, date),
+                FOREIGN KEY(contact_id) REFERENCES interaction_stats(contact_id)
+            );
             """
         ]
         
@@ -116,6 +134,56 @@ public actor BrainDatabaseManager {
         sqlite3_finalize(statement)
     }
     
+    public func fetchLocations(start: Date, end: Date) -> [(lat: Double, lon: Double, address: String?, timestamp: Date)] {
+        let query = "SELECT latitude, longitude, address, timestamp FROM location_logs WHERE datetime(timestamp) BETWEEN datetime(?) AND datetime(?) ORDER BY timestamp ASC;"
+        var statement: OpaquePointer?
+        var results: [(Double, Double, String?, Date)] = []
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (ISO8601DateFormatter().string(from: start) as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(statement, 2, (ISO8601DateFormatter().string(from: end) as NSString).utf8String, -1, nil)
+            
+            while sqlite3_step(statement) == SQLITE_ROW {
+                let lat = sqlite3_column_double(statement, 0)
+                let lon = sqlite3_column_double(statement, 1)
+                let addr = sqlite3_column_text(statement, 2).map { String(cString: $0) }
+                let tsStr = String(cString: sqlite3_column_text(statement, 3))
+                let ts = ISO8601DateFormatter().date(from: tsStr) ?? Date()
+                
+                results.append((lat, lon, addr, ts))
+            }
+        }
+        sqlite3_finalize(statement)
+        return results
+    }
+    
+    /// Provides a unified snapshot of the user's state for the Mirror OS Vitals.
+    public func getDailyStatusSnapshot() -> [String: Double] {
+        var snapshot: [String: Double] = [
+            "social": 0.5,
+            "focus": 0.8,
+            "physical": 0.3,
+            "finance": 0.9
+        ]
+        
+        // 1. Calculate Social score based on interaction frequency today
+        let socialCountQuery = "SELECT COUNT(*) FROM interaction_stats WHERE datetime(last_spoken_at) >= datetime('now', 'start of day');"
+        var statement: OpaquePointer?
+        if sqlite3_prepare_v2(db, socialCountQuery, -1, &statement, nil) == SQLITE_OK {
+            if sqlite3_step(statement) == SQLITE_ROW {
+                let count = Double(sqlite3_column_int(statement, 0))
+                // Normalize: 5 interactions = 1.0 (arbitrary but fits 'Sims' vibe)
+                snapshot["social"] = min(1.0, count / 5.0)
+            }
+        }
+        sqlite3_finalize(statement)
+        
+        // 2. Physical score from step logs (if we had them in DB, usually in HealthKit)
+        // For now, we'll keep health retrieval in the View/Manager, but we can store a cached 'vitals' table later.
+        
+        return snapshot
+    }
+    
     public func updateInteraction(contactId: String, name: String, timestamp: Date) {
         let query = """
         INSERT INTO interaction_stats (contact_id, contact_name, last_spoken_at, interaction_count)
@@ -136,6 +204,44 @@ public actor BrainDatabaseManager {
             }
         }
         sqlite3_finalize(statement)
+        
+        // Log daily tally for trends
+        let dateStr = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            return formatter.string(from: timestamp)
+        }()
+        
+        let dailyQuery = """
+        INSERT INTO social_vitals_log (contact_id, date, interaction_count)
+        VALUES (?, ?, 1)
+        ON CONFLICT(contact_id, date) DO UPDATE SET
+            interaction_count = interaction_count + 1;
+        """
+        var dailyStmt: OpaquePointer?
+        if sqlite3_prepare_v2(db, dailyQuery, -1, &dailyStmt, nil) == SQLITE_OK {
+            sqlite3_bind_text(dailyStmt, 1, (contactId as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(dailyStmt, 2, (dateStr as NSString).utf8String, -1, nil)
+            sqlite3_step(dailyStmt)
+        }
+        sqlite3_finalize(dailyStmt)
+    }
+    
+    public func getRelationshipTrends(contactId: String, days: Int = 7) -> [Double] {
+        let query = "SELECT interaction_count FROM social_vitals_log WHERE contact_id = ? AND date >= date('now', ?) ORDER BY date ASC;"
+        var statement: OpaquePointer?
+        var results: [Double] = []
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (contactId as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(statement, 2, ("-\(days) days" as NSString).utf8String, -1, nil)
+            
+            while sqlite3_step(statement) == SQLITE_ROW {
+                results.append(Double(sqlite3_column_int(statement, 0)))
+            }
+        }
+        sqlite3_finalize(statement)
+        return results
     }
     
     public func getStaleContacts(days: Int = 30) -> [(name: String, lastSpoken: Date)] {
@@ -160,7 +266,14 @@ public actor BrainDatabaseManager {
     // MARK: - Knowledge Graph
 
     public func upsertEntity(name: String, type: String, metadata: [String: String] = [:]) {
-        let id = "\(type):\(name.lowercased())"
+        let canonicalId = resolveCanonicalEntity(name: name, type: type)
+        let id = canonicalId ?? "\(type):\(name.lowercased())"
+        
+        // If it's a new alias, record it
+        if canonicalId == nil {
+            saveEntityAlias(alias: name, canonicalId: id)
+        }
+        
         let metaJson = (try? JSONSerialization.data(withJSONObject: metadata)) ?? Data()
         let metaStr = String(data: metaJson, encoding: .utf8) ?? "{}"
         
@@ -183,6 +296,33 @@ public actor BrainDatabaseManager {
             if sqlite3_step(statement) != SQLITE_DONE {
                 BrainLogger.error("Failed to upsert entity: \(name)", category: .core)
             }
+        }
+        sqlite3_finalize(statement)
+    }
+
+    private func resolveCanonicalEntity(name: String, type: String) -> String? {
+        let query = "SELECT canonical_id FROM entity_aliases WHERE LOWER(alias) = LOWER(?);"
+        var statement: OpaquePointer?
+        var result: String? = nil
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (name as NSString).utf8String, -1, nil)
+            if sqlite3_step(statement) == SQLITE_ROW {
+                result = String(cString: sqlite3_column_text(statement, 0))
+            }
+        }
+        sqlite3_finalize(statement)
+        return result
+    }
+
+    public func saveEntityAlias(alias: String, canonicalId: String) {
+        let query = "INSERT OR IGNORE INTO entity_aliases (alias, canonical_id) VALUES (?, ?);"
+        var statement: OpaquePointer?
+        
+        if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, (alias as NSString).utf8String, -1, nil)
+            sqlite3_bind_text(statement, 2, (canonicalId as NSString).utf8String, -1, nil)
+            sqlite3_step(statement)
         }
         sqlite3_finalize(statement)
     }

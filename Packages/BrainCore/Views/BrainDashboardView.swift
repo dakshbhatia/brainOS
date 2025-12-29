@@ -20,33 +20,30 @@ struct BrainDashboardView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Header with Brain Status
+            VStack(alignment: .leading, spacing: 24) {
+                // Header with Brain Orb
                 headerSection
                 
-                // Memory Stream Status
-                memoryStreamSection
+                // Vital Meters (The "Sims" Mirror)
+                vitalsGridSection
                 
-                // Daily Brief
+                // Daily Brief (Surfaced Insights)
                 dailyBriefSection
+                
+                // Active Action Hub (SURFACE ACTIONABLE NUDGES)
+                actionHubSection
                 
                 // Recent Insights
                 recentInsightsSection
-                
-                // Relationships Inbox
-                relationshipsSection
-                
-                // Health & Context Cards
-                contextCardsSection
                 
                 Spacer(minLength: 20)
                 
                 // Footer
                 footerSection
             }
-            .padding(20)
+            .padding(24)
         }
-        .frame(width: 380, height: 600)
+        .frame(width: 400, height: 750)
         .opacity(hasAppeared ? 1 : 0)
         .animation(.easeOut(duration: 0.4), value: hasAppeared)
         .onAppear {
@@ -56,349 +53,135 @@ struct BrainDashboardView: View {
         }
     }
     
-    // MARK: - Header Section
+    // MARK: - Header (The Orb)
     private var headerSection: some View {
-        HStack {
-            BrainAvatarView()
-                .frame(width: 50, height: 50)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(theme.accentColor.opacity(0.3), lineWidth: 2)
-                        .scaleEffect(pulseAnimation ? 1.2 : 1.0)
-                        .opacity(pulseAnimation ? 0 : 0.8)
-                )
-                .onAppear {
-                    withAnimation(.easeOut(duration: 2).repeatForever(autoreverses: false)) {
-                        pulseAnimation = true
-                    }
+        VStack(spacing: 16) {
+            ZStack {
+                // Outer glow
+                Circle()
+                    .fill(theme.accentColor.opacity(0.15))
+                    .frame(width: 100, height: 100)
+                    .scaleEffect(pulseAnimation ? 1.2 : 0.9)
+                    .blur(radius: 10)
+                
+                // The Core Orb
+                DashboardOrbView(state: overallState)
+                    .frame(width: 80, height: 80)
+                    .shadow(color: orbColor.opacity(0.5), radius: 10)
+            }
+            .onAppear {
+                withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
+                    pulseAnimation = true
                 }
+            }
             
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(spacing: 4) {
                 Text("\(greeting), \(userName)")
-                    .font(.system(size: 16, weight: .semibold))
-                HStack(spacing: 4) {
+                    .font(.system(size: 18, weight: .bold))
+                
+                HStack(spacing: 6) {
                     Circle()
                         .fill(memoryStreamActive ? Color.green : Color.orange)
                         .frame(width: 6, height: 6)
-                    Text(memoryStreamActive ? "Learning" : "Idle")
+                    Text(memoryStreamActive ? "Cognition Active" : "Brain Idle")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
                 }
-            }
-            
-            Spacer()
-            
-            Button(action: {}) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14))
-            }
-            .buttonStyle(.plain)
-        }
-    }
-    
-    // MARK: - Memory Stream Section
-    private var memoryStreamSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Label("MEMORY STREAM", systemImage: "brain.head.profile")
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text(lastIngestionTime)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-            
-            // Semantic memory status
-            if let stats = semanticMemoryStats {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Circle()
-                            .fill(AutoEmbeddingService.shared.isConfigured ? Color.green : Color.orange)
-                            .frame(width: 6, height: 6)
-                        Text(AutoEmbeddingService.shared.isConfigured ? "Semantic memory active" : "Configure OpenAI provider")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    if stats.totalMessages > 0 {
-                        HStack {
-                            Text("\(stats.embeddedMessages)/\(stats.totalMessages) messages indexed")
-                                .font(.system(size: 11, design: .monospaced))
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text("\(Int(stats.embeddingProgress * 100))%")
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(theme.accentColor)
-                        }
-                        
-                        ProgressView(value: stats.embeddingProgress)
-                            .progressViewStyle(.linear)
-                            .tint(theme.accentColor)
-                            .frame(height: 3)
-                    }
-                }
-                .padding(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.primary.opacity(0.04))
-                )
-            }
-            
-            if memoryStreamActive {
-                HStack(spacing: 8) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text("Processing new experiences...")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(theme.accentColor.opacity(0.1))
-                .cornerRadius(8)
-            } else {
-                Text("\(recentMemories.count) knowledge items indexed")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.primary.opacity(0.05))
-                    .cornerRadius(8)
             }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 10)
     }
-    
-    // MARK: - Daily Brief Section
-    private var dailyBriefSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Label("DAILY BRIEF", systemImage: "sparkles")
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                if !brief.hasPrefix("Loading") {
-                    Button(showingFullBrief ? "Show Less" : "Expand") {
-                        withAnimation(.spring(response: 0.3)) {
-                            showingFullBrief.toggle()
-                        }
-                    }
-                    .font(.caption2)
-                    .buttonStyle(.plain)
-                    .foregroundStyle(theme.accentColor)
-                }
-            }
-            
-            Text(brief)
-                .font(.system(size: 13, weight: .regular))
-                .lineSpacing(4)
-                .lineLimit(showingFullBrief ? nil : 4)
-                .animation(.easeInOut(duration: 0.2), value: showingFullBrief)
-        }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(theme.accentColor.opacity(0.08))
-        )
-    }
-    
-    // MARK: - Recent Insights Section
-    private var recentInsightsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("RECENT INSIGHTS", systemImage: "lightbulb.fill")
+
+    // MARK: - Vitals Grid
+    private var vitalsGridSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("LIFESTYLE VITALS", systemImage: "waveform.path.ecg")
                 .font(.caption2.weight(.bold))
                 .foregroundStyle(.secondary)
             
-            if recentMemories.isEmpty {
-                Text("No insights yet today")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 12)
-            } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array(recentMemories.prefix(3).enumerated()), id: \.offset) { index, memory in
-                        HStack(alignment: .top, spacing: 8) {
-                            Circle()
-                                .fill(theme.accentColor.opacity(0.6))
-                                .frame(width: 6, height: 6)
-                                .padding(.top, 5)
-                            Text(memory)
-                                .font(.caption)
-                                .foregroundStyle(.primary)
-                                .lineLimit(2)
-                        }
-                        .transition(.opacity.combined(with: .move(edge: .leading)))
-                    }
-                }
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                VitalMeter(title: "Social", icon: "person.2.fill", value: vitals["social"] ?? 0.5, color: .blue)
+                VitalMeter(title: "Focus", icon: "bolt.fill", value: vitals["focus"] ?? 0.5, color: .purple)
+                VitalMeter(title: "Physical", icon: "figure.walk", value: Double(stepCount) / 10000.0, color: .green)
+                VitalMeter(title: "Finance", icon: "creditcard.fill", value: vitals["finance"] ?? 0.5, color: .orange)
             }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.primary.opacity(0.05))
-        )
     }
-    
-    // MARK: - Relationships Section
-    private var relationshipsSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("RELATIONSHIPS", systemImage: "person.2.fill")
+
+    // MARK: - Action Hub
+    private var actionHubSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("ACTION HUB", systemImage: "command")
                 .font(.caption2.weight(.bold))
                 .foregroundStyle(.secondary)
             
             if nudges.isEmpty {
-                Text("All caught up")
+                Text("Your state is optimal. No actions needed.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 12)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.primary.opacity(0.04))
+                    .cornerRadius(10)
             } else {
-                VStack(spacing: 8) {
-                    ForEach(Array(nudges.prefix(3).enumerated()), id: \.element.id) { index, nudge in
-                        relationshipNudgeCard(nudge)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
-                            ))
-                    }
+                ForEach(nudges) { nudge in
+                    ActionCard(nudge: nudge)
                 }
             }
         }
     }
     
-    private func relationshipNudgeCard(_ nudge: RelationshipNudge) -> some View {
-        HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(nudge.contactName)
-                    .font(.system(size: 13, weight: .semibold))
-                Text(nudge.reason)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-            
-            Spacer()
-            
-            Button(action: {}) {
-                Image(systemName: "paperplane.fill")
-                    .font(.caption)
-            }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
-            .tint(theme.accentColor)
-        }
-        .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.primary.opacity(0.04))
-        )
+    // MARK: - Supporting Views
+    
+    private var overallState: BrainOrbState {
+        let avg = (vitals.values.reduce(0, +) + (Double(stepCount) / 10000.0)) / 5.0
+        if avg > 0.8 { return .peak }
+        if avg < 0.4 { return .low }
+        return .normal
     }
     
-    // MARK: - Context Cards Section
-    private var contextCardsSection: some View {
-        HStack(spacing: 10) {
-            contextCard(
-                title: "Activity",
-                value: stepCount > 0 ? "\(stepCount.formatted())" : "—",
-                subtitle: stepCount > 0 ? "steps" : "No data",
-                icon: "figure.walk",
-                color: .green
-            )
-            
-            contextCard(
-                title: "Location",
-                value: currentLocation == "Unknown" ? "—" : currentLocation,
-                subtitle: currentLocation == "Unknown" ? "Unavailable" : "Current",
-                icon: "location.fill",
-                color: .blue
-            )
+    private var orbColor: Color {
+        switch overallState {
+        case .peak: return .purple
+        case .normal: return theme.accentColor
+        case .low: return .orange
         }
     }
     
-    private func contextCard(title: String, value: String, subtitle: String, icon: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.caption)
-                    .foregroundStyle(color)
-                Spacer()
-            }
-            
-            Text(value)
-                .font(.system(size: 16, weight: .bold))
-                .lineLimit(1)
-            
-            Text(subtitle)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(color.opacity(0.1))
-        )
-    }
+    @State private var vitals: [String: Double] = [:]
     
-    // MARK: - Footer Section
-    private var footerSection: some View {
-        HStack {
-            Text("⌥Space to chat")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            Spacer()
-            HStack(spacing: 4) {
-                Image(systemName: "brain")
-                    .font(.caption2)
-                Text("Powered by MLX")
-                    .font(.caption2)
-            }
-            .foregroundStyle(.secondary.opacity(0.7))
-        }
-    }
-    
-    // MARK: - Data Loading
     private func loadDashboardData() {
-        // Load user profile
         userName = UserDefaults.standard.string(forKey: "userName") ?? NSFullUserName()
-        
-        // Set greeting based on time
         let hour = Calendar.current.component(.hour, from: Date())
         greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
-        
-        // Load semantic memory stats immediately (sync)
         semanticMemoryStats = AutoEmbeddingService.shared.getStats()
         
         Task {
-            // Load relationship nudges
+            // New snapshot retrieval
+            let snapshot = await BrainDatabaseManager.shared.getDailyStatusSnapshot()
             let loadedNudges = await RelationshipAgent.shared.analyzeRecentInteractions()
+            
             await MainActor.run {
-                withAnimation(.spring(response: 0.4)) {
+                withAnimation {
+                    self.vitals = snapshot
                     self.nudges = loadedNudges
                 }
             }
             
-            // Generate AI brief
             let generatedBrief = await BrainManager.shared.generateBrief()
             await MainActor.run {
-                withAnimation {
-                    self.brief = generatedBrief
-                }
+                self.brief = generatedBrief
             }
             
-            // Load health data
             if let steps = try? await BrainHealthManager.shared.fetchStepCount(days: 1).first {
                 await MainActor.run {
                     self.stepCount = Int(steps)
                 }
             }
             
-            // Load recent memories for insights
             await loadRecentInsights()
-            
-            // Check memory stream status
             await updateMemoryStreamStatus()
         }
     }
@@ -428,8 +211,7 @@ struct BrainDashboardView: View {
     }
     
     private func updateMemoryStreamStatus() async {
-        // Check if BackgroundIngestionService is currently running
-        // For now, we'll check if there are any recent memories (within last 5 minutes)
+        // Check if there are any recent memories (within last 5 minutes)
         let fiveMinutesAgo = Date().addingTimeInterval(-300)
         
         if let recentMems = await BrainKnowledgeManager.shared.getMemories(
@@ -462,7 +244,91 @@ struct BrainDashboardView: View {
             }
         }
     }
+    
+    // MARK: - Sections
+    
+    private var recentInsightsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("RECENT INSIGHTS", systemImage: "sparkles")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+            
+            if recentMemories.isEmpty {
+                Text("No significant events captured today.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.primary.opacity(0.04))
+                    .cornerRadius(10)
+            } else {
+                ForEach(recentMemories, id: \.self) { insight in
+                    HStack(alignment: .top, spacing: 12) {
+                        Circle()
+                            .fill(Color.purple.opacity(0.3))
+                            .frame(width: 6, height: 6)
+                            .padding(.top, 6)
+                        Text(insight)
+                            .font(.caption)
+                            .foregroundStyle(.primary.opacity(0.8))
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(Color.primary.opacity(0.04)))
+                }
+            }
+        }
+    }
+
+    private var dailyBriefSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("DAILY BRIEF", systemImage: "doc.text.fill")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.secondary)
+            
+            Text(brief)
+                .font(.system(size: 14))
+                .lineSpacing(4)
+                .foregroundStyle(.primary.opacity(0.9))
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.primary.opacity(0.04))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.primary.opacity(0.05), lineWidth: 1)
+                )
+        }
+    }
+
+    private var footerSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("LAST INGESTION")
+                    .font(.system(size: 8, weight: .black))
+                    .foregroundStyle(.secondary)
+                Text(lastIngestionTime)
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+            }
+            
+            Spacer()
+            
+            if let stats = semanticMemoryStats {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("NEURAL GRAPH")
+                        .font(.system(size: 8, weight: .black))
+                        .foregroundStyle(.secondary)
+                    Text("\(stats.embeddedMessages) NODES")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                }
+            }
+        }
+        .padding(.top, 10)
+    }
 }
+
+
 
 #Preview {
     BrainDashboardView()
