@@ -26,6 +26,9 @@ actor MLXService: ToolCapableService {
     nonisolated func handles(requestedModel: String?) -> Bool {
         let trimmed = (requestedModel ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return false }
+        if trimmed.lowercased() == "default" {
+            return !Self.getAvailableModels().isEmpty
+        }
         return Self.findModel(named: trimmed) != nil
     }
 
@@ -157,7 +160,9 @@ actor MLXService: ToolCapableService {
 
     private func selectModel(requestedName: String?) throws -> LocalModelRef {
         let trimmed = (requestedName ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
+        let isDefault = trimmed.isEmpty || trimmed.lowercased() == "default"
+        
+        if isDefault {
             // Fallback: pick the first available installed model
             if let first = Self.getAvailableModels().first, let m = Self.findModel(named: first) {
                 return m
@@ -165,14 +170,14 @@ actor MLXService: ToolCapableService {
             throw NSError(
                 domain: "MLXService",
                 code: 3,
-                userInfo: [NSLocalizedDescriptionKey: "No models installed. Requested model is required."]
+                userInfo: [NSLocalizedDescriptionKey: "No MLX models installed. Please go to the Models tab in the Sidebar Hub to download recommended models like Gemma 3."]
             )
         }
         if let m = Self.findModel(named: trimmed) { return m }
         throw NSError(
             domain: "MLXService",
             code: 4,
-            userInfo: [NSLocalizedDescriptionKey: "Requested model not found: \(trimmed)"]
+            userInfo: [NSLocalizedDescriptionKey: "Requested model '\(trimmed)' not found locally. Ensure it's downloaded in the Models tab."]
         )
     }
 }

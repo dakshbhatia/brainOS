@@ -122,33 +122,52 @@ enum BrainOrbState {
 struct DashboardOrbView: View {
     let state: BrainOrbState
     @State private var rotation = 0.0
+    @State private var breath = 1.0
     
     var body: some View {
         ZStack {
-            // Multi-layered glass sphere
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [orbColor.opacity(0.8), .clear],
-                        center: .center,
-                        startRadius: 5,
-                        endRadius: 40
+            // Multi-layered glass sphere + Neural core
+            ForEach(0..<3) { i in
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [orbColor.opacity(0.8 - Double(i)*0.2), .clear],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 60
+                        )
                     )
-                )
+                    .scaleEffect(breath + (Double(i) * 0.05))
+                    .offset(x: sin(rotation * .pi / 180 + Double(i)) * 5,
+                            y: cos(rotation * .pi / 180 + Double(i)) * 5)
+            }
             
-            // Rotating "Energy" rings
+            // Rotating "Neural Path" rings
             Circle()
-                .stroke(orbColor.opacity(0.4), lineWidth: 1)
+                .stroke(orbColor.opacity(0.5), lineWidth: 0.5)
+                .frame(width: 70, height: 70)
                 .rotationEffect(.degrees(rotation))
             
             Circle()
-                .stroke(orbColor.opacity(0.2), lineWidth: 3)
-                .padding(5)
-                .rotationEffect(.degrees(-rotation * 0.5))
+                .stroke(orbColor.opacity(0.3), lineWidth: 1)
+                .frame(width: 85, height: 85)
+                .rotationEffect(.degrees(-rotation * 1.5))
+            
+            // Highlight
+            Circle()
+                .fill(
+                    LinearGradient(colors: [.white.opacity(0.5), .clear], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .frame(width: 30, height: 30)
+                .offset(x: -15, y: -15)
+                .blur(radius: 2)
         }
         .onAppear {
-            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
                 rotation = 360
+            }
+            withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
+                breath = 1.15
             }
         }
     }
@@ -156,8 +175,33 @@ struct DashboardOrbView: View {
     private var orbColor: Color {
         switch state {
         case .peak: return .purple
-        case .normal: return .blue
-        case .low: return .orange
+            case .low: return .orange
         }
+    }
+}
+
+struct MemoryFlowTicker: View {
+    let items: [String]
+    @State private var offset: CGFloat = 0
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(items.prefix(3), id: \.self) { item in
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(Color.green.opacity(0.6))
+                        .frame(width: 4, height: 4)
+                    
+                    Text(item)
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                .transition(.asymmetric(insertion: .move(edge: .bottom).combined(with: .opacity),
+                                      removal: .move(edge: .top).combined(with: .opacity)))
+            }
+        }
+        .frame(height: 50, alignment: .top)
+        .clipped()
     }
 }

@@ -16,10 +16,14 @@ public actor BrainDatabaseManager {
     }
     
     public func initialize() {
+        if db != nil { return }
+        
         if sqlite3_open(dbPath, &db) != SQLITE_OK {
-            BrainLogger.error("Failed to open brain database", category: .core)
+            BrainLogger.error("Failed to open brain database at \(dbPath)", category: .core)
             return
         }
+        
+        BrainLogger.info("Database initialized at \(dbPath)", category: .core)
         
         // Create tables
         let tables = [
@@ -198,7 +202,16 @@ public actor BrainDatabaseManager {
         }
     }
     
+    private func ensureInitialized() {
+        if db == nil {
+            initialize()
+        }
+    }
+    
     public func logLocation(lat: Double, lon: Double, address: String?) {
+        ensureInitialized()
+        guard let db = db else { return }
+        
         let query = "INSERT INTO location_logs (latitude, longitude, address) VALUES (?, ?, ?);"
         var statement: OpaquePointer?
         
@@ -217,6 +230,9 @@ public actor BrainDatabaseManager {
     }
     
     public func fetchLocations(start: Date, end: Date) -> [(lat: Double, lon: Double, address: String?, timestamp: Date)] {
+        ensureInitialized()
+        guard let db = db else { return [] }
+        
         let query = "SELECT latitude, longitude, address, timestamp FROM location_logs WHERE datetime(timestamp) BETWEEN datetime(?) AND datetime(?) ORDER BY timestamp ASC;"
         var statement: OpaquePointer?
         var results: [(Double, Double, String?, Date)] = []
@@ -241,12 +257,16 @@ public actor BrainDatabaseManager {
     
     /// Provides a unified snapshot of the user's state for the Mirror OS Vitals.
     public func getDailyStatusSnapshot() -> [String: Double] {
+        ensureInitialized()
+        
         var snapshot: [String: Double] = [
             "social": 0.5,
             "focus": 0.8,
             "physical": 0.3,
             "finance": 0.9
         ]
+        
+        guard let db = db else { return snapshot }
         
         // 1. Calculate Social score based on interaction frequency today
         let socialCountQuery = "SELECT COUNT(*) FROM interaction_stats WHERE datetime(last_spoken_at) >= datetime('now', 'start of day');"
@@ -267,6 +287,9 @@ public actor BrainDatabaseManager {
     }
     
     public func updateInteraction(contactId: String, name: String, timestamp: Date) {
+        ensureInitialized()
+        guard let db = db else { return }
+        
         let query = """
         INSERT INTO interaction_stats (contact_id, contact_name, last_spoken_at, interaction_count)
         VALUES (?, ?, ?, 1)
@@ -466,6 +489,9 @@ public actor BrainDatabaseManager {
     // MARK: - Memory Storage
 
     public func saveMemory(id: String, content: String, embedding: [Float], metadata: [String: String]) {
+        ensureInitialized()
+        guard let db = db else { return }
+        
         let metaJson = (try? JSONSerialization.data(withJSONObject: metadata)) ?? Data()
         let metaStr = String(data: metaJson, encoding: .utf8) ?? "{}"
         

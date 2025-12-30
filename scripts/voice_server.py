@@ -12,6 +12,7 @@ import tempfile
 
 # Assuming chatterbox-tts is installed
 try:
+    from chatterbox import Chatterbox
 except ImportError:
     print("Warning: chatterbox-tts not found. Will use native 'say' fallback.")
     Chatterbox = None

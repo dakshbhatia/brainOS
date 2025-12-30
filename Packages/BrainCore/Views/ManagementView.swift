@@ -72,7 +72,7 @@ struct ManagementView: View {
     var deeplinkFile: String?
 
     init(
-        initialTab: ManagementTab = .models,
+        initialTab: ManagementTab = .brain,
         deeplinkModelId: String? = nil,
         deeplinkFile: String? = nil
     ) {

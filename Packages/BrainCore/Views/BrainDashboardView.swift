@@ -21,9 +21,16 @@ struct BrainDashboardView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 32) {
                 // Header with Brain Orb
                 headerSection
+                
+                // Memory Flow Ticker (New)
+                if memoryStreamActive {
+                    MemoryFlowTicker(items: recentMemories.isEmpty ? ["Processing life events...", "Updating neural graph..."] : recentMemories)
+                        .padding(.horizontal, 40)
+                        .transition(.opacity)
+                }
                 
                 // Vital Meters (The "Sims" Mirror)
                 vitalsGridSection
@@ -37,14 +44,14 @@ struct BrainDashboardView: View {
                 // Recent Insights
                 recentInsightsSection
                 
-                Spacer(minLength: 20)
+                Spacer(minLength: 40)
                 
                 // Footer
                 footerSection
             }
-            .padding(24)
+            .padding(32)
         }
-        .frame(width: 400, height: 750)
+        .frame(minWidth: 450)
         .opacity(hasAppeared ? 1 : 0)
         .animation(.easeOut(duration: 0.4), value: hasAppeared)
         .onAppear {
@@ -60,15 +67,15 @@ struct BrainDashboardView: View {
             ZStack {
                 // Outer glow
                 Circle()
-                    .fill(theme.accentColor.opacity(0.15))
-                    .frame(width: 100, height: 100)
+                    .fill(orbColor.opacity(0.15))
+                    .frame(width: 180, height: 180)
                     .scaleEffect(pulseAnimation ? 1.2 : 0.9)
-                    .blur(radius: 10)
+                    .blur(radius: 20)
                 
                 // The Core Orb
                 DashboardOrbView(state: overallState)
-                    .frame(width: 80, height: 80)
-                    .shadow(color: orbColor.opacity(0.5), radius: 10)
+                    .frame(width: 140, height: 140)
+                    .shadow(color: orbColor.opacity(0.4), radius: 20)
             }
             .onAppear {
                 withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {

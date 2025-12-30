@@ -47,6 +47,12 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
                 try? await Task.sleep(nanoseconds: 500_000_000)
                 showFirstRunWizard()
             }
+        } else {
+            // Show Hub (Management Window) by default as per the new UI direction
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 800_000_000) // Give a bit more time for background services
+                showManagementWindow(initialTab: .brain)
+            }
         }
 
         // Configure local notifications
@@ -187,7 +193,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegat
     public func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag {
             Task { @MainActor in
-                self.showChatOverlay()
+                self.showManagementWindow(initialTab: .brain)
             }
         }
         return true
@@ -643,9 +649,9 @@ extension AppDelegate {
         if win.isMiniaturized { win.deminiaturize(nil) }
         centerWindowOnActiveScreen(win)
         win.makeKeyAndOrderFront(nil)
-        Task { @MainActor in
-            NotificationCenter.default.post(name: .chatOverlayActivated, object: nil)
-        }
+        
+        // Ensure grounding avatar/orb is visible in dashboard if it's the first time
+        NotificationCenter.default.post(name: .chatOverlayActivated, object: nil)
     }
 
     @MainActor func closeChatOverlay() {
